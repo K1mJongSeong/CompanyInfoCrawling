@@ -11,48 +11,7 @@ import time
 import urllib
 import threading
 
-# 기업 이름 순차 제너레이터
-def company_name_generator(company_list):
-    idx = 0
-    while True:
-        yield company_list[idx]
-        idx = (idx + 1) % len(company_list)
 
-def crawl_articles(company_name, start_date, end_date):
-    start_date = datetime.datetime.strptime(start_date, "%Y%m%d")
-    end_date = datetime.datetime.strptime(end_date, "%Y%m%d")
-    delta = datetime.timedelta(days=1)
-
-    while start_date <= end_date:
-        formatted_date = start_date.strftime("%Y%m%d")
-        print(f"Crawling articles for {company_name} on {formatted_date}")
-        #save_path = f"C:/Users/softlabs/Desktop/naver_news/{company_name}_{formatted_date}_articles_upScaling.xlsx"
-        ds_de = start_date.strftime("%Y.%m.%d")
-        get_naver_news_info_from_selenium(company_name, formatted_date, ds_de)
-        start_date += delta
-
-def crawl_yesterdays_articles(company_name):
-    today=datetime.datetime.now()
-    yesterday = today - datetime.timedelta(days=1)
-
-    start_date = yesterday.strftime("%Y%m%d")
-    end_date = start_date
-
-    crawl_articles(company_name,start_date,end_date)
-
-def schedule_crawling(company_name):
-
-    for company in company_name:
-        print(f"Crawling {company}")
-        threading.Thread(target=crawl_yesterdays_articles, args=(company,)).start()
-        time.sleep(60)  # 기다릴 시간 설정 (예: 60초)
-
-    # next_company=next(company_name)
-    # schedule.every().day.at("12:31").do(crawl_yesterdays_articles, next_company)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
 
 
@@ -177,13 +136,57 @@ def get_naver_news_info_from_selenium(keyword, target_date, ds_de, sort=0, remov
             # DB에 저장
             article.save()
 
+def crawl_articles(company_name, start_date, end_date):
+    start_date = datetime.datetime.strptime(start_date, "%Y%m%d")
+    end_date = datetime.datetime.strptime(end_date, "%Y%m%d")
+    delta = datetime.timedelta(days=1)
+
+    while start_date <= end_date:
+        formatted_date = start_date.strftime("%Y%m%d")
+        print(f"Crawling articles for {company_name} on {formatted_date}")
+        #save_path = f"C:/Users/softlabs/Desktop/naver_news/{company_name}_{formatted_date}_articles_upScaling.xlsx"
+        ds_de = start_date.strftime("%Y.%m.%d")
+        get_naver_news_info_from_selenium(company_name, formatted_date, ds_de)
+        start_date += delta
+def crawl_yesterdays_articles(company_name):
+    today=datetime.datetime.now()
+    yesterday = today - datetime.timedelta(days=1)
+
+    start_date = yesterday.strftime("%Y%m%d")
+    end_date = start_date
+
+    crawl_articles(company_name,start_date,end_date)
+
+def schedule_crawling(company_name):
+
+    for company in company_name:
+        print(f"Crawling {company}")
+        crawl_yesterdays_articles(company)
+        time.sleep(3)  # 기다릴 시간 설정
+    # next_company=next(company_name)
+    # schedule.every().day.at("12:31").do(crawl_yesterdays_articles, next_company) #로직 다 완성하면 이 부분 매일 자정으로 00:00 실행될 수 있게 변경필요.
+
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
+    print("끝")
+    return
+
+
 # 기업 리스트
-company_list = ["삼성전자", "현대차", "에코프로비엠", "에코프로"]
+company_list = ["희림", "아진산업", "에코프로비엠", "에코프로"]
 
-# 제너레이터 생성
-company_name = company_name_generator(company_list)
+schedule_crawling(company_list)
+        
 
-schedule_crawling(company_name)
+
+
+
+
+
+
+
+
 
 # def crawl_articles(company_name, start_date, end_date):
 #     start_date = datetime.datetime.strptime(start_date, "%Y%m%d")
