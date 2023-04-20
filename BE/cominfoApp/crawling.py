@@ -15,7 +15,7 @@ import threading
 
 
 
-def get_article_info(driver, keyword, crawl_date, press_list, title_list, link_list, date_list, more_news_base_url=None, more_news=False):
+def get_article_info(driver, keyword, crawl_date, press_list, title_list, link_list, date_list, more_news_base_url=None, more_news=False, max_page=20):
     chrome_options = Options()
     #headless 설정
     chrome_options.headless =True
@@ -23,7 +23,12 @@ def get_article_info(driver, keyword, crawl_date, press_list, title_list, link_l
     caps["pageLoadStrategy"] = "none"
     #default는 caps["pageLoadStrategy"] = "normal"
     more_news_url_list = []
-    while True:    
+    current_page = 1
+
+    while True:
+        if current_page > max_page:
+            break
+
         page_html_source = driver.page_source
         url_soup = BeautifulSoup(page_html_source, 'lxml')
         
@@ -66,8 +71,11 @@ def get_article_info(driver, keyword, crawl_date, press_list, title_list, link_l
         
         time.sleep(0.2)
         next_page_btn = driver.find_element(By.CSS_SELECTOR, "a.btn_next").click() 
-        
+
+        current_page += 1
+
     return press_list, title_list, link_list, more_news_url_list
+
 
 
 def get_naver_news_info_from_selenium(keyword, target_date, ds_de, sort=0, remove_duplicate=False):
@@ -174,7 +182,7 @@ def schedule_crawling(company_name):
 
 
 # 기업 리스트
-company_list = ["희림", "아진산업", "에코프로비엠", "에코프로"]
+company_list = ["희림", "아진산업", "포스코퓨처엠", "포스코DX"]
 
 schedule_crawling(company_list)
         
