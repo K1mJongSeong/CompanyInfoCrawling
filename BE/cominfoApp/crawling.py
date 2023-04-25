@@ -10,6 +10,7 @@ import pandas as pd
 import time
 import urllib
 import threading
+import concurrent.futures
 
 
 
@@ -152,10 +153,13 @@ def crawl_articles(company_name, start_date, end_date):
     while start_date <= end_date:
         formatted_date = start_date.strftime("%Y%m%d")
         print(f"Crawling articles for {company_name} on {formatted_date}")
+        print(datetime.datetime.now())
         #save_path = f"C:/Users/softlabs/Desktop/naver_news/{company_name}_{formatted_date}_articles_upScaling.xlsx"
         ds_de = start_date.strftime("%Y.%m.%d")
         get_naver_news_info_from_selenium(company_name, formatted_date, ds_de)
         start_date += delta
+
+
 def crawl_yesterdays_articles(company_name):
     today=datetime.datetime.now()
     yesterday = today - datetime.timedelta(days=1)
@@ -165,12 +169,17 @@ def crawl_yesterdays_articles(company_name):
 
     crawl_articles(company_name,start_date,end_date)
 
+
 def schedule_crawling(company_name):
+
+    # with concurrent.futures.ProcessPoolExecutor() as executor: #멀티프로세싱 concurrent.futures 라이브러리 적용.
+    #     results = list(executor.map(crawl_yesterdays_articles, company_list))
 
     for company in company_name:
         print(f"Crawling {company}")
         crawl_yesterdays_articles(company)
         time.sleep(3)  # 기다릴 시간 설정
+        
     # next_company=next(company_name)
     # schedule.every().day.at("12:31").do(crawl_yesterdays_articles, next_company) #로직 다 완성하면 이 부분 매일 자정으로 00:00 실행될 수 있게 변경필요.
 
@@ -178,14 +187,15 @@ def schedule_crawling(company_name):
     #     schedule.run_pending()
     #     time.sleep(1)
     print("끝")
+    print(datetime.datetime.now())
     return
 
 
 # 기업 리스트
-company_list = ["희림", "아진산업", "포스코퓨처엠", "포스코DX"]
+company_list = ["이아이디", "이브이첨단소재", "에코프로", "현대로템","에코프로비엠","피엔티","엘엔에프","이수화학","두산에너빌리티","이트론"]
 
 schedule_crawling(company_list)
-        
+
 
 
 

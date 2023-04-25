@@ -19,5 +19,5 @@ from cominfoApp.views import run_crawling
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('run_crawling/',run_crawling),
+    #path('run_crawling/',run_crawling),
 ]
