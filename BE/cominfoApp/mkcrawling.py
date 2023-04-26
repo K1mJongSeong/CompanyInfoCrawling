@@ -3,14 +3,16 @@ from bs4 import BeautifulSoup
 import datetime
 import pandas as pd
 import time
-
+import schedule
 from .models import Crawling
 
-#매일경제 뉴스 크롤링
-def get_mk_article_links(date):
-    base_url = "https://www.mk.co.kr/news/"
+company_list = ["현대차"]
+
+# 매일경제 뉴스 크롤링
+def get_mk_article_links(date, company):
+    base_url = "https://search.mk.co.kr/search.php?&page={page}&s_kwd={company}&s_page=news"
     formatted_date = date.strftime("%Y%m%d")
-    url = f"{base_url}economy/?date={formatted_date}"
+    url = f"{base_url}search/?date={formatted_date}&s_keyword={company}"
 
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -40,20 +42,38 @@ def crawl_mk_articles(start_date, end_date):
 
     while start_date <= end_date:
         print(f"Crawling articles on {start_date.strftime('%Y-%m-%d')}")
-        article_links = get_mk_article_links(start_date)
+        for company in company_list:
+            print(f"Crawling articles for {company}")
+            article_links = get_mk_article_links(start_date, company)
 
-        for link in article_links:
-            time.sleep(1)  # 기다릴 시간 설정
-            title, date, content = get_mk_article_info(link)
+            for link in article_links:
+                time.sleep(1)  # 기다릴 시간 설정
+                title, date, content = get_mk_article_info(link)
 
-            # DB에 저장
-            article = Crawling(title=title, news_date=date, link=link, news_agency="매일경제", content=content)
-            article.save()
+                # DB에 저장
+                article = Crawling(title=title, news_date=date, link=link, news_agency="매일경제", content=content)
+                article.save()
 
         start_date += delta
 
-# 사용 예제
-start_date = input("시작 날짜를 입력하세요 (YYYYMMDD 형식): ")
-end_date = input("종료 날짜를 입력하세요 (YYYYMMDD 형식): ")
+def run_mk_crawling():
+    today = datetime.date.today()
+    yesterday = today - datetime.timedelta(days=1)
+    start_date = yesterday.strftime("%Y%m%d")
+    end_date = start_date
 
-crawl_mk_articles(start_date, end_date)
+    crawl_mk_articles(start_date, end_date)
+
+# def job():
+#     print("Starting the crawling job...")
+#     run_mk_crawling()
+#     print("Crawling job finished.")
+
+# # 스케줄 설정: 매일 자정에 실행
+# schedule.every().day.at("09:51").do(job)
+
+# while True:
+#     schedule.run_pending()
+#     time.sleep(60)  # 대기 시간 60초
+
+# run_mk_crawling()
