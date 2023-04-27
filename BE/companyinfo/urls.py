@@ -15,11 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from cominfoApp.views import start_crawling, start_mkcrawling, start_mkcrawling2
+from cominfoApp.views import start_crawling, start_mkcrawling
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('start_crawling/',start_crawling),
     path('start_mkcrawling/',start_mkcrawling),
-    path('start_mkcrawling2/',start_mkcrawling2),
 ]
