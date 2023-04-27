@@ -1,79 +1,94 @@
-import requests
+from django.core.management.base import BaseCommand
 from bs4 import BeautifulSoup
-import datetime
-import pandas as pd
-import time
-import schedule
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime, timedelta
 from .models import Crawling
 
-company_list = ["현대차"]
+def start_mk():
+    companies = ["넷플릭스", "삼성전자", "LG전자"]
+    today = datetime.now()
+    yesterday = today - timedelta(days=1)
+    yesterday_str = yesterday.strftime("%Y-%m-%d")
+    base_url = "https://www.mk.co.kr/search?word={company}&dateType=1day&startDate={startDate}&endDate={endDate}"
 
-# 매일경제 뉴스 크롤링
-def get_mk_article_links(date, company):
-    base_url = "https://search.mk.co.kr/search.php?&page={page}&s_kwd={company}&s_page=news"
-    formatted_date = date.strftime("%Y%m%d")
-    url = f"{base_url}search/?date={formatted_date}&s_keyword={company}"
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
 
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+    driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
 
-    article_links = []
-    for link in soup.select("div.list_area > dl > dt > a"):
-        article_links.append(link['href'])
+    for company in companies:
+        print(f"{company}기업 크롤링 시작.")
 
-    return article_links
+        url = base_url.format(company=company, startDate=yesterday_str, endDate=today.strftime("%Y-%m-%d"))
+        driver.get(url)
+
+        # 더보기 버튼 클릭
+        try:
+            more_button = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".btn_area > button"))
+            )
+            more_button.click()
+        except:
+            print(f"{company} 페이지가 더 이상 없습니다.")
+
+        # 크롤링
+        soup = BeautifulSoup(driver.page_source, "html.parser")
+        news_items = soup.select("div.result_news_wrap ul.news_list li")
+
+        print(f"news_items length: {len(news_items)}")  # 추가
+
+        if not news_items:
+            print(f"이 기업의 뉴스가 없습니다: {company}.")
+            #continue
+
+        for news_item in news_items:
+            title_tag = news_item.select_one("h3.news_ttl")
+            if title_tag is None:
+                print("제목이 포함된 뉴스가 없습니다.")
+                continue
+
+            link_tag = news_item.select_one("a.news_item")
+            if link_tag is None:
+                print("링크가 포함된 뉴스가 없습니다.")
+                continue
+
+            title = title_tag.text.strip() #제목 태그 잘라서 제목 text만 가져옴.
+            print(title)
+            link = link_tag["href"] #링크 태그 잘라서 링크만 가져옴.
+            print(link)
+
+            #news_agency_tag = news_item.select_one(".result_news_info .result_news_date")
+            print("as23232323")
+            # print(news_agency_tag)
+
+            # if news_agency_tag is None:
+            #     print("뉴스가 없습니다.")
+            #     continue
+            
+            #news_agency = news_agency_tag.text.strip().split(" ")[-1]
+            #date_str = news_agency_tag.text.strip().split(" ")[0]
+
+            # 날짜 형식 변환
+            # news_date = datetime.strptime(date_str, "%Y.%m.%d")
+            # formatted_date = news_date.strftime("%Y-%m-%d")
+            # 데이터 저장
+            #Crawling.objects.create(title=title, news_date=formatted_date, link=link, news_agency="매일경제")
+            mkDB=Crawling(title=title, news_date=yesterday_str, link=link, news_agency="매일경제")
+            print(mkDB)
+            mkDB.save()
 
 
-def get_mk_article_info(url):
-    response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+        print(f"이 기업의 크롤링이 완료 되었습니다. {company}")
 
-    title = soup.select_one("div.top_title > h1").text.strip()
-    date = soup.select_one("li.date").text.strip()
-    content = soup.select_one("div.art_txt").text.strip()
-
-    return title, date, content
+    print("크롤링 완료.")
 
 
-def crawl_mk_articles(start_date, end_date):
-    start_date = datetime.datetime.strptime(start_date, "%Y%m%d")
-    end_date = datetime.datetime.strptime(end_date, "%Y%m%d")
-    delta = datetime.timedelta(days=1)
 
-    while start_date <= end_date:
-        print(f"Crawling articles on {start_date.strftime('%Y-%m-%d')}")
-        for company in company_list:
-            print(f"Crawling articles for {company}")
-            article_links = get_mk_article_links(start_date, company)
+class Command(BaseCommand):
+    help = '매일경제 뉴스 크롤링'
 
-            for link in article_links:
-                time.sleep(1)  # 기다릴 시간 설정
-                title, date, content = get_mk_article_info(link)
-
-                # DB에 저장
-                article = Crawling(title=title, news_date=date, link=link, news_agency="매일경제", content=content)
-                article.save()
-
-        start_date += delta
-
-def run_mk_crawling():
-    today = datetime.date.today()
-    yesterday = today - datetime.timedelta(days=1)
-    start_date = yesterday.strftime("%Y%m%d")
-    end_date = start_date
-
-    crawl_mk_articles(start_date, end_date)
-
-# def job():
-#     print("Starting the crawling job...")
-#     run_mk_crawling()
-#     print("Crawling job finished.")
-
-# # 스케줄 설정: 매일 자정에 실행
-# schedule.every().day.at("09:51").do(job)
-
-# while True:
-#     schedule.run_pending()
-#     time.sleep(60)  # 대기 시간 60초
-
-# run_mk_crawling()
+    def handle(self, *args, **options):
+        start_mk()
