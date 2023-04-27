@@ -6,6 +6,8 @@ class Crawling(models.Model):
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
     news_agency = models.CharField(max_length=45, blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    img = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False

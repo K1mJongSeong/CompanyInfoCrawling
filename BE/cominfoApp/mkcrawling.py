@@ -55,36 +55,42 @@ def start_mk():
                 print("링크가 포함된 뉴스가 없습니다.")
                 continue
 
-            title = title_tag.text.strip() #제목 태그 잘라서 제목 text만 가져옴.
-            print(title)
-            link = link_tag["href"] #링크 태그 잘라서 링크만 가져옴.
-            print(link)
-
-            #news_agency_tag = news_item.select_one(".result_news_info .result_news_date")
-            print("as23232323")
-            # print(news_agency_tag)
-
-            # if news_agency_tag is None:
-            #     print("뉴스가 없습니다.")
-            #     continue
             
-            #news_agency = news_agency_tag.text.strip().split(" ")[-1]
-            #date_str = news_agency_tag.text.strip().split(" ")[0]
+            driver.get(link_tag['href'])# 링크 방문
+            content_soup = BeautifulSoup(driver.page_source, "html.parser")
+            
+            content_tag = content_soup.select_one(".news_cnt_detail_wrap")# 뉴스 내용 찾기
+            if content_tag is None:
+                print("뉴스 내용이 없습니다.")
+                continue
 
-            # 날짜 형식 변환
-            # news_date = datetime.strptime(date_str, "%Y.%m.%d")
-            # formatted_date = news_date.strftime("%Y-%m-%d")
-            # 데이터 저장
-            #Crawling.objects.create(title=title, news_date=formatted_date, link=link, news_agency="매일경제")
-            mkDB=Crawling(title=title, news_date=yesterday_str, link=link, news_agency="매일경제")
-            print(mkDB)
+            image_tags = content_soup.select(".news_cnt_detail_wrap img")
+
+            image_urls = []# 이미지 URL을 저장할 리스트 생성
+
+            
+            for image_tag in image_tags: # 이미지 태그에서 src 속성을 가져와서 리스트에 추가
+                image_url = image_tag["src"]
+                image_urls.append(image_url)
+
+            # 이미지 URL 리스트 출력
+            print("이미지 URL 리스트:", image_urls)
+
+            img = image_urls
+            print(img)
+            content = content_tag.get_text(strip=True)  # 내용 태그에서 내용 text만 가져옴.
+            title = title_tag.text.strip() #제목 태그 잘라서 제목 text만 가져옴.
+            link = link_tag["href"] #링크 태그 잘라서 링크만 가져옴.
+
+            mkDB=Crawling(title=title, news_date=yesterday_str, link=link, news_agency="매일경제", content=content, img=img)
             mkDB.save()
+
+            driver.back()
 
 
         print(f"이 기업의 크롤링이 완료 되었습니다. {company}")
 
     print("크롤링 완료.")
-
 
 
 class Command(BaseCommand):
