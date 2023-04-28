@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from .crawling import schedule_crawling, company_list
 from . import mkcrawling
+from . import khcrawling
 
 def start_crawling(request):
     schedule_crawling(company_list)  # 크롤링 코드를 실행합니다.
@@ -9,3 +10,7 @@ def start_crawling(request):
 def start_mkcrawling(requset):
     mkcrawling.start_mk()
     return JsonResponse({"message":"매일경제 크롤링 시작."})
+
+def start_khcrawling(requset):
+    khcrawling.start_kh()
+    return JsonResponse({"message":"코리아 헤럴드 크롤링 시작."})
