@@ -6,6 +6,23 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
 from .models import Crawling
+from newspaper import Article
+from konlpy.tag import Okt
+from sumy.nlp.tokenizers import Tokenizer as SumyTokenizer
+import time
+import nltk
+
+nltk.download('punkt')
+
+class KoreanTokenizer(SumyTokenizer):
+    def __init__(self, language):
+        super().__init__(language)
+        self.okt = Okt()
+
+    def _tokenize_sentence(self, sentence):
+        return self.okt.morphs(sentence)
+
+
 
 def start_mk():
     companies = ["넷플릭스", "삼성전자", "LG전자"]
@@ -14,13 +31,15 @@ def start_mk():
     yesterday_str = yesterday.strftime("%Y-%m-%d")
     base_url = "https://www.mk.co.kr/search?word={company}&dateType=1day&startDate={startDate}&endDate={endDate}"
 
+
     chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
     chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
 
     driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
 
     for company in companies:
-        print(f"{company}기업 크롤링 시작.")
+        print(f"{company} 크롤링 시작.")
 
         url = base_url.format(company=company, startDate=yesterday_str, endDate=today.strftime("%Y-%m-%d"))
         driver.get(url)
@@ -64,6 +83,7 @@ def start_mk():
                 print("뉴스 내용이 없습니다.")
                 continue
 
+
             image_tags = content_soup.select(".news_cnt_detail_wrap img")
 
             image_urls = []# 이미지 URL을 저장할 리스트 생성
@@ -73,19 +93,30 @@ def start_mk():
                 image_url = image_tag["src"]
                 image_urls.append(image_url)
 
-            # 이미지 URL 리스트 출력
-            print("이미지 URL 리스트:", image_urls)
+            
+            print("이미지 URL 리스트:", image_urls)# 이미지 URL 리스트 출력. 함수가 동작하는지 확인하기 위한 print임.
 
             img = image_urls
             print(img)
-            content = content_tag.get_text(strip=True)  # 내용 태그에서 내용 text만 가져옴.
+            #content = content_tag.get_text(strip=True)  # 내용 태그에서 내용 text만 가져옴.
             title = title_tag.text.strip() #제목 태그 잘라서 제목 text만 가져옴.
             link = link_tag["href"] #링크 태그 잘라서 링크만 가져옴.
 
-            mkDB=Crawling(title=title, news_date=yesterday_str, link=link, news_agency="매일경제", content=content, img=img)
+
+            # 뉴스 내용 요약부분
+            article = Article(link_tag["href"])
+            article.download()
+            article.parse()
+            article.nlp()
+            summary = article.summary
+
+
+            mkDB=Crawling(title=title, news_date=yesterday_str, link=link, news_agency="매일경제", content=summary, img=img, collect_date=datetime.now())
             mkDB.save()
 
             driver.back()
+
+            time.sleep(7)
 
 
         print(f"이 기업의 크롤링이 완료 되었습니다. {company}")
