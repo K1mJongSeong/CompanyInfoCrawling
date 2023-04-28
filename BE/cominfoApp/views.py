@@ -1,10 +1,19 @@
 from django.http import JsonResponse
-from .crawling import schedule_crawling, company_list
-from . import mkcrawling
-from . import khcrawling
+from rest_framework_swagger.renderers import SwaggerUIRenderer
+from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import api_view, renderer_classes, parser_classes #api
+from rest_framework import status, generics, viewsets, serializers
+from rest_framework.parsers import FileUploadParser,MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
+from drf_yasg import openapi
+from . import mkcrawling, khcrawling, crawling
+from .models import Crawling, Khcrawling, Mkcrawling
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer
 
 def start_crawling(request):
-    schedule_crawling(company_list)  # 크롤링 코드를 실행합니다.
+    crawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
     return JsonResponse({"status": "정상", "message": "네이버 뉴스 크롤링 시작."})
 
 def start_mkcrawling(requset):
@@ -14,3 +23,23 @@ def start_mkcrawling(requset):
 def start_khcrawling(requset):
     khcrawling.start_kh()
     return JsonResponse({"message":"코리아 헤럴드 크롤링 시작."})
+
+#매일경제 크롤링 GET API
+class MkCrwawlingGet(APIView):
+    @swagger_auto_schema(
+        operation_summary='매일경제 크롤링 데이터 GET API',
+    )
+    def get(self, request):
+        mkData = Mkcrawling.objects.all()
+        serializers = MkCrawlingSerializer(mkData, many=True)
+        return Response(serializers.data)
+    
+#헤럴드경제 크롤링 GET API
+class KhCrwawlingGet(APIView):
+    @swagger_auto_schema(
+        operation_summary='헤럴드경제 크롤링 데이터 GET API',
+    )
+    def get(self, request):
+        khData = Khcrawling.objects.all()
+        serializers = KhCrawlingSerializer(khData, many=True)
+        return Response(serializers.data)
