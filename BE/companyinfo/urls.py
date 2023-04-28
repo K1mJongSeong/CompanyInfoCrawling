@@ -15,11 +15,33 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling
+from rest_framework.permissions import AllowAny
+from rest_framework import routers
+from rest_framework.decorators import api_view
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework_swagger.views import get_swagger_view
+from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, KhCrwawlingGet, MkCrwawlingGet
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Open API", #타이틀
+        default_version='v1', #버전
+        description="시스템 API", #설명
+        terms_of_service="https://www.google.com/policies/terms/",
+    ),
+    public=True,
+    permission_classes=(AllowAny,),
+) #Swagger API문서 스키마
 
 urlpatterns = [
+    path('swagger<str:format>', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),#Swagger API PATH
     path('admin/', admin.site.urls),
-    path('start_crawling/',start_crawling),
-    path('start_mkcrawling/',start_mkcrawling),
-    path('start_khcrawling/',start_khcrawling),
+    path('start_crawling/',start_crawling), #네이버뉴스(네이버API 따로 제공 받을 예정.)
+    path('start_mkcrawling/',start_mkcrawling), #매일경제
+    path('start_khcrawling/',start_khcrawling), #헤럴드경제
+    path('KhCrwawlingGet/',KhCrwawlingGet.as_view()),
+    path('MkCrwawlingGet/',MkCrwawlingGet.as_view()),
 ]

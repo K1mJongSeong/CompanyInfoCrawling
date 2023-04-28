@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
-from .models import Crawling
+from .models import Khcrawling
 from newspaper import Article
 from sumy.nlp.tokenizers import Tokenizer as SumyTokenizer
 import requests
@@ -56,7 +56,7 @@ def start_kh():
             img = img_tag['src'] if img_tag else None
 
             # 데이터베이스에 저장
-            khDB = Crawling(title=title, news_date=datetime.strptime(yesterday_str, "%Y%m%d"), link=article_url, news_agency="헤럴드경제", content=summary, img=img, collect_date=datetime.now())
+            khDB = Khcrawling(title=title, news_date=datetime.strptime(yesterday_str, "%Y%m%d"), link=article_url, news_agency="헤럴드경제", content=summary, img=img, collect_date=datetime.now())
             khDB.save()
 
             print(f"기사 {article_id} 저장 완료")

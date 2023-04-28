@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
-from .models import Crawling
+from .models import Mkcrawling
 from newspaper import Article
 from konlpy.tag import Okt
 from sumy.nlp.tokenizers import Tokenizer as SumyTokenizer
@@ -111,12 +111,12 @@ def start_mk():
             summary = article.summary
 
 
-            mkDB=Crawling(title=title, news_date=yesterday_str, link=link, news_agency="매일경제", content=summary, img=img, collect_date=datetime.now())
+            mkDB=Mkcrawling(title=title, news_date=yesterday_str, link=link, news_agency="매일경제", content=summary, img=img, collect_date=datetime.now())
             mkDB.save()
 
             driver.back()
 
-            time.sleep(7)
+            time.sleep(3)
 
 
         print(f"이 기업의 크롤링이 완료 되었습니다. {company}")
