@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, timedelta
+from googletrans import Translator
 from .models import Khcrawling
 from newspaper import Article
 from sumy.nlp.tokenizers import Tokenizer as SumyTokenizer
@@ -19,6 +20,8 @@ def start_kh():
     base_url = "http://biz.heraldcorp.com/view.php?ud="
 
     article_id = 1
+
+    translator = Translator() #googletrans 번역 라이브러리 사용.
 
 
     while True:
@@ -52,11 +55,14 @@ def start_kh():
             article.nlp()
             summary = article.summary
 
+            translated_summary = translator.translate(summary, dest='en').text
+            translated_title = translator.translate(title,dest='en').text
+
             img_tag = article_soup.find('div', {'class': 'article_view'}).find('img')
             img = img_tag['src'] if img_tag else None
 
             # 데이터베이스에 저장
-            khDB = Khcrawling(title=title, news_date=datetime.strptime(yesterday_str, "%Y%m%d"), link=article_url, news_agency="헤럴드경제", content=summary, img=img, collect_date=datetime.now())
+            khDB = Khcrawling(title=translated_title, news_date=datetime.strptime(yesterday_str, "%Y%m%d"), link=article_url, news_agency="헤럴드경제", content=translated_summary, img=img, collect_date=datetime.now())
             khDB.save()
 
             print(f"기사 {article_id} 저장 완료")
@@ -67,7 +73,7 @@ def start_kh():
             break
 
 class Command(BaseCommand):
-    help = '코리아 헤럴드 뉴스 크롤링'
+    help = '헤럴드경제 뉴스 크롤링'
 
     def handle(self, *args, **options):
         start_kh()
