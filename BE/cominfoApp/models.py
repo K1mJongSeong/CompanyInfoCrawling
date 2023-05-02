@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Crawling(models.Model):
+    crawling_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
@@ -43,6 +44,20 @@ class Mkcrawling(models.Model):
     class Meta:
         managed = False
         db_table = 'mkCrawling'
+
+class Khfncrawling(models.Model):
+    fn_id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    news_date = models.DateTimeField(blank=True, null=True)
+    link = models.TextField(blank=True, null=True)
+    news_agency = models.CharField(max_length=45, blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    img = models.TextField(blank=True, null=True)
+    collect_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'khfnCrawling'
 
 class User(models.Model):
     user_id = models.BigIntegerField(primary_key=True)
