@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
-from . import mkcrawling, khcrawling, crawling, khfncrawling
+from . import mkcrawling, khcrawling, crawling, khfncrawling, mkcrawling2
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling
 from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer
 
@@ -27,6 +27,10 @@ def start_khcrawling(requset):
 def start_khfncrawling(requset):
     khfncrawling.start_khfn()
     return JsonResponse({"message":"헤럴드 파이넨스 크롤링 시작."})
+
+def start_mkcrawling2(requset):
+    mkcrawling2.start_mk2()
+    return JsonResponse({"message":"매일경제 모든 뉴스 크롤링 시작."})
 
 #매일경제 크롤링 GET API
 class MkCrwawlingGet(APIView):
