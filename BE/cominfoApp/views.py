@@ -8,9 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
-from . import mkcrawling, khcrawling, crawling
-from .models import Crawling, Khcrawling, Mkcrawling
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer
+from . import mkcrawling, khcrawling, crawling, khfncrawling
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer
 
 def start_crawling(request):
     crawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
@@ -22,7 +22,11 @@ def start_mkcrawling(requset):
 
 def start_khcrawling(requset):
     khcrawling.start_kh()
-    return JsonResponse({"message":"코리아 헤럴드 크롤링 시작."})
+    return JsonResponse({"message":"헤럴드경제 크롤링 시작."})
+
+def start_khfncrawling(requset):
+    khfncrawling.start_khfn()
+    return JsonResponse({"message":"헤럴드 파이넨스 크롤링 시작."})
 
 #매일경제 크롤링 GET API
 class MkCrwawlingGet(APIView):
