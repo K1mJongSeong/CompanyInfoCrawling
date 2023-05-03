@@ -14,11 +14,7 @@ const theme = createTheme({
       main: "#17217A",
     },
   },
-  typography: {
-    fontFamily: ["__pretendard_d46352", "__pretendard_Fallback_d46352"].join(
-      ","
-    ),
-  },
+
   breakpoints: {
     values: {
       xs: 0,

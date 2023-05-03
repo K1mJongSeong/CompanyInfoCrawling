@@ -3,6 +3,7 @@ import MuiSetup from "./MuiSetup";
 import "./styles/globals.css";
 import localFont from "next/font/local";
 import Header from "@/components/common/header";
+import Footer from "@/components/common/footer";
 
 const pretendard = localFont({
   src: [
@@ -45,6 +46,7 @@ export default function RootLayout({
         <MuiSetup>
           <Header />
           {children}
+          <Footer />
         </MuiSetup>
       </body>
     </html>
