@@ -29,9 +29,8 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Sentinel Korea KYC",
-  description:
-    "My descriptionEnterprise Information Delivery Platform | Sentinel Korea KYC",
+  title: "My title",
+  description: "My description",
 };
 
 export default function RootLayout({
