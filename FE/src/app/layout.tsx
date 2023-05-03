@@ -42,7 +42,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={pretendard.className}>
-        <MuiSetup><Header />{children}</MuiSetup>
+        <MuiSetup>
+          <Header />
+          {children}
+        </MuiSetup>
       </body>
     </html>
   );
