@@ -2,6 +2,7 @@ import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import MuiSetup from "./MuiSetup";
 import "./styles/globals.css";
 import localFont from "next/font/local";
+import Header from "@/components/common/header";
 
 const pretendard = localFont({
   src: [
@@ -29,8 +30,8 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "My title",
-  description: "My description",
+  title: "Sentinel Korea KYC",
+  description: "Enterprise Information Delivery Platform | Sentinel Korea KYC",
 };
 
 export default function RootLayout({
@@ -41,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={pretendard.className}>
-        <MuiSetup>{children} </MuiSetup>
+        <MuiSetup><Header />{children}</MuiSetup>
       </body>
     </html>
   );

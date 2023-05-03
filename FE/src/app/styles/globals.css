@@ -42,4 +42,30 @@ body {
   width: 100%;
   overflow-x: hidden;
   font-family: "Pretendard";
+  font-weight: 400;
+  font-style: normal;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+img {
+  border: 0;
+  display: block;
+  max-width: 100%;
+}
+header,
+main,
+footer,
+nav,
+section,
+article,
+aside {
+  display: block;
+}
+textarea,
+button,
+input,
+select {
+  font-family: Pretendard;
 }
