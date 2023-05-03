@@ -1,5 +1,7 @@
-import instaloader
+#import instaloader
 import re
+import time
+from instaloader import Instaloader, Profile
 from django.utils import timezone
 from .models import Instagram
 
@@ -8,7 +10,11 @@ def clean_string(s):
     return re.sub(r'[^\x00-\x7F]+', '', s)
 
 def get_instagram_posts(username, insta_username, insta_password):
-    L = instaloader.Instaloader()
+    custom_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'
+    L = Instaloader(user_agent=custom_user_agent)
+    #L = instaloader.Instaloader()
+
+    
 
     # 로그인
     try:
@@ -18,13 +24,15 @@ def get_instagram_posts(username, insta_username, insta_password):
         L.login(insta_username, insta_password)
         L.save_session_to_file()
 
-    for post in instaloader.Profile.from_username(L.context, username).get_posts():
+    for post in Profile.from_username(L.context, username).get_posts():
         img_url = post.url
         post_url = post.shortcode
         content = clean_string(post.caption) if post.caption else ''
         post_date = post.date
 
-        # Save the data in the Instagram model
+        time.sleep(2)
+
+        # DB저장
         ins_post = Instagram(
             title="",
             news_date=post_date,
@@ -37,7 +45,7 @@ def get_instagram_posts(username, insta_username, insta_password):
 
 
 def scrape_instagram():
-    username = 'kbsnews'
-    insta_username = 'n.young9'
-    insta_password = 'young269212'
+    username = 'kbsnews' #크롤링할 태그네임
+    insta_username = 'thesoftlabs@daum.net' #인스타 로그인
+    insta_password = 'thvmxmfoqtm'
     get_instagram_posts(username, insta_username, insta_password)
