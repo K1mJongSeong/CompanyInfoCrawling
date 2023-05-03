@@ -59,6 +59,29 @@ class Khfncrawling(models.Model):
         managed = False
         db_table = 'khfnCrawling'
 
+
+class Facebook(models.Model):
+    meta_id = models.IntegerField(primary_key=True)
+    message = models.TextField(blank=True, null=True)
+    created_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'facebook'      
+
+class Instagram(models.Model):
+    ins_id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    news_date = models.DateTimeField(blank=True, null=True)
+    link = models.TextField(blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    img = models.TextField(blank=True, null=True)
+    collect_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'instagram'
+
 class User(models.Model):
     user_id = models.BigIntegerField(primary_key=True)
     id = models.CharField(max_length=100, blank=True, null=True)
