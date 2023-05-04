@@ -1,5 +1,12 @@
 "use client";
-import { Box, Button, IconButton, Stack, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Hidden,
+  IconButton,
+  Stack,
+  useTheme,
+} from "@mui/material";
 import { deepPurple, grey, red } from "@mui/material/colors";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,10 +14,26 @@ import { Spacer, StyledButton, StyledLink } from "./styles";
 import { FiSearch } from "react-icons/fi";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import HeaderSearch from "./HeaderSearch";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import MoHeaderMemu from "./MoHeaderMemu";
 
 export default function Header() {
+  const router = useRouter();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
+
+  const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const [moMenuOpen, setMoMenuOpen] = useState<boolean>(false);
+
+  const handleSearchOpen = () => {
+    setSearchOpen(!searchOpen);
+  };
+
+  const handleGotoLogin = () => {
+    router.push("/auth/login");
+  };
 
   return (
     <>
@@ -30,7 +53,7 @@ export default function Header() {
       >
         <Stack
           width={"calc(100% - 32px)"}
-          maxWidth={"1800px"}
+          maxWidth={"1586px"}
           direction={"row"}
           alignItems={"center"}
           justifyContent={"space-between"}
@@ -53,24 +76,33 @@ export default function Header() {
             color={grey[500]}
             fontSize={14}
           >
-            <StyledButton>
+            <StyledButton onClick={handleSearchOpen}>
               <FiSearch />
             </StyledButton>
-            {matches ? (
+            <Hidden mdDown>
               <>
                 <StyledLink href={"/"}>INDUSTRY</StyledLink>
                 <StyledLink href={"/"}>SERVICE</StyledLink>
                 <StyledLink href={"/"}>TERMS</StyledLink>
-                <Button variant="contained">SIGN IN</Button>
+                <Button variant="contained" onClick={handleGotoLogin}>
+                  SIGN IN
+                </Button>
               </>
-            ) : (
-              <IconButton>
+            </Hidden>
+            <Hidden mdUp>
+              <IconButton onClick={() => setMoMenuOpen(!moMenuOpen)}>
                 <HiBars3BottomRight />
               </IconButton>
-            )}
+            </Hidden>
           </Stack>
         </Stack>
       </Stack>
+      {searchOpen && <HeaderSearch />}
+      {moMenuOpen && (
+        <Hidden mdUp>
+          <MoHeaderMemu />
+        </Hidden>
+      )}
       <Spacer />
     </>
   );

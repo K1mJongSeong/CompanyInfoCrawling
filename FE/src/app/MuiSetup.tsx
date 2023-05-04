@@ -3,6 +3,7 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { useEffect, useState } from "react";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
+import { SnackbarProvider } from "notistack";
 
 import theme from "./styles/theme";
 import DefaultLoading from "./loading";
@@ -17,12 +18,16 @@ export default function MuiSetup({ children }: Props) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
   if (!mounted) return <DefaultLoading />;
+
   return (
     <>
       <CssBaseline />
       <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
-        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        <SnackbarProvider maxSnack={3}>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </SnackbarProvider>
       </NextAppDirEmotionCacheProvider>
     </>
   );
