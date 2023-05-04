@@ -88,7 +88,6 @@ class User(models.Model): #일반로그인
     password = models.CharField(max_length=100, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
-    password_ck = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -100,7 +99,6 @@ class Coruser(models.Model): #법인 로그인
     password = models.CharField(max_length=100, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
-    password_ck = models.CharField(max_length=100, blank=True, null=True)
     corporate_name = models.CharField(max_length=255, blank=True, null=True)
     business_num = models.CharField(max_length=100, blank=True, null=True)
 
@@ -116,3 +114,14 @@ class Login(models.Model):
     class Meta:
         managed = False
         db_table = 'Login'
+
+class Email(models.Model):
+    email_id = models.AutoField(primary_key=True)
+    email = models.CharField(max_length=100, blank=True, null=True)
+    auth_num = models.CharField(max_length=10, blank=True, null=True)
+    create_at = models.DateTimeField(blank=True, null=True)
+    expires_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'email'

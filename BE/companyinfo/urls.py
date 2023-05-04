@@ -14,15 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from rest_framework.permissions import AllowAny
 from rest_framework import routers
 from rest_framework.decorators import api_view
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
-from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts, KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView
-
+from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts
+from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView, SendEmailVerificationView
 schema_view = get_schema_view(
     openapi.Info(
         title="Open API", #타이틀
@@ -33,6 +33,7 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(AllowAny,),
 ) #Swagger API문서 스키마
+
 
 urlpatterns = [
     path('swagger<str:format>', schema_view.without_ui(cache_timeout=0), name='schema-json'),
@@ -53,4 +54,6 @@ urlpatterns = [
     path('UserLogin/',UserLogin.as_view()), # 일반 로그인
     path('CorUserLogin/',CorUserLogin.as_view()), #법인 로그인
     path('Join/',LoginView.as_view()), #로그인 검증
+    path('send_email_verification/', SendEmailVerificationView.as_view()),
+    #path('email/',send_email_verification),
 ]
