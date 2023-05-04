@@ -20,9 +20,6 @@ class CustomAuthenticationBackend(BaseBackend):
                 # 사용자가 없으면 None 반환
                 return None
 
-        # 패스워드가 일치하는지 확인
-        if check_password(password, user.password):
-            return user
 
     def get_user(self, user_id):
         try:

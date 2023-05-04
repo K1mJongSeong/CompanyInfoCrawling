@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework_swagger.renderers import SwaggerUIRenderer
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
@@ -11,11 +11,18 @@ from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
+from django.core.mail import EmailMessage,send_mail
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.crypto import get_random_string
+from django.conf import settings
+from django.views.generic import View
 from . import mkcrawling, khcrawling, crawling, khfncrawling, mkcrawling2
-from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
+import random
+from datetime import datetime, timedelta
 
 
 #-----------------------------------------------------크롤링 동작
@@ -66,6 +73,66 @@ def fetch_and_save_fb_data(request): #페이스북 크롤링
 #-----------------------------------------------------크롤링 동작
 
 #-----------------------------------------------------API
+class SendEmailVerificationView(GenericAPIView):
+    serializer_class = EmailSerializer
+    def post(self, request, *args, **kwargs):
+        # POST 요청에서 이메일 주소 가져오기
+        email = request.data.get('email')
+
+        # # 이메일이 없는 경우 에러 메시지 반환
+        # if not email:
+        #     return JsonResponse({'message': '이메일을 입력해주세요.'}, status=400)
+
+        # # 일반 회원 테이블에서 이메일 확인
+        # try:
+        #     user = User.objects.get(email=email)
+        # except User.DoesNotExist:
+        #     user = None
+
+        # # 법인 회원 테이블에서 이메일 확인
+        # try:
+        #     coruser = Coruser.objects.get(email=email)
+        # except Coruser.DoesNotExist:
+        #     coruser = None
+
+        # # 일반 회원과 법인 회원에서 모두 해당 이메일을 사용하는 사용자가 없는 경우 에러 메시지 반환
+        # if not user and not coruser:
+        #     return JsonResponse({'message': '등록되지 않은 이메일입니다.'}, status=404)
+
+        # 5자리 랜덤 인증번호 생성
+        verification_code = get_random_string(length=5, allowed_chars='0123456789')
+
+        # 이메일 전송
+        success = send_mail(
+            '회원가입 인증번호',  # 제목
+            f'인증번호: {verification_code}',  # 내용
+            settings.EMAIL_HOST_USER,  # 발신자 이메일
+            [email],  # 수신자 이메일
+            fail_silently=False,  # 실패 시 에러를 발생시키도록 설정
+        )
+        print(f"받는 사람 {email}. 성공여부: {success}")
+        # 현재 시간 저장
+        now = datetime.now()
+
+        # Email 객체 생성 및 저장
+        email_obj = Email.objects.create(
+            email=email, 
+            auth_num=verification_code, 
+            created_at=now,
+            expires_at=now + timedelta(minutes=5) # 현재 시간에서 5분 더한 시간을 만료 시간으로 설정
+        )
+        email_obj = Email.objects.get(email=email, auth_num=verification_code)
+
+        if email_obj.expires_at < datetime.now():
+            # 인증번호가 만료된 경우
+            email_obj.auth_num = None # 인증번호를 초기화하거나, None 값으로 저장합니다.
+            email_obj.save()
+        #email_obj = Email.objects.create(email=email, auth_num=verification_code, create_at=datetime.now())
+
+        # 인증번호와 메시지 반환
+        return JsonResponse({'verification_code': verification_code, 'message': '인증번호가 이메일로 발송되었습니다.'})
+
+
 
 class LoginView(GenericAPIView):
     serializer_class = LoginSerializer
