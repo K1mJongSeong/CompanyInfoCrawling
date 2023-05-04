@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from rest_framework_swagger.renderers import SwaggerUIRenderer
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import GenericAPIView
 from rest_framework.decorators import api_view, renderer_classes, parser_classes #api
 from rest_framework import status, generics, viewsets, serializers
 from rest_framework.parsers import FileUploadParser,MultiPartParser, FormParser
@@ -8,11 +9,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
 from . import mkcrawling, khcrawling, crawling, khfncrawling, mkcrawling2
-from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
+
 
 #-----------------------------------------------------크롤링 동작
 def start_crawling(request):
@@ -47,9 +51,43 @@ def fetch_and_save_fb_data(request): #페이스북 크롤링
     save_facebook_data(data)
 
     return JsonResponse({"status": "success"})
+
+# def login_view(request):
+#     if request.method == 'POST':
+#         email = request.POST['email']
+#         password = request.POST['password']
+#         user = authenticate(request, email=email, password=password)
+        
+#         if user is not None:
+#             login(request, user)
+#             return JsonResponse({"status": "success", "message": "로그인 성공"})
+#         else:
+#             return JsonResponse({"status": "error", "message": "이메일 또는 비밀번호가 일치하지 않습니다."})
 #-----------------------------------------------------크롤링 동작
 
 #-----------------------------------------------------API
+
+class LoginView(GenericAPIView):
+    serializer_class = LoginSerializer
+    @swagger_auto_schema(
+        operation_summary='로그인 POST API',
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+
+        user = authenticate(request, email=email, password=password)
+        print("유저 반환값:",user)
+
+        if user is not None:
+            # 로그인 성공
+            return Response({"status": "success", "message": "로그인 성공"}, status=status.HTTP_200_OK)
+        else:
+            # 이메일 또는 비밀번호가 일치하지 않음
+            return Response({"status": "error", "message": "이메일 또는 비밀번호가 일치하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+
 #매일경제 크롤링 GET API
 class MkCrwawlingGet(APIView):
     @swagger_auto_schema(

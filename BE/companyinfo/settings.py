@@ -91,6 +91,11 @@ SECRET_KEY = my_settings.SECRET_KEY
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
+AUTHENTICATION_BACKENDS = [
+    'cominfoApp.backends.CustomAuthenticationBackend', # 사용자 정의 인증 백엔드
+]
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
