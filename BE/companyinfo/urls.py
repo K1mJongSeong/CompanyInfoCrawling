@@ -21,7 +21,7 @@ from rest_framework.decorators import api_view
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
-from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts, get_instagram_posts2,KhCrwawlingGet, MkCrwawlingGet
+from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts, get_instagram_posts2,KhCrwawlingGet, MkCrwawlingGet, UserLogin, CorUserLogin
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -49,4 +49,6 @@ urlpatterns = [
     path('get_instagram_posts2/',get_instagram_posts2),
     path('KhCrwawlingGet/',KhCrwawlingGet.as_view()), #헤럴드 경제 API
     path('MkCrwawlingGet/',MkCrwawlingGet.as_view()), #매일경제 API 
+    path('UserLogin/',UserLogin.as_view()), # 일반 로그인
+    path('CorUserLogin/',CorUserLogin.as_view()), #법인 로그인
 ]

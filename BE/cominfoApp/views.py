@@ -9,8 +9,8 @@ from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from . import mkcrawling, khcrawling, crawling, khfncrawling, mkcrawling2
-from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 from .insta2 import scrape_instagram
@@ -72,3 +72,25 @@ def fetch_and_save_fb_data(request):
     save_facebook_data(data)
 
     return JsonResponse({"status": "success"})
+
+
+class UserLogin(generics.ListCreateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    @swagger_auto_schema(
+        operation_summary=' 일반 로그인 POST API'
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+    
+
+class CorUserLogin(generics.ListCreateAPIView):
+    serializer_class = CorUserSerializer
+    queryset = Coruser.objects.all()
+
+    @swagger_auto_schema(
+        operation_summary=' 법인 로그인 POST API'
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
