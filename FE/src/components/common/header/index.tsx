@@ -1,5 +1,12 @@
 "use client";
-import { Box, Button, IconButton, Stack, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Hidden,
+  IconButton,
+  Stack,
+  useTheme,
+} from "@mui/material";
 import { deepPurple, grey, red } from "@mui/material/colors";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +17,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import HeaderSearch from "./HeaderSearch";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import MoHeaderMemu from "./MoHeaderMemu";
 
 export default function Header() {
   const router = useRouter();
@@ -17,6 +25,7 @@ export default function Header() {
   const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const [moMenuOpen, setMoMenuOpen] = useState<boolean>(false);
 
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
@@ -70,7 +79,7 @@ export default function Header() {
             <StyledButton onClick={handleSearchOpen}>
               <FiSearch />
             </StyledButton>
-            {matches ? (
+            <Hidden mdDown>
               <>
                 <StyledLink href={"/"}>INDUSTRY</StyledLink>
                 <StyledLink href={"/"}>SERVICE</StyledLink>
@@ -79,15 +88,21 @@ export default function Header() {
                   SIGN IN
                 </Button>
               </>
-            ) : (
-              <IconButton>
+            </Hidden>
+            <Hidden mdUp>
+              <IconButton onClick={() => setMoMenuOpen(!moMenuOpen)}>
                 <HiBars3BottomRight />
               </IconButton>
-            )}
+            </Hidden>
           </Stack>
         </Stack>
       </Stack>
       {searchOpen && <HeaderSearch />}
+      {moMenuOpen && (
+        <Hidden mdUp>
+          <MoHeaderMemu />
+        </Hidden>
+      )}
       <Spacer />
     </>
   );
