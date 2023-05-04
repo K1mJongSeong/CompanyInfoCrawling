@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Input, Typography } from "@mui/material";
 import Link from "next/link";
 
 export const StyledLink = styled(Link)`
@@ -28,5 +28,11 @@ export const SearchCloseBtn = styled(Button)`
   padding: 4px 8px;
   &:hover {
     opacity: 0.8;
+  }
+`;
+
+export const SearchInput = styled(Input)`
+  ::before {
+    border-color: #beb0ff6b;
   }
 `;

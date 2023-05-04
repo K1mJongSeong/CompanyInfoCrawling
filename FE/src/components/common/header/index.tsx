@@ -9,8 +9,10 @@ import { HiBars3BottomRight } from "react-icons/hi2";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import HeaderSearch from "./HeaderSearch";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -18,6 +20,10 @@ export default function Header() {
 
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
+  };
+
+  const handleGotoLogin = () => {
+    router.push("/auth/login");
   };
 
   return (
@@ -38,7 +44,7 @@ export default function Header() {
       >
         <Stack
           width={"calc(100% - 32px)"}
-          maxWidth={"1800px"}
+          maxWidth={"1586px"}
           direction={"row"}
           alignItems={"center"}
           justifyContent={"space-between"}
@@ -69,7 +75,9 @@ export default function Header() {
                 <StyledLink href={"/"}>INDUSTRY</StyledLink>
                 <StyledLink href={"/"}>SERVICE</StyledLink>
                 <StyledLink href={"/"}>TERMS</StyledLink>
-                <Button variant="contained">SIGN IN</Button>
+                <Button variant="contained" onClick={handleGotoLogin}>
+                  SIGN IN
+                </Button>
               </>
             ) : (
               <IconButton>

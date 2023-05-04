@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  IconButton,
-  Input,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { AiOutlineCloseCircle } from "react-icons/ai";
-import { SearchCloseBtn } from "./styles";
+import { Button, Input, Stack } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
 import { FiSearch } from "react-icons/fi";
+import { SearchInput } from "./styles";
 
 export default function HeaderSearch() {
   return (
@@ -30,14 +22,14 @@ export default function HeaderSearch() {
     >
       <Stack
         width={"calc(100% - 32px)"}
-        maxWidth={"1800px"}
+        maxWidth={"1586px"}
         direction={"column"}
         justifyContent={"space-between"}
       >
         <Stack direction={"row"} gap={1}>
-          <Input
+          <SearchInput
             placeholder="Search Company or CEO"
-            sx={{ flex: 1, px: 2, borderColor: deepPurple[300] }}
+            sx={{ flex: 1, px: 2 }}
           />
           <Button variant="contained">
             <FiSearch style={{ fontSize: "1rem" }} />
