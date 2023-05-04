@@ -5,7 +5,7 @@ import { deepPurple, grey } from "@mui/material/colors";
 
 export default function Footer() {
   return (
-    <Box width={1} borderTop={1} borderColor={deepPurple[100]}>
+    <Box width={"100vw"} borderTop={1} borderColor={deepPurple[100]}>
       <Stack
         direction={"column"}
         width={"calc(100% - 32px)"}

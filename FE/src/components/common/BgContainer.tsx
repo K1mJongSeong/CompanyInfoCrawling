@@ -2,6 +2,7 @@
 
 import { Box } from "@mui/material";
 import styled from "@emotion/styled";
+import { media } from "@/app/styles/theme";
 
 export default function BgContainer({
   children,
@@ -12,7 +13,8 @@ export default function BgContainer({
 }
 
 const BgBlock = styled(Box)`
-  width: 100%;
+  width: 100vw;
+  height: max-content;
   min-height: 820px;
   background: #f1f4ff; /* Old browsers */
   background: -moz-linear-gradient(
@@ -34,4 +36,7 @@ const BgBlock = styled(Box)`
     #7db9e8 100%
   ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f1f4ff', endColorstr='#7db9e8',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+  ${media.tablet} {
+    min-height: auto;
+  }
 `;

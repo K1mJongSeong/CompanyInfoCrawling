@@ -1,6 +1,6 @@
 import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import MuiSetup from "./MuiSetup";
-import "./styles/globals.css";
+import "./globals.css";
 import localFont from "next/font/local";
 import Header from "@/components/common/header";
 import Footer from "@/components/common/footer";
