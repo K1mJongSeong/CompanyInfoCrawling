@@ -10,12 +10,11 @@ from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from . import mkcrawling, khcrawling, crawling, khfncrawling, mkcrawling2
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
-from .insta2 import scrape_instagram
 
-
+#-----------------------------------------------------크롤링 동작
 def start_crawling(request):
     crawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
     return JsonResponse({"status": "정상", "message": "네이버 뉴스 크롤링 시작."})
@@ -36,6 +35,21 @@ def start_mkcrawling2(requset):
     mkcrawling2.start_mk2()
     return JsonResponse({"message":"매일경제 모든 뉴스 크롤링 시작."})
 
+def get_instagram_posts(request):
+    scrape_instagram()
+    return JsonResponse({"message":"인스타그램 크롤링 시작."})
+
+def fetch_and_save_fb_data(request): #페이스북 크롤링
+    page_id = 'jtbcnews'  # JTBC 뉴스 채널 page_id
+    access_token = '1325728901310569|c2kKh7Wi6SNfMr_b2MV2R8uXbPw'  # 소프트랩스 페이스북 개발자 기업정보 플랫폼 API토큰
+
+    data = fetch_facebook_data(page_id, access_token)
+    save_facebook_data(data)
+
+    return JsonResponse({"status": "success"})
+#-----------------------------------------------------크롤링 동작
+
+#-----------------------------------------------------API
 #매일경제 크롤링 GET API
 class MkCrwawlingGet(APIView):
     @swagger_auto_schema(
@@ -56,23 +70,25 @@ class KhCrwawlingGet(APIView):
         serializers = KhCrawlingSerializer(khData, many=True)
         return Response(serializers.data)
     
+#인스타그램 크롤링 GET API
+class InstagramGet(APIView):
+    @swagger_auto_schema(
+        operation_summary='인스타그램 크롤링 데이터 GET API',
+    )
+    def get(self, request):
+        instaData = Instagram.objects.all()
+        serializers = InstagramSerializer(instaData, many=True)
+        return Response(serializers.data)
 
-def get_instagram_posts(request):
-    scrape_instagram()
-
-def get_instagram_posts2(request):
-    scrape_instagram()
-
-
-def fetch_and_save_fb_data(request):
-    page_id = 'jtbcnews'  # JTBC 뉴스 채널 page_id
-    access_token = '1325728901310569|c2kKh7Wi6SNfMr_b2MV2R8uXbPw'  # 소프트랩스 페이스북 개발자 기업정보 플랫폼 API토큰
-
-    data = fetch_facebook_data(page_id, access_token)
-    save_facebook_data(data)
-
-    return JsonResponse({"status": "success"})
-
+#헤럳드 파이넨스 크롤링 GET API
+class KhfnCrwawlingGet(APIView):
+    @swagger_auto_schema(
+        operation_summary='헤럴드 파이넨스 크롤링 데이터 GET API',
+    )
+    def get(self, request):
+        khfnData = Khfncrawling.objects.all()
+        serializers = KhfncrawlingSerializer(khfnData, many=True)
+        return Response(serializers.data)
 
 class UserLogin(generics.ListCreateAPIView):
     serializer_class = UserSerializer
@@ -94,3 +110,6 @@ class CorUserLogin(generics.ListCreateAPIView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+    
+
+#-----------------------------------------------------API

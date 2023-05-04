@@ -1,29 +1,38 @@
-from bs4 import BeautifulSoup
+#import instaloader
+import re
+import time
+from instaloader import Instaloader, Profile
 from django.utils import timezone
 from .models import Instagram
-import json
-import requests
 
-def get_instagram_posts(url):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    script_tag = soup.find('script', text=lambda t: t.startswith('window._sharedData'))
-    shared_data = script_tag.string.partition('=')[-1].strip(' ;')
-    json_data = json.loads(shared_data)
-    
-    posts = json_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['edges']
-    
-    for post in posts:
-        node = post['node']
-        img_url = node['thumbnail_src']
-        post_url = f"https://www.instagram.com/p/{node['shortcode']}/"
-        content = node['edge_media_to_caption']['edges'][0]['node']['text'] if node['edge_media_to_caption']['edges'] else ''
-        timestamp = node['taken_at_timestamp']
-        post_date = timezone.datetime.fromtimestamp(timestamp)
+def clean_string(s):
+    # 이모지 및 특수 문자를 제거하고 반환합니다.
+    return re.sub(r'[^\x00-\x7F]+', '', s)
 
-        # DB 저장
+def get_instagram_posts(username, insta_username, insta_password):
+    custom_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'
+    L = Instaloader(user_agent=custom_user_agent)
+    #L = instaloader.Instaloader()
+
+    
+
+    # 로그인
+    try:
+        L.load_session_from_file(insta_username)
+    except FileNotFoundError:
+        L.context.log("Session file not found, logging in...")
+        L.login(insta_username, insta_password)
+        L.save_session_to_file()
+
+    for post in Profile.from_username(L.context, username).get_posts():
+        img_url = post.url
+        post_url = post.shortcode
+        content = clean_string(post.caption) if post.caption else ''
+        post_date = post.date
+
+        time.sleep(2)
+
+        # DB저장
         ins_post = Instagram(
             title="",
             news_date=post_date,
@@ -34,7 +43,9 @@ def get_instagram_posts(url):
         )
         ins_post.save()
 
-def scrape_instagram():
-    url = 'https://www.instagram.com/kbsnews/'
-    get_instagram_posts(url)
 
+def scrape_instagram():
+    username = 'kbsnews' #크롤링할 태그네임
+    insta_username = 'thesoftlabs@daum.net' #인스타 로그인
+    insta_password = 'thvmxmfoqtm'
+    get_instagram_posts(username, insta_username, insta_password)
