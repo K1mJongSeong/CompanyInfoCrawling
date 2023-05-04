@@ -7,10 +7,18 @@ import { Spacer, StyledButton, StyledLink } from "./styles";
 import { FiSearch } from "react-icons/fi";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import HeaderSearch from "./HeaderSearch";
+import { useState } from "react";
 
 export default function Header() {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
+
+  const [searchOpen, setSearchOpen] = useState<boolean>(false);
+
+  const handleSearchOpen = () => {
+    setSearchOpen(!searchOpen);
+  };
 
   return (
     <>
@@ -53,7 +61,7 @@ export default function Header() {
             color={grey[500]}
             fontSize={14}
           >
-            <StyledButton>
+            <StyledButton onClick={handleSearchOpen}>
               <FiSearch />
             </StyledButton>
             {matches ? (
@@ -71,6 +79,7 @@ export default function Header() {
           </Stack>
         </Stack>
       </Stack>
+      {searchOpen && <HeaderSearch />}
       <Spacer />
     </>
   );

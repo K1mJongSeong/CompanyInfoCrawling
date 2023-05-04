@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import Link from "next/link";
 
 export const StyledLink = styled(Link)`
@@ -19,5 +19,14 @@ export const StyledButton = styled(Button)`
 
 export const Spacer = styled(Box)`
   width: 100%;
-  height: 60px
+  height: 60px;
+`;
+
+export const SearchCloseBtn = styled(Button)`
+  background-color: white;
+  border: none;
+  padding: 4px 8px;
+  &:hover {
+    opacity: 0.8;
+  }
 `;
