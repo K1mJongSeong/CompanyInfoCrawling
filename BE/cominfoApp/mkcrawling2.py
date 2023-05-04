@@ -3,9 +3,11 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from .models import Mkcrawling
 import time
+from googletrans import Translator
 
 def start_mk2():
     base_url = "https://www.mk.co.kr/news/stock/"
+    translator = Translator()
 
     article_id = 10726685
 
@@ -24,6 +26,7 @@ def start_mk2():
                 continue
 
             title = title_tag.text.strip()
+            translated_title = translator.translate(title, dest='en').text
 
             content_tag = article_soup.find('div', {'class': 'news_cnt_detail_wrap'})
             if not content_tag:
@@ -32,6 +35,7 @@ def start_mk2():
                 continue
 
             content = content_tag.text.strip()
+            translated_content = translator.translate(content, dest='en').text
 
             # time_tag = article_soup.find('li', {'class': 'lasttime'})
             # if not time_tag:
@@ -54,7 +58,7 @@ def start_mk2():
 
 
             # 데이터베이스에 저장
-            mkDB = Mkcrawling(title=title,news_date=news_time, link=article_url, news_agency="매일경제", content=content, collect_date=datetime.now(), img=img_url)
+            mkDB = Mkcrawling(title=translated_title,news_date=news_time, link=article_url, news_agency="매일경제", content=translated_content, collect_date=datetime.now(), img=img_url)
             mkDB.save()
 
             print(f"기사 {article_id} 저장 완료")
