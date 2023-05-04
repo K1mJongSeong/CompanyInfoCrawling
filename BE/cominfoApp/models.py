@@ -70,7 +70,7 @@ class Facebook(models.Model):
         db_table = 'facebook'      
 
 class Instagram(models.Model):
-    ins_id = models.AutoField(primary_key=True)
+    ins_id = models.AutoField(primary_key=True, db_index=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
@@ -107,3 +107,12 @@ class Coruser(models.Model): #법인 로그인
     class Meta:
         managed = False
         db_table = 'corUser'
+
+class Login(models.Model):
+    login_id = models.IntegerField(primary_key=True)
+    email = models.CharField(max_length=100, blank=True, null=True)
+    password = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Login'
