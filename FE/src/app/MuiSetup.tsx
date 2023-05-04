@@ -18,7 +18,9 @@ export default function MuiSetup({ children }: Props) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
   if (!mounted) return <DefaultLoading />;
+
   return (
     <>
       <CssBaseline />
