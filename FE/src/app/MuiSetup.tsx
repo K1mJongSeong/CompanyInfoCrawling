@@ -1,6 +1,6 @@
 "use client";
 
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, ThemeProvider } from "@/components/@mui/material";
 import { useEffect, useState } from "react";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 import { SnackbarProvider } from "notistack";
