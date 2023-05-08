@@ -81,9 +81,9 @@ export default function Header() {
             </StyledButton>
             <Hidden mdDown>
               <>
-                <StyledLink href={"/"}>INDUSTRY</StyledLink>
-                <StyledLink href={"/"}>SERVICE</StyledLink>
-                <StyledLink href={"/"}>TERMS</StyledLink>
+                <StyledLink href={"/industry"}>INDUSTRY</StyledLink>
+                <StyledLink href={"/service"}>SERVICE</StyledLink>
+                <StyledLink href={"/terms"}>TERMS</StyledLink>
                 <Button variant="contained" onClick={handleGotoLogin}>
                   SIGN IN
                 </Button>

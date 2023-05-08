@@ -37,18 +37,22 @@ export default function MoHeaderMemu() {
       <List
         component="nav"
         subheader={
-          <ListSubheader component="div" id="nested-list-subheader" sx={{px:0}}>
+          <ListSubheader
+            component="div"
+            id="nested-list-subheader"
+            sx={{ px: 0 }}
+          >
             Welcome to Sentinel Korea KYC
           </ListSubheader>
         }
       >
-        <ListItemButton sx={{px:0}}  component="a" href={"/"}>
+        <ListItemButton sx={{ px: 0 }} component="a" href={"/industry"}>
           <ListItemText primary="INDUSTRY" />
         </ListItemButton>
-        <ListItemButton  sx={{px:0}} component="a" href={"/"}>
+        <ListItemButton sx={{ px: 0 }} component="a" href={"/service"}>
           <ListItemText primary="SERVICE" />
         </ListItemButton>
-        <ListItemButton  sx={{px:0}} component="a" href={"/"}>
+        <ListItemButton sx={{ px: 0 }} component="a" href={"/terms"}>
           <ListItemText primary="TERMS" />
         </ListItemButton>
       </List>
