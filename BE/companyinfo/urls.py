@@ -14,15 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from rest_framework.permissions import AllowAny
 from rest_framework import routers
 from rest_framework.decorators import api_view
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
-from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts, get_instagram_posts2,KhCrwawlingGet, MkCrwawlingGet
-
+from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts
+from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView, SendEmailVerificationView
 schema_view = get_schema_view(
     openapi.Info(
         title="Open API", #타이틀
@@ -33,6 +33,7 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(AllowAny,),
 ) #Swagger API문서 스키마
+
 
 urlpatterns = [
     path('swagger<str:format>', schema_view.without_ui(cache_timeout=0), name='schema-json'),
@@ -46,7 +47,13 @@ urlpatterns = [
     path('start_mkcrawling2/',start_mkcrawling2), #매일경제 모든 뉴스
     path('fetch_and_save_fb_data/',fetch_and_save_fb_data), #페이스북
     path('get_instagram_posts/',get_instagram_posts), #인스타그램
-    path('get_instagram_posts2/',get_instagram_posts2),
-    path('KhCrwawlingGet/',KhCrwawlingGet.as_view()), #헤럴드 경제 API
-    path('MkCrwawlingGet/',MkCrwawlingGet.as_view()), #매일경제 API 
+    path('KhCrwawlingGet/',KhCrwawlingGet.as_view()), #헤럴드 경제 GET API
+    path('MkCrwawlingGet/',MkCrwawlingGet.as_view()), #매일경제 GET API  
+    path('InstagramGet/',InstagramGet.as_view()), #인스타그램 GET API
+    path('KhfnCrwawlingGet',KhfnCrwawlingGet.as_view()), #헤럴드 파이넨스 GET API
+    path('UserLogin/',UserLogin.as_view()), # 일반 로그인
+    path('CorUserLogin/',CorUserLogin.as_view()), #법인 로그인
+    path('Join/',LoginView.as_view()), #로그인 검증
+    path('send_email_verification/', SendEmailVerificationView.as_view()),
+    #path('email/',send_email_verification),
 ]

@@ -1,6 +1,21 @@
 from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser
-from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram
+from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email
+
+class EmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Email
+        fields = ('email',)
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('name','password','email','country')
+
+class CorUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coruser
+        fields = ('name','password','email','country','corporate_name','business_num')
 
 class MkCrawlingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,3 +46,8 @@ class InstagramSerializer(serializers.ModelSerializer):
     class Meta:
         model = Instagram
         fields = '__all__'
+
+class LoginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Login
+        fields = ('email','password')
