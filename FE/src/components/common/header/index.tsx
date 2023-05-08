@@ -54,6 +54,10 @@ export default function Header() {
     setAnchorEl(null);
   };
 
+  const handleClickAccount = () => {
+    router.push("/account/test");
+  };
+
   const isIndustry = pathname === "/industry";
   const isService = pathname === "/service";
   const isTerms = pathname === "/terms";
@@ -152,7 +156,7 @@ export default function Header() {
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
-                  <MenuItem onClick={handleCloseMenu}>
+                  <MenuItem onClick={handleClickAccount}>
                     <Stack direction={"column"}>
                       <Typography
                         variant="body1"
