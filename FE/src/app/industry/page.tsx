@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function IndustryPage() {
   return (
     <div
-      className="relative flex items-center justify-center py-10 bg-fixed min-h-[900px]"
+      className="w-screen relative flex items-center justify-center py-10 bg-fixed min-h-[900px]"
       style={{ background: "url('/assets/images/industry_bg.png" }}
     >
       <div className="relative flex flex-col w-[calc(100%-32px)] max-w-2xl gap-7 xl:max-w-4xl">
