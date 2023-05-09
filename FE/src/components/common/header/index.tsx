@@ -20,7 +20,7 @@ import { FiSearch } from "react-icons/fi";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import HeaderSearch from "./HeaderSearch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import MoHeaderMemu from "./MoHeaderMemu";
 import { PersonAdd, Settings, Logout } from "@mui/icons-material";
@@ -42,6 +42,10 @@ export default function Header() {
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
   };
+
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [pathname]);
 
   const handleClickAuthButton = (event: React.MouseEvent<HTMLElement>) => {
     if (isUser) {
