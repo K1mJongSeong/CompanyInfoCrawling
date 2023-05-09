@@ -34,7 +34,7 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [moMenuOpen, setMoMenuOpen] = useState<boolean>(false);
 
-  const [isUser, setIsUser] = useState<boolean>(true);
+  const [isUser, setIsUser] = useState<boolean>(false);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -56,6 +56,10 @@ export default function Header() {
 
   const handleClickAccount = () => {
     router.push("/account/test");
+  };
+
+  const handleLogout = () => {
+    setIsUser(!isUser);
   };
 
   const isIndustry = pathname === "/industry";
@@ -178,7 +182,7 @@ export default function Header() {
                     </ListItemIcon>
                     My Service
                   </MenuItem>
-                  <MenuItem onClick={handleCloseMenu}>
+                  <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                       <Logout fontSize="small" />
                     </ListItemIcon>
