@@ -74,10 +74,23 @@ export default function FindPWContainer() {
 
   const handleClickButton = async () => {
     if (isFirst) {
+      if (!verified) {
+        return enqueueSnackbar("Please verify your email", {
+          variant: "warning",
+        });
+      }
+      localStorage.setItem("email", email);
       router.push("/auth/findPassword/2");
     }
     if (isSec) {
       try {
+        const lsEmail = await localStorage.getItem("email");
+        if (!lsEmail) {
+          enqueueSnackbar("No Verified Email, Please Start First", {
+            variant: "warning",
+          });
+          return router.push("/auth/findPassword/1");
+        }
         if (!pw)
           return enqueueSnackbar("Enter Password", { variant: "warning" });
         if (!pwConfirm)
@@ -89,12 +102,19 @@ export default function FindPWContainer() {
             variant: "warning",
           });
         }
-        const result = await ChangePw({ email, password: pw });
-        if (result) {
+        const result = await ChangePw({ email: lsEmail, password: pw });
+        if (result.detail === "비밀번호가 변경되었습니다.") {
           enqueueSnackbar("Change password Done", {
             variant: "success",
           });
+          localStorage.clear();
           router.push("/auth/findPassword/3");
+        } else if (result.detail === "찾을 수 없습니다.") {
+          localStorage.clear();
+          enqueueSnackbar("Can Not Found User", {
+            variant: "warning",
+          });
+          return false;
         }
       } catch (err) {
         return enqueueSnackbar("Server Error", {
