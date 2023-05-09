@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Img from "@/components/common/Image";
 import { MainSearchBox, MainStyledInput } from "@/components/main/styled";
 import {
@@ -11,10 +11,23 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { FiSearch } from "react-icons/fi";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
+import { GotoSearch } from "@/service/search_service";
 
-export default function HomeContainer(){
+export default function HomeContainer() {
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
+  const [value, setValue] = useState<string>("");
+  const handleChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+  const handleSubmit = (e: React.FormEvent) => {
+    GotoSearch({ e, value, router, enqueueSnackbar });
+  };
 
   return (
     <Stack
@@ -47,6 +60,8 @@ export default function HomeContainer(){
           </Typography>
         </Stack>
         <Stack
+          component="form"
+          onSubmit={handleSubmit}
           width={1}
           height={70}
           direction={"row"}
@@ -64,8 +79,14 @@ export default function HomeContainer(){
           >
             <FiSearch />
           </Box>
-          <MainStyledInput placeholder="Search Company or CEO" />
-          <Button variant="contained">Search</Button>
+          <MainStyledInput
+            placeholder="Search Company or CEO"
+            value={value ? value : ""}
+            onChange={handleChangeSearchValue}
+          />
+          <Button type="submit" variant="contained">
+            Search
+          </Button>
         </Stack>
       </MainSearchBox>
       <Img src={"/assets/images/main_bg.png"} alt="main background" />
