@@ -22,7 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
 from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts
-from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView, SendEmailVerificationView, VerifyEmailView
+from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView, SendEmailVerificationView, VerifyEmailView, ChangePasswordView
 schema_view = get_schema_view(
     openapi.Info(
         title="Open API", #타이틀
@@ -56,5 +56,6 @@ urlpatterns = [
     path('Login/',LoginView.as_view()), #로그인 검증
     path('send_email_verification/', SendEmailVerificationView.as_view()),
     path('verfication/', VerifyEmailView.as_view()),
+    path('ChangePassword/<str:email>', ChangePasswordView.as_view()),
     #path('email/',send_email_verification),
 ]

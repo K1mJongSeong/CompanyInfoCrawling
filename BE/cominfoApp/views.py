@@ -18,7 +18,7 @@ from django.conf import settings
 from django.views.generic import View
 from . import mkcrawling, khcrawling, crawling, khfncrawling, mkcrawling2
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import random
@@ -123,9 +123,10 @@ class VerifyEmailView(GenericAPIView): #이메일 인증
 
         # 이메일이 존재하지 않는 경우 에러 메시지 반환
         try:
-            email_verfi = Email.objects.get(email=email)
+            email_verfi = Email.objects.filter(email=email).last()
         except Email.DoesNotExist:
             return JsonResponse({'message': '등록되지 않은 이메일입니다.'}, status=404)
+
 
         # 이메일이 존재하면서 인증번호가 일치하지 않는 경우 에러 메시지 반환
         if email_verfi.auth_num != auth_num:
@@ -133,6 +134,26 @@ class VerifyEmailView(GenericAPIView): #이메일 인증
 
         # 인증번호 일치 시 성공 메시지 반환
         return JsonResponse({'message': '인증되었습니다.'})
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = UserPasswordChange
+    queryset = User.objects.all()
+    lookup_field = 'email'
+
+    @swagger_auto_schema(
+        operation_summary='비밀번호 변경 PUT API',
+    )
+    def put(self, request, *args, **kwargs):
+        email = kwargs.get('email')
+        password = request.data.get('password')
+        try:
+            user = self.get_object()
+            user.password = password
+            user.save()
+            return Response({'message': '비밀번호가 변경되었습니다.'})
+        except User.DoesNotExist:
+            return Response({'message': '일치하는 이메일이 없습니다.'})
 
 
 class LoginView(GenericAPIView):
