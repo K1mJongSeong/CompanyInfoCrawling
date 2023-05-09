@@ -16,7 +16,8 @@ import my_settings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+ADMIN_LOGOUT_PRESERVE_SESSION = True
+ACCOUNT_SESSION_REMEMBER = True
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -30,7 +31,8 @@ ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
-
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+CSRF_COOKIE_SECURE = False
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
