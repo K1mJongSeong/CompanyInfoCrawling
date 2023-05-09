@@ -1,11 +1,23 @@
 "use client";
 
-import { Button, Input, Stack } from "@mui/material";
-import { deepPurple } from "@mui/material/colors";
+import { Button, Stack } from "@mui/material";
 import { FiSearch } from "react-icons/fi";
 import { SearchInput } from "./styles";
+import { useRouter } from "next/navigation";
+import { GotoSearch } from "@/service/search_service";
+import { useSnackbar } from "notistack";
+import { useState } from "react";
 
 export default function HeaderSearch() {
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const [value, setValue] = useState<string>("");
+  const handleChangeSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+  const handleSubmit = (e: React.FormEvent) => {
+    GotoSearch({ e, value, router, enqueueSnackbar });
+  };
   return (
     <Stack
       direction={"row"}
@@ -26,12 +38,14 @@ export default function HeaderSearch() {
         direction={"column"}
         justifyContent={"space-between"}
       >
-        <Stack direction={"row"} gap={1}>
+        <Stack component={"form"} onSubmit={handleSubmit} direction={"row"} gap={1}>
           <SearchInput
             placeholder="Search Company or CEO"
             sx={{ flex: 1, px: 2 }}
+            value={value?value:""}
+            onChange={handleChangeSearchValue}
           />
-          <Button variant="contained">
+          <Button type="submit" variant="contained">
             <FiSearch style={{ fontSize: "1rem" }} />
           </Button>
         </Stack>
