@@ -60,7 +60,7 @@ export default function IndustryPage() {
             </div>
             <Link
               className="flex gap-1 text-sm text-blue-400 whitespace-nowrap"
-              href={"/"}
+              href={"https://www.sentinelkorea.com/"}
             >
               CONTACT US
               <Img

@@ -7,6 +7,12 @@ import {
   RegisterTab,
   AuthCheckBox,
 } from "@/components/auth/styled";
+import {
+  CoUserRegister,
+  InCountry,
+  UserRegister,
+  VerifyCode,
+} from "@/service/auth_service";
 import VerifyAuth from "@/utils/auth/verified";
 import {
   Box,
@@ -17,43 +23,20 @@ import {
   InputLabel,
   Link,
   MenuItem,
-  NativeSelect,
   Select,
   SelectChangeEvent,
   Stack,
   TextField,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { AiFillCheckCircle, AiOutlineCheckCircle } from "react-icons/ai";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Stack direction={"column"} gap={1}>
-          {children}
-        </Stack>
-      )}
-    </div>
-  );
-}
+import Countries from "@/data/countries.json";
+import uuid from "react-uuid";
+import TabPanel from "@/components/auth/items/TabPanel";
+import { useRouter } from "next/navigation";
 
 function a11yProps(index: number) {
   return {
@@ -62,43 +45,165 @@ function a11yProps(index: number) {
   };
 }
 
-const Checklabel = { inputProps: { "aria-label": "Term Checkbox" } };
+const Checklabel = {
+  inputProps: { "aria-label": "Term Checkbox", name: "agree" },
+};
 
 export default function RegisterContainer() {
-  const [value, setValue] = useState<number>(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-  const [age, setAge] = useState("");
-
-  const handleSelect = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
+  const router = useRouter();
+  const [tabValue, setTabValue] = useState<number>(0);
+  const handleChangeJoinType = (
+    event: React.SyntheticEvent,
+    newValue: number
+  ) => {
+    setTabValue(newValue);
+    initialRegisterForm();
   };
 
   const { enqueueSnackbar } = useSnackbar();
 
   const { verifyEmail } = new VerifyAuth();
 
+  //** field */
+  const [name, setName] = useState<string>("");
+  const [corName, setCorName] = useState<string>("");
+  const [bsNum, setbsNum] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
+
   const [email, setEmail] = useState<string>("");
   const [code, setCode] = useState<string>("");
 
+  const [pw, setPw] = useState<string>("");
+  const [pwConfirm, setPwConfirm] = useState<string>("");
+
+  const [agree, setAgree] = useState<boolean>(false);
+
+  //** status */
   const [sended, setSended] = useState<boolean>(false);
   const [verified, setVerified] = useState<boolean>(false);
 
+  const handleChangeRegisterField = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    if (name === "name") setName(value);
+    if (name === "corName") setCorName(value);
+    if (name === "bsNum") setbsNum(value);
+    if (name === "email") setEmail(value);
+    if (name === "code") setCode(value);
+    if (name === "pw") setPw(value);
+    if (name === "pwConfirm") setPwConfirm(value);
+  };
+
+  const handleSelect = (event: SelectChangeEvent) => {
+    setCountry(event.target.value);
+  };
+
   const handleClicSendEmail = async () => {
     const result = await verifyEmail(email, enqueueSnackbar);
-    if (result) {
+    if (result === true) {
       setSended(true);
     }
   };
 
-  const handleClickVerified = () => {
-    if (!setCode) {
-      enqueueSnackbar("Enter Code", { variant: "warning" });
+  const handleClickVerified = async () => {
+    try {
+      if (!code) {
+        enqueueSnackbar("Enter Code", { variant: "warning" });
+        return false;
+      }
+      const result = await VerifyCode({ email, code });
+      if (result.message === "인증되었습니다.") {
+        enqueueSnackbar("Verified Code", { variant: "success" });
+        setVerified(true);
+      } else {
+        enqueueSnackbar("Checkout Code", { variant: "warning" });
+        return false;
+      }
+    } catch (err) {
+      enqueueSnackbar("Server Error", { variant: "error" });
       return false;
     }
-    enqueueSnackbar("Verified Code", { variant: "success" });
-    setVerified(true);
+  };
+
+  const handleRegister = async () => {
+    try {
+      let result;
+      if (!name || !email || !country || !pw || !pwConfirm) {
+        enqueueSnackbar("Please enter all the information", {
+          variant: "warning",
+        });
+        return false;
+      }
+      if (!verified) {
+        enqueueSnackbar("Please verify your email", {
+          variant: "warning",
+        });
+        return false;
+      }
+      if (pw !== pwConfirm) {
+        enqueueSnackbar("Not Same Password", {
+          variant: "warning",
+        });
+        return false;
+      }
+      if (!agree) {
+        enqueueSnackbar(
+          "Please Check the agreement of the terms and conditions",
+          {
+            variant: "warning",
+          }
+        );
+        return false;
+      }
+      if (tabValue === 0) {
+        result = await UserRegister({ name, email, password: pw, country });
+      } else if (tabValue === 1) {
+        if (!bsNum || !corName) {
+          enqueueSnackbar("Please enter all the information", {
+            variant: "warning",
+          });
+          return false;
+        }
+        result = await CoUserRegister({
+          name,
+          email,
+          password: pw,
+          country,
+          corporate_name: corName,
+          business_num: bsNum,
+        });
+      }
+      if (result) {
+        enqueueSnackbar("Register Done", {
+          variant: "success",
+        });
+        router.push("/auth/login");
+        return true;
+      } else {
+        enqueueSnackbar("Register Done", {
+          variant: "warning",
+        });
+        return false;
+      }
+    } catch (err) {
+      console.error(err);
+      enqueueSnackbar("Server Error", { variant: "error" });
+    }
+  };
+
+  const initialRegisterForm = () => {
+    setName("");
+    setCorName("");
+    setbsNum("");
+    setEmail("");
+    setCountry("");
+    setCode("");
+    setPw("");
+    setPwConfirm("");
+    setSended(false);
+    setVerified(false);
+    setAgree(false);
   };
 
   return (
@@ -118,8 +223,8 @@ export default function RegisterContainer() {
           </Typography>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }} mb={2}>
             <RegisterTabs
-              value={value}
-              onChange={handleChange}
+              value={tabValue}
+              onChange={handleChangeJoinType}
               variant="fullWidth"
             >
               <RegisterTab label="Individual" {...a11yProps(0)} />
@@ -132,41 +237,43 @@ export default function RegisterContainer() {
               type="text"
               autoComplete="userName"
               variant="standard"
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                console.log(event.target.value);
-              }}
+              name="name"
+              value={name ? name : ""}
+              onChange={handleChangeRegisterField}
             />
-            <TabPanel value={value} index={1}>
+            <TabPanel value={tabValue} index={1}>
               <TextField
                 label="Corporate Name"
                 type="text"
                 autoComplete="CorporateName"
                 variant="standard"
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  console.log(event.target.value);
-                }}
+                name="corName"
+                value={corName ? corName : ""}
+                onChange={handleChangeRegisterField}
               />
               <TextField
                 label="Business Number"
                 type="text"
                 autoComplete="BusinessNumber"
                 variant="standard"
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  console.log(event.target.value);
-                }}
+                name="bsNum"
+                value={bsNum ? bsNum : ""}
+                onChange={handleChangeRegisterField}
               />
             </TabPanel>
             <FormControl variant="standard">
               <InputLabel id="demo-simple-select-standard-label">
                 Select Country
               </InputLabel>
-              <Select value={age} onChange={handleSelect} label="Age">
+              <Select value={country} onChange={handleSelect} label="country">
                 <MenuItem value="">
-                  <em>None</em>
+                  <em>Select Country</em>
                 </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {Countries?.map((el: InCountry) => (
+                  <MenuItem key={uuid()} value={el.name}>
+                    {el.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl variant="standard">
@@ -176,9 +283,8 @@ export default function RegisterContainer() {
                 type={"text"}
                 sx={{ height: "40px" }}
                 value={email ? email : ""}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setEmail(event.target.value);
-                }}
+                name="email"
+                onChange={handleChangeRegisterField}
                 readOnly={sended}
                 endAdornment={
                   <InputAdornment position="end">
@@ -200,16 +306,16 @@ export default function RegisterContainer() {
                 <Input
                   id="verifyCode"
                   type={"text"}
+                  name="code"
                   sx={{ height: "40px" }}
                   value={code ? code : ""}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setCode(e.target.value);
-                  }}
+                  onChange={handleChangeRegisterField}
                   endAdornment={
                     <InputAdornment position="end">
                       <Button
                         variant="contained"
                         onClick={handleClickVerified}
+                        disabled={verified}
                         sx={{ py: 0.5, width: "80px" }}
                       >
                         Verify
@@ -224,33 +330,43 @@ export default function RegisterContainer() {
               type="password"
               autoComplete="new-password"
               variant="standard"
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                console.log(event.target.value);
-              }}
+              name="pw"
+              value={pw ? pw : ""}
+              onChange={handleChangeRegisterField}
             />
             <TextField
               label="Password Confirm"
               type="password"
               autoComplete="password-confirm"
               variant="standard"
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                console.log(event.target.value);
-              }}
+              name="pwConfirm"
+              value={pwConfirm ? pwConfirm : ""}
+              onChange={handleChangeRegisterField}
             />
             <Stack direction={"row"} alignItems={"center"} mb={7}>
               <AuthCheckBox
                 {...Checklabel}
                 icon={<AiOutlineCheckCircle />}
                 checkedIcon={<AiFillCheckCircle />}
+                checked={agree}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (e.target.checked) {
+                    setAgree(true);
+                  } else {
+                    setAgree(false);
+                  }
+                }}
               />
               <Typography variant="body1" fontSize={"small"} color={grey[500]}>
                 I Read and Agree to
-                <Link href={"/"} target="_blank" sx={{ ml: 0.5 }}>
+                <Link href={"/terms"} target="_blank" sx={{ ml: 0.5 }}>
                   Terms
                 </Link>
               </Typography>
             </Stack>
-            <Button variant="contained">JOIN</Button>
+            <Button variant="contained" onClick={handleRegister}>
+              JOIN
+            </Button>
           </Stack>
         </Stack>
       </AuthCard>

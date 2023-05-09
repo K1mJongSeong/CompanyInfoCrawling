@@ -20,7 +20,7 @@ import { FiSearch } from "react-icons/fi";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import HeaderSearch from "./HeaderSearch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import MoHeaderMemu from "./MoHeaderMemu";
 import { PersonAdd, Settings, Logout } from "@mui/icons-material";
@@ -34,7 +34,7 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [moMenuOpen, setMoMenuOpen] = useState<boolean>(false);
 
-  const [isUser, setIsUser] = useState<boolean>(true);
+  const [isUser, setIsUser] = useState<boolean>(false);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -42,6 +42,10 @@ export default function Header() {
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
   };
+
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [pathname]);
 
   const handleClickAuthButton = (event: React.MouseEvent<HTMLElement>) => {
     if (isUser) {
@@ -56,6 +60,10 @@ export default function Header() {
 
   const handleClickAccount = () => {
     router.push("/account/test");
+  };
+
+  const handleLogout = () => {
+    setIsUser(!isUser);
   };
 
   const isIndustry = pathname === "/industry";
@@ -178,7 +186,7 @@ export default function Header() {
                     </ListItemIcon>
                     My Service
                   </MenuItem>
-                  <MenuItem onClick={handleCloseMenu}>
+                  <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                       <Logout fontSize="small" />
                     </ListItemIcon>

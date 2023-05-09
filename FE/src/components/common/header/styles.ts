@@ -1,21 +1,18 @@
 import styled from "@emotion/styled";
 import { Box, Button, Input, Typography, css } from "@mui/material";
+import { grey } from "@mui/material/colors";
 import Link from "next/link";
 
 interface LinkProps {
   isActive: boolean;
 }
 
-export const StyledLink = styled(Link)<LinkProps>`
+export const StyledLink = styled(Link)`
+  color: ${(props: LinkProps) => (props.isActive ? "#17217a" : grey[700])};
+
   &:hover {
     color: #17217a;
   }
-
-  ${(props) =>
-    props.isActive &&
-    css`
-      color: #17217a;
-    `}
 `;
 
 export const StyledButton = styled(Button)`
