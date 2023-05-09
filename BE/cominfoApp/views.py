@@ -123,9 +123,10 @@ class VerifyEmailView(GenericAPIView): #이메일 인증
 
         # 이메일이 존재하지 않는 경우 에러 메시지 반환
         try:
-            email_verfi = Email.objects.get(email=email)
+            email_verfi = Email.objects.filter(email=email).last()
         except Email.DoesNotExist:
             return JsonResponse({'message': '등록되지 않은 이메일입니다.'}, status=404)
+
 
         # 이메일이 존재하면서 인증번호가 일치하지 않는 경우 에러 메시지 반환
         if email_verfi.auth_num != auth_num:
