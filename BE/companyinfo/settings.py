@@ -120,8 +120,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.naver.com'
 EMAIL_PORT = 587 #구글 587 네이버 465
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'miaer789@naver.com'
-EMAIL_HOST_PASSWORD = 'rlawhdtjd159'
+EMAIL_HOST_USER = 'ideavillage@naver.com'
+EMAIL_HOST_PASSWORD = 'rcsoft3!@#'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Internationalization

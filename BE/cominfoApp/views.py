@@ -17,8 +17,8 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.views.generic import View
 from . import mkcrawling, khcrawling, crawling, khfncrawling, mkcrawling2
-from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import random
@@ -79,26 +79,6 @@ class SendEmailVerificationView(GenericAPIView):
         # POST 요청에서 이메일 주소 가져오기
         email = request.data.get('email')
 
-        # # 이메일이 없는 경우 에러 메시지 반환
-        # if not email:
-        #     return JsonResponse({'message': '이메일을 입력해주세요.'}, status=400)
-
-        # # 일반 회원 테이블에서 이메일 확인
-        # try:
-        #     user = User.objects.get(email=email)
-        # except User.DoesNotExist:
-        #     user = None
-
-        # # 법인 회원 테이블에서 이메일 확인
-        # try:
-        #     coruser = Coruser.objects.get(email=email)
-        # except Coruser.DoesNotExist:
-        #     coruser = None
-
-        # # 일반 회원과 법인 회원에서 모두 해당 이메일을 사용하는 사용자가 없는 경우 에러 메시지 반환
-        # if not user and not coruser:
-        #     return JsonResponse({'message': '등록되지 않은 이메일입니다.'}, status=404)
-
         # 5자리 랜덤 인증번호 생성
         verification_code = get_random_string(length=5, allowed_chars='0123456789')
 
@@ -118,7 +98,7 @@ class SendEmailVerificationView(GenericAPIView):
         email_obj = Email.objects.create(
             email=email, 
             auth_num=verification_code, 
-            created_at=now,
+            create_at=now,
             expires_at=now + timedelta(minutes=5) # 현재 시간에서 5분 더한 시간을 만료 시간으로 설정
         )
         email_obj = Email.objects.get(email=email, auth_num=verification_code)
@@ -132,6 +112,27 @@ class SendEmailVerificationView(GenericAPIView):
         # 인증번호와 메시지 반환
         return JsonResponse({'verification_code': verification_code, 'message': '인증번호가 이메일로 발송되었습니다.'})
 
+
+class VerifyEmailView(GenericAPIView): #이메일 인증
+    serializer_class = EmailVerfiSerailizer
+
+    def post(self, request, *args, **kwargs):
+        # POST 요청에서 이메일과 인증번호 가져오기
+        email = request.data.get('email')
+        auth_num = request.data.get('auth_num')
+
+        # 이메일이 존재하지 않는 경우 에러 메시지 반환
+        try:
+            email_verfi = Email.objects.get(email=email)
+        except Email.DoesNotExist:
+            return JsonResponse({'message': '등록되지 않은 이메일입니다.'}, status=404)
+
+        # 이메일이 존재하면서 인증번호가 일치하지 않는 경우 에러 메시지 반환
+        if email_verfi.auth_num != auth_num:
+            return JsonResponse({'message': '인증번호가 일치하지 않습니다.'}, status=400)
+
+        # 인증번호 일치 시 성공 메시지 반환
+        return JsonResponse({'message': '인증되었습니다.'})
 
 
 class LoginView(GenericAPIView):

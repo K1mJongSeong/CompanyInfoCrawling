@@ -22,7 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
 from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts
-from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView, SendEmailVerificationView
+from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView, SendEmailVerificationView, VerifyEmailView
 schema_view = get_schema_view(
     openapi.Info(
         title="Open API", #타이틀
@@ -51,9 +51,10 @@ urlpatterns = [
     path('MkCrwawlingGet/',MkCrwawlingGet.as_view()), #매일경제 GET API  
     path('InstagramGet/',InstagramGet.as_view()), #인스타그램 GET API
     path('KhfnCrwawlingGet',KhfnCrwawlingGet.as_view()), #헤럴드 파이넨스 GET API
-    path('UserLogin/',UserLogin.as_view()), # 일반 로그인
-    path('CorUserLogin/',CorUserLogin.as_view()), #법인 로그인
-    path('Join/',LoginView.as_view()), #로그인 검증
+    path('UserJoin/',UserLogin.as_view()), # 일반 로그인
+    path('CorJoin/',CorUserLogin.as_view()), #법인 로그인
+    path('Login/',LoginView.as_view()), #로그인 검증
     path('send_email_verification/', SendEmailVerificationView.as_view()),
+    path('verfication/', VerifyEmailView.as_view()),
     #path('email/',send_email_verification),
 ]
