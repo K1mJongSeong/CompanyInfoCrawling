@@ -125,3 +125,11 @@ class Email(models.Model):
     class Meta:
         managed = False
         db_table = 'email'
+
+class EmailVerfi(models.Model):
+    email = models.CharField(primary_key=True, max_length=100)
+    verfication_num = models.CharField(max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'email_verfi'
