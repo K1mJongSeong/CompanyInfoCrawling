@@ -1,6 +1,7 @@
 "use client";
 
 import PaginationBox from "@/components/common/Pagination";
+import NoSearch from "@/components/search/NoSearch";
 import SearchList, { SearchItem } from "@/components/search/SearchList";
 import SearchTop from "@/components/search/SearchTop";
 import { SearchCard, SearchLayoutContainer } from "@/components/search/styles";
@@ -18,11 +19,12 @@ export default function SearchContainer({ slug }: Props) {
       setSearchValue("");
     }
   }, [slug]);
+  const [result, setResult] = useState(false);
   return (
     <SearchLayoutContainer>
       <SearchTop searchValue={searchValue} />
       <SearchCard>
-        <Stack direction={"row"} mb={3} gap={1} alignItems={'flex-end'}>
+        <Stack direction={"row"} mb={3} gap={1} alignItems={"flex-end"}>
           <Typography variant="h2" fontSize={"large"} fontWeight={"bold"}>
             {searchValue}
           </Typography>
@@ -30,20 +32,26 @@ export default function SearchContainer({ slug }: Props) {
             Search Reasult 0000
           </Typography>
         </Stack>
-        <SearchList>
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-          <SearchItem />
-        </SearchList>
-        <PaginationBox />
+        {result ? (
+          <>
+            <SearchList>
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+              <SearchItem />
+            </SearchList>
+            <PaginationBox />
+          </>
+        ) : (
+          <NoSearch />
+        )}
       </SearchCard>
     </SearchLayoutContainer>
   );
