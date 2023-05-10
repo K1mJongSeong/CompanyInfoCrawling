@@ -8,7 +8,7 @@ DATABASES = {
         'PORT': '3306',
         'CONN_MAX_AGE': 300, #ORM 쿼리 실행시간 증가.
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         }
     } 
 }

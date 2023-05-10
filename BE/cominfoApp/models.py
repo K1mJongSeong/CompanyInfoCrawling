@@ -61,7 +61,7 @@ class Khfncrawling(models.Model):
 
 
 class Facebook(models.Model):
-    meta_id = models.IntegerField(primary_key=True)
+    fb_id = models.AutoField(primary_key=True)
     message = models.TextField(blank=True, null=True)
     created_time = models.DateTimeField(blank=True, null=True)
 
@@ -133,3 +133,11 @@ class EmailVerfi(models.Model):
     class Meta:
         managed = False
         db_table = 'email_verfi'
+
+class Jwt(models.Model):
+    acesstoken = models.TextField(blank=True, null=True)
+    refresh = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'jwt'
