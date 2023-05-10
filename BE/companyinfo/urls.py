@@ -21,8 +21,8 @@ from rest_framework.decorators import api_view
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
-from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling,start_mkcrawling2, fetch_and_save_fb_data, get_instagram_posts
-from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView, SendEmailVerificationView, VerifyEmailView, ChangePasswordView
+from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling, fetch_and_save_fb_data, get_instagram_posts, example_post_api
+from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, LoginView, SendEmailVerificationView, VerifyEmailView, ChangePasswordView, UserLoginView2
 schema_view = get_schema_view(
     openapi.Info(
         title="Open API", #타이틀
@@ -41,10 +41,9 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),#Swagger API PATH
     path('admin/', admin.site.urls),
     path('start_crawling/',start_crawling), #네이버뉴스(네이버API 따로 제공 받을 예정.)
-    path('start_mkcrawling/',start_mkcrawling), #매일경제
     path('start_khcrawling/',start_khcrawling), #헤럴드경제
     path('start_khfncrawling/',start_khfncrawling), #헤럴드 파이넨스
-    path('start_mkcrawling2/',start_mkcrawling2), #매일경제 모든 뉴스
+    path('start_mkcrawling/',start_mkcrawling), #매일경제 모든 뉴스
     path('fetch_and_save_fb_data/',fetch_and_save_fb_data), #페이스북
     path('get_instagram_posts/',get_instagram_posts), #인스타그램
     path('KhCrwawlingGet/',KhCrwawlingGet.as_view()), #헤럴드 경제 GET API
@@ -53,9 +52,12 @@ urlpatterns = [
     path('KhfnCrwawlingGet',KhfnCrwawlingGet.as_view()), #헤럴드 파이넨스 GET API
     path('UserJoin/',UserLogin.as_view()), # 일반 로그인
     path('CorJoin/',CorUserLogin.as_view()), #법인 로그인
-    path('Login/',LoginView.as_view()), #로그인 검증
-    path('send_email_verification/', SendEmailVerificationView.as_view()),
+    #path('Login/',LoginView.as_view()), #로그인 검증
+    path('SendEmail/', SendEmailVerificationView.as_view()),
     path('verfication/', VerifyEmailView.as_view()),
     path('ChangePassword/<str:email>', ChangePasswordView.as_view()),
+    #path('AuthTokenView/', AuthTokenView.as_view()),
+    path("AuthToken/", example_post_api, name="example-post-api"),
+    path("Login/", UserLoginView2.as_view()),
     #path('email/',send_email_verification),
 ]
