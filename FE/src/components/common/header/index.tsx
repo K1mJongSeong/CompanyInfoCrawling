@@ -45,6 +45,7 @@ export default function Header() {
 
   useEffect(() => {
     setSearchOpen(false);
+    setMoMenuOpen(false);
   }, [pathname]);
 
   const handleClickAuthButton = (event: React.MouseEvent<HTMLElement>) => {
@@ -73,7 +74,7 @@ export default function Header() {
   return (
     <>
       <Stack
-        width={1}
+        width={"100vw"}
         height={60}
         direction={"row"}
         justifyContent={"center"}

@@ -14,7 +14,9 @@ const theme = createTheme({
       main: "#17217A",
     },
   },
-
+  typography: {
+    fontFamily: "Pretendard",
+  },
   breakpoints: {
     values: {
       xs: 0,
