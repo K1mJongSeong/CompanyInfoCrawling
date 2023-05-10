@@ -1,6 +1,12 @@
 "use client";
 
-import { Divider, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Divider,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { grey } from "@mui/material/colors";
 import Link from "next/link";
 
@@ -16,10 +22,10 @@ export default function SearchList({
   );
 }
 export const SearchItem = () => {
-     const theme = useTheme();
-     const matches = useMediaQuery(theme.breakpoints.up("md"));
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up("md"));
   return (
-    <Link href="/">
+    <Link href="/company/payments/test">
       <Stack
         direction={"column"}
         gap={1}
@@ -31,7 +37,7 @@ export const SearchItem = () => {
         borderColor={grey[400]}
         borderRadius={2}
       >
-        <Stack direction={"row"} mb={matches?0:1}>
+        <Stack direction={"row"} mb={matches ? 0 : 1}>
           <Typography variant="h3" fontSize={"large"} fontWeight={"bold"}>
             COMPANY NAME
           </Typography>

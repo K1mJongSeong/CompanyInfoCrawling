@@ -19,7 +19,7 @@ export default function SearchContainer({ slug }: Props) {
       setSearchValue("");
     }
   }, [slug]);
-  const [result, setResult] = useState(false);
+  const [result, setResult] = useState(true);
   return (
     <SearchLayoutContainer>
       <SearchTop searchValue={searchValue} />

@@ -88,7 +88,7 @@ export const BorderCompanyCard = styled(Box)`
   ul,
   li {
     list-style: initial;
-    color: ${grey[400]};
+    color: ${grey[500]};
   }
   ${media.tablet} {
     padding: 28px 20px;

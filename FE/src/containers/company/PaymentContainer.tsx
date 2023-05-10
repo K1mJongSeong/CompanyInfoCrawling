@@ -13,11 +13,17 @@ import {
   useTheme,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import { useRouter } from "next/navigation";
 import { FaPaperPlane } from "react-icons/fa";
 
 export default function PaymentContainer() {
+  const router = useRouter();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
+
+  const handleClickPayBtn = () => {
+    router.push("/company/information/test");
+  };
   return (
     <>
       <CampanyProfile />
@@ -44,7 +50,7 @@ export default function PaymentContainer() {
                 </ol>
               </Box>
             </Box>
-            <Button variant="contained" fullWidth>
+            <Button variant="contained" fullWidth onClick={handleClickPayBtn}>
               $50
             </Button>
           </Stack>
@@ -73,7 +79,7 @@ export default function PaymentContainer() {
                 </ol>
               </Box>
             </Box>
-            <Button variant="contained" fullWidth>
+            <Button variant="contained" fullWidth onClick={handleClickPayBtn}>
               $300
             </Button>
           </Stack>
