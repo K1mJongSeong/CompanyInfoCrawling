@@ -1,8 +1,10 @@
+import SearchContainer from "@/containers/search/SearchContainer";
+
 interface Props {
   params: {
-    slug: string | Array<string>;
+    slug: Array<string>;
   };
 }
 export default function SearchPage({ params: { slug } }: Props) {
-  return <div>{slug}</div>;
+  return <SearchContainer slug={slug} />;
 }
