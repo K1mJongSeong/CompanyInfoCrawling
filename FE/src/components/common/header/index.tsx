@@ -45,6 +45,7 @@ export default function Header() {
 
   useEffect(() => {
     setSearchOpen(false);
+    setMoMenuOpen(false);
   }, [pathname]);
 
   const handleClickAuthButton = (event: React.MouseEvent<HTMLElement>) => {
