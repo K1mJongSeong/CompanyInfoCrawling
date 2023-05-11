@@ -148,3 +148,19 @@ class Qna(models.Model):
         db_table = 'Qna'
         verbose_name = 'Q&A'
         verbose_name_plural = 'Q&A'
+
+class PuchasedSales(models.Model):
+    ps_id = models.AutoField(primary_key=True,verbose_name='NO')
+    trans_num = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래넘버')
+    trans_item = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래항목')
+    trans_name = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래자')
+    trans_date = models.DateField(blank=True, null=True,verbose_name='거래일')
+    payment = models.CharField(max_length=100, blank=True, null=True,verbose_name='결제금액')
+    state = models.CharField(max_length=10, blank=True, null=True,verbose_name='상태')
+    pay_method = models.CharField(max_length=100, blank=True, null=True,verbose_name='결제방식')
+
+    class Meta:
+        managed = False
+        db_table = 'Puchased_sales'
+        verbose_name = '거래목록'
+        verbose_name_plural = '거래목록'
