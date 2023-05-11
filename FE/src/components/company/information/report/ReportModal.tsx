@@ -82,10 +82,9 @@ export default function ReportModal({ open, close }: Props) {
                     loading ? (
                       "Loading..."
                     ) : (
-                      <p className="py-6 align-center">
-                        PDF preview not available on mobile
-                        <br />
-                        Click me to Download
+                      <p className="align-center py-7">
+                        Please use PC for PDF preview <br />
+                        Click me to Download!
                       </p>
                     )
                   }
@@ -101,7 +100,17 @@ export default function ReportModal({ open, close }: Props) {
         </Device>
       </DialogContent>
       <DialogActions>
-        <Button onClick={close}>download</Button>
+        <PDFDownloadLink document={<RepoerPDF />} fileName="My_Report">
+          {({ loading }) =>
+            loading ? (
+              "Loading..."
+            ) : (
+              <Button variant="contained" onClick={close}>
+                download
+              </Button>
+            )
+          }
+        </PDFDownloadLink>
       </DialogActions>
     </StyledDialog>
   );
