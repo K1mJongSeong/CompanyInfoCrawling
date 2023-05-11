@@ -82,7 +82,7 @@ export default function ReportModal({ open, close }: Props) {
                     loading ? (
                       "Loading..."
                     ) : (
-                      <p className="align-center py-7">
+                      <p className="text-center py-7">
                         Please use PC for PDF preview <br />
                         Click me to Download!
                       </p>
