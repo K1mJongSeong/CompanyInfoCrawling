@@ -135,10 +135,16 @@ class EmailVerfi(models.Model):
         managed = False
         db_table = 'email_verfi'
 
-class Jwt(models.Model):
-    acesstoken = models.TextField(blank=True, null=True)
-    refresh = models.TextField(blank=True, null=True)
+class Qna(models.Model):
+    qna_id = models.AutoField(primary_key=True,verbose_name='NO')
+    question = models.TextField(blank=True, null=True,verbose_name='질문')
+    answer = models.TextField(blank=True, null=True,verbose_name='작성자')
+    create_at = models.DateTimeField(blank=True, null=True,verbose_name='등록일')
+    modified_at = models.DateTimeField(blank=True, null=True)
+    exposure = models.CharField(max_length=45, blank=True, null=True,verbose_name='노출여부')
 
     class Meta:
         managed = False
-        db_table = 'jwt'
+        db_table = 'Qna'
+        verbose_name = 'Q&A'
+        verbose_name_plural = 'Q&A'
