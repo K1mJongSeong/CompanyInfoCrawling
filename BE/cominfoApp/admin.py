@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.utils.html import format_html
 from django.urls import reverse
 from django.core.exceptions import ValidationError
-from .models import Mkcrawling, Instagram, Qna
+from .models import Qna, PuchasedSales
 from .validators import validate_username
 
 admin.site.unregister(Group)
@@ -73,5 +73,19 @@ admin.site.register(User, CustomUserAdmin)
 
 class QnaAdmin(admin.ModelAdmin):
     list_display = ('qna_id','question','answer','exposure','create_at')
+    list_per_page = 8
 
 admin.site.register(Qna, QnaAdmin)    
+
+class PuchasedSalesAdmin(admin.ModelAdmin):
+    list_display = ('ps_id','trans_num','trans_item','trans_name','payment','state','pay_method','trans_date')
+    
+    def has_add_permission(self, request, obj=None):
+        # 추가 권한 없애기
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        # 변경 권한 없애기
+        return False
+
+admin.site.register(PuchasedSales, PuchasedSalesAdmin)
