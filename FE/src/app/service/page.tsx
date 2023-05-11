@@ -10,7 +10,7 @@ export default function ServicePage() {
           Experience the services offered by Sentinel Korea!
         </p>
         <div className="flex flex-col justify-between w-full lg:flex-row">
-          <div className="flex flex-col gap-5 px-0 py-4 border-b border-gray-200 lg:border-r lg:px-10 lg:py-7">
+          <div className="flex flex-col gap-5 px-0 py-4 border-b border-gray-200 lg:border-b-0 lg:border-r lg:px-10 lg:py-7">
             <div className="flex flex-col gap-2">
               <div className="font-bold text-blue-500">DD1, DD2</div>
               <p className="text-sm">

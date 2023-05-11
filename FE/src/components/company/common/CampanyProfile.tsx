@@ -14,9 +14,10 @@ import { AiFillFileText } from "react-icons/ai";
 
 interface Props {
   pdf?: boolean;
+  onClickOpenPdf?: () => void;
 }
 
-export default function CampanyProfile({ pdf }: Props) {
+export default function CampanyProfile({ pdf, onClickOpenPdf }: Props) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
   return (
@@ -67,7 +68,11 @@ export default function CampanyProfile({ pdf }: Props) {
         </Stack>
       </Stack>
       {pdf && (
-        <Button variant="contained" endIcon={<AiFillFileText />}>
+        <Button
+          onClick={onClickOpenPdf}
+          variant="contained"
+          endIcon={<AiFillFileText />}
+        >
           PDF
         </Button>
       )}
