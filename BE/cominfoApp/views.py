@@ -6,14 +6,8 @@ from rest_framework.decorators import api_view, permission_classes#api
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.exceptions import TokenError
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from django.contrib.auth import authenticate, login
@@ -26,12 +20,11 @@ from django.views.generic import View
 from datetime import datetime, timedelta
 from . import mkcrawling
 from . import mkcrawling, khcrawling, crawling, khfncrawling
-from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Jwt
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, JwtSerializers
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, QnaSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import random
-import jwt
 from datetime import datetime, timedelta
 
 
@@ -168,31 +161,6 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response({'message': '비밀번호가 변경되었습니다.'})
         except User.DoesNotExist:
             return Response({'message': '일치하는 이메일이 없습니다.'})
-
-
-class LoginView(GenericAPIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    serializer_class = UserJWTSerializer
-    
-    @swagger_auto_schema(
-        operation_summary='로그인 JWT 토큰 발급 POST API',
-    )
-    def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        password = request.data.get('password')
-
-        # 이메일과 비밀번호로 유저 인증
-        try:
-            user = User.objects.get(email=email, password=password)
-        except User.DoesNotExist:
-            return Response({'message': '이메일 또는 비밀번호가 일치하지 않습니다.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        # JWT 토큰 발급
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
-
-        # JWT 토큰 반환
-        return Response({'access_token': access_token, 'refresh': str(refresh)})
 
 
 class UserLoginView2(GenericAPIView):

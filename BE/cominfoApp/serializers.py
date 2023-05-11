@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser
-from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi, Jwt
+from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi, Qna
 
-class JwtSerializers(serializers.ModelSerializer):
+class QnaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Jwt
-        fields = ('acesstoken','refresh')
+        model = Qna
+        fields = '__all__'
 
 class EmailSerializer(serializers.ModelSerializer):
     class Meta:
