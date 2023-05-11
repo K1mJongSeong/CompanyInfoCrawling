@@ -11,7 +11,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.exceptions import TokenError
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from django.contrib.auth import authenticate, login
@@ -21,7 +23,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.views.generic import View
-
+from datetime import datetime, timedelta
 from . import mkcrawling
 from . import mkcrawling, khcrawling, crawling, khfncrawling
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Jwt
@@ -194,11 +196,10 @@ class LoginView(GenericAPIView):
 
 
 class UserLoginView2(GenericAPIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    serializer_class = UserJWTSerializer
+    serializer_class = LoginSerializer
     
     @swagger_auto_schema(
-        operation_summary='로그인 JWT 토큰 발급 POST API',
+        operation_summary='로그인 POST API',
     )
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
@@ -210,29 +211,89 @@ class UserLoginView2(GenericAPIView):
             return Response(
                 {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
-        
-        if user is not None:
-            token = TokenObtainPairSerializer.get_token(user)
-            refresh_token = str(token)
-            access_token = str(token.access_token)
-            response = Response(
-                {
-                    "user": UserSerializer(user).data,
-                    "message": "로그인 성공",
-                    "jwt_token": {
-                        "access_token": access_token,
-                        "refresh_token": refresh_token
-                    },
-                },
-                status=status.HTTP_200_OK
-            )
-            response.set_cookie("access_token", access_token, httponly=True)
-            response.set_cookie("refresh_token", refresh_token, httponly=True)
-            return response
+        if user.password != password:
+            return Response({"message":"비밀번호가 틀렸습니다."},status=status.HTTP_400_BAD_REQUEST)
+
+        if  user.is_login == '1':
+            user.save()
+            return Response({"message": "로그인에 성공했습니다."}, status=status.HTTP_200_OK)
         else:
             return Response(
                 {"message": "로그인에 실패하였습니다."}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class UserLogoutView(GenericAPIView):
+    serializer_class = LoginSerializer
+    @swagger_auto_schema(
+        operation_summary='로그아웃 POST API',
+    )
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+
+        user = User.objects.filter(email=email).first()
+
+        if user is None:
+            return Response(
+                {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if user.is_login == '1':
+            user.is_login = '0'
+            user.save()
+            return Response(
+                {"message": "로그아웃에 성공하였습니다."}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"message": "이미 로그아웃 상태입니다."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+class UserLoginStatusView(APIView):
+    def get_object(self, email):#GET,PUT,DELETE
+        try:
+            return User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise Response({"message":"에러"},status=status.HTTP_404_NOT_FOUND)
+    @swagger_auto_schema(
+        operation_summary='로그인 상태',
+    )
+    def get(self, request, email):
+        login = self.get_object(email)
+        serializer = UserSerializer(login)
+        user = User.objects.filter(email=email).first()
+
+        if serializer is None:
+            return Response({"message":"아이디가 존재하지 않습니다"},status=status.HTTP_400_BAD_REQUEST)
+
+        if user.is_login =='1':
+            return Response({"message":"로그인 상태입니다."},status=status.HTTP_200_OK)
+        else:
+            return Response({"message":"로그아웃 상태입니다."},status=status.HTTP_200_OK)
+
+# class UserLoginStatusView(APIView):
+#     serializer_class = UserSerializer
+#     lookup_field=("email")
+
+#     @swagger_auto_schema(
+#         operation_summary='로그인 상태 확인 GET API',
+#     )
+#     def get(self, request, *args, **kwargs):
+#         email = self.request.query_params.get('email')
+#         print(email)
+#         user = User.objects.filter(email=email).first()
+#         print(user)
+
+#         if user is None:
+#             return Response(
+#                 {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
+#             )
+#         if user.is_login == '1':
+#             return Response({
+#                 "message": "로그인 중입니다."
+#             },status=status.HTTP_200_OK)
+#         else:
+#             return Response({"message":"로그아웃 상태입니다."},status=status.HTTP_400_BAD_REQUEST)
 
 
 header_params = [

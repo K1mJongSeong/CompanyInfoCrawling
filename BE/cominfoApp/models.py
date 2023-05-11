@@ -88,6 +88,7 @@ class User(models.Model): #일반로그인
     password = models.CharField(max_length=100, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
+    is_login = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False
