@@ -14,7 +14,6 @@ def get_instagram_posts(username, insta_username, insta_password):
     L = Instaloader(user_agent=custom_user_agent)
     #L = instaloader.Instaloader()
 
-    
 
     # 로그인
     try:

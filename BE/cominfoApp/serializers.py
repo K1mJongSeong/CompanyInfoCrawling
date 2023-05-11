@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser
-from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi
+from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi, Jwt
+
+class JwtSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Jwt
+        fields = ('acesstoken','refresh')
 
 class EmailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,6 +21,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('name','password','email','country')
+
+class UserJWTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email','password')
 
 class UserPasswordChange(serializers.ModelSerializer):
     class Meta:

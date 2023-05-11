@@ -2,11 +2,16 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework_swagger.renderers import SwaggerUIRenderer
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
-from rest_framework.decorators import api_view, renderer_classes, parser_classes #api
-from rest_framework import status, generics, viewsets, serializers
-from rest_framework.parsers import FileUploadParser,MultiPartParser, FormParser
+from rest_framework.decorators import api_view, permission_classes#api
+from rest_framework import status, generics
 from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from django.contrib.auth import authenticate, login
@@ -16,12 +21,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.views.generic import View
-from . import mkcrawling, khcrawling, crawling, khfncrawling, mkcrawling2
-from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange
+
+from . import mkcrawling
+from . import mkcrawling, khcrawling, crawling, khfncrawling
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Jwt
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, JwtSerializers
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import random
+import jwt
 from datetime import datetime, timedelta
 
 
@@ -30,9 +38,6 @@ def start_crawling(request):
     crawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
     return JsonResponse({"status": "정상", "message": "네이버 뉴스 크롤링 시작."})
 
-def start_mkcrawling(requset):
-    mkcrawling.start_mk()
-    return JsonResponse({"message":"매일경제 크롤링 시작."})
 
 def start_khcrawling(requset):
     khcrawling.start_kh()
@@ -42,8 +47,8 @@ def start_khfncrawling(requset):
     khfncrawling.start_khfn()
     return JsonResponse({"message":"헤럴드 파이넨스 크롤링 시작."})
 
-def start_mkcrawling2(requset):
-    mkcrawling2.start_mk2()
+def start_mkcrawling(requset):
+    mkcrawling.start_mk()
     return JsonResponse({"message":"매일경제 모든 뉴스 크롤링 시작."})
 
 def get_instagram_posts(request):
@@ -75,6 +80,10 @@ def fetch_and_save_fb_data(request): #페이스북 크롤링
 #-----------------------------------------------------API
 class SendEmailVerificationView(GenericAPIView):
     serializer_class = EmailSerializer
+    
+    @swagger_auto_schema(
+        operation_summary='이메일 POST API',
+    )
     def post(self, request, *args, **kwargs):
         # POST 요청에서 이메일 주소 가져오기
         email = request.data.get('email')
@@ -116,6 +125,9 @@ class SendEmailVerificationView(GenericAPIView):
 class VerifyEmailView(GenericAPIView): #이메일 인증
     serializer_class = EmailVerfiSerailizer
 
+    @swagger_auto_schema(
+        operation_summary='이메일 인증번호 POST API',
+    )
     def post(self, request, *args, **kwargs):
         # POST 요청에서 이메일과 인증번호 가져오기
         email = request.data.get('email')
@@ -157,25 +169,123 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 
 class LoginView(GenericAPIView):
-    serializer_class = LoginSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    serializer_class = UserJWTSerializer
+    
     @swagger_auto_schema(
-        operation_summary='로그인 POST API',
+        operation_summary='로그인 JWT 토큰 발급 POST API',
     )
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data['email']
-        password = serializer.validated_data['password']
+        email = request.data.get('email')
+        password = request.data.get('password')
 
-        user = authenticate(request, email=email, password=password)
-        print("유저 반환값:",user)
+        # 이메일과 비밀번호로 유저 인증
+        try:
+            user = User.objects.get(email=email, password=password)
+        except User.DoesNotExist:
+            return Response({'message': '이메일 또는 비밀번호가 일치하지 않습니다.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+        # JWT 토큰 발급
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        # JWT 토큰 반환
+        return Response({'access_token': access_token, 'refresh': str(refresh)})
+
+
+class UserLoginView2(GenericAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    serializer_class = UserJWTSerializer
+    
+    @swagger_auto_schema(
+        operation_summary='로그인 JWT 토큰 발급 POST API',
+    )
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        user = User.objects.filter(email=email).first()
+
+        if user is None:
+            return Response(
+                {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        
         if user is not None:
-            # 로그인 성공
-            return Response({"status": "success", "message": "로그인 성공"}, status=status.HTTP_200_OK)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            response = Response(
+                {
+                    "user": UserSerializer(user).data,
+                    "message": "로그인 성공",
+                    "jwt_token": {
+                        "access_token": access_token,
+                        "refresh_token": refresh_token
+                    },
+                },
+                status=status.HTTP_200_OK
+            )
+            response.set_cookie("access_token", access_token, httponly=True)
+            response.set_cookie("refresh_token", refresh_token, httponly=True)
+            return response
         else:
-            # 이메일 또는 비밀번호가 일치하지 않음
-            return Response({"status": "error", "message": "이메일 또는 비밀번호가 일치하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "로그인에 실패하였습니다."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+header_params = [
+    openapi.Parameter(
+        "access_token",
+        openapi.IN_HEADER,
+        description="access_token",
+        type=openapi.TYPE_STRING,
+    ),
+    openapi.Parameter(
+        "refresh_token",
+        openapi.IN_HEADER,
+        description="refresh_token",
+        type=openapi.TYPE_STRING,
+    ),
+]
+
+@swagger_auto_schema(
+    operation_summary="JWT토큰 전달 POST API",
+    method="post",
+    manual_parameters=header_params,
+    security=[{"Bearer": []}],
+)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def example_post_api(request):
+    access_token = request.META.get("HTTP_ACCESS_TOKEN")
+    refresh_token = request.META.get("HTTP_REFRESH_TOKEN")
+
+    return Response({"message": "Success", "field1": access_token, "field2": refresh_token})
+
+
+    
+# class LoginView(GenericAPIView):
+#     serializer_class = LoginSerializer
+#     @swagger_auto_schema(
+#         operation_summary='로그인 POST API',
+#     )
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         email = serializer.validated_data['email']
+#         password = serializer.validated_data['password']
+
+#         user = authenticate(request, email=email, password=password)
+#         print("유저 반환값:",user)
+
+#         if user is not None:
+#             # 로그인 성공
+#             return Response({"status": "success", "message": "로그인 성공"}, status=status.HTTP_200_OK)
+#         else:
+#             # 이메일 또는 비밀번호가 일치하지 않음
+#             return Response({"status": "error", "message": "이메일 또는 비밀번호가 일치하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
 
 #매일경제 크롤링 GET API
 class MkCrwawlingGet(APIView):

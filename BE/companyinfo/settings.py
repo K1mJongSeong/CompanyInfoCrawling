@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import datetime
 import my_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
 
 ADMIN_LOGOUT_PRESERVE_SESSION = True
 ACCOUNT_SESSION_REMEMBER = True
@@ -29,6 +32,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS' :{
+        'Bearer':{
+            'type':'apiKey',
+            'name':'Authorization',
+            'in':'header'
+        }
+    }
+}
 
 # Application definition
 X_FRAME_OPTIONS = 'SAMEORIGIN'
@@ -45,7 +57,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'drf_yasg',
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -62,6 +73,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+JWT_AUTH = {
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'cominfoApp.utils.jwt_response_payload_handler',
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=5),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
+SIMPLE_JWT = {
+    'USER_ID_FIELD': 'user_id',
+}
 ROOT_URLCONF = 'companyinfo.urls'
 
 TEMPLATES = [
