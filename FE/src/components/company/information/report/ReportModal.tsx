@@ -1,7 +1,4 @@
 "use client";
-
-import RepoerPDF from "@/components/company/information/report/RepoerPDF";
-import { PDFViewer } from "@react-pdf/renderer";
 import {
   DialogTitle,
   DialogContent,
@@ -10,10 +7,13 @@ import {
   Slide,
   IconButton,
 } from "@mui/material";
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import { TransitionProps } from "@mui/material/transitions";
 import CloseIcon from "@mui/icons-material/Close";
 import { StyledDialog } from "./styles";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import RepoerPDF from "./RepoerPDF";
+import Device from "@/components/common/Device";
 
 export interface DialogTitleProps {
   id: string;
@@ -73,9 +73,32 @@ export default function ReportModal({ open, close }: Props) {
       </BootstrapDialogTitle>
       <DialogContent>
         {/** render pdf */}
-        <PDFViewer>
-          <RepoerPDF />
-        </PDFViewer>
+        <Device>
+          {({ isMobile }) => {
+            if (isMobile) {
+              return (
+                <PDFDownloadLink document={<RepoerPDF />} fileName="My_Report">
+                  {({ loading }) =>
+                    loading ? (
+                      "Loading..."
+                    ) : (
+                      <p className="py-6 align-center">
+                        PDF preview not available on mobile
+                        <br />
+                        Click me to Download
+                      </p>
+                    )
+                  }
+                </PDFDownloadLink>
+              );
+            }
+            return (
+              <PDFViewer>
+                <RepoerPDF />
+              </PDFViewer>
+            );
+          }}
+        </Device>
       </DialogContent>
       <DialogActions>
         <Button onClick={close}>download</Button>
