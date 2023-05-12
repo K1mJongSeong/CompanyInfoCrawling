@@ -102,6 +102,7 @@ class Coruser(models.Model): #법인 로그인
     country = models.CharField(max_length=100, blank=True, null=True)
     corporate_name = models.CharField(max_length=255, blank=True, null=True)
     business_num = models.CharField(max_length=100, blank=True, null=True)
+    is_login = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
         managed = False

@@ -174,16 +174,24 @@ class UserLoginView2(GenericAPIView):
         password = request.data.get('password')
 
         user = User.objects.filter(email=email).first()
+        cor_user = Coruser.objects.filter(email=email).first()
 
-        if user is None:
+        print(user)
+        print(cor_user)
+        if user is None and cor_user is None:
             return Response(
                 {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
-        if user.password != password:
+        if (user and user.password != password) or (cor_user and cor_user.password != password):
             return Response({"message":"비밀번호가 틀렸습니다."},status=status.HTTP_400_BAD_REQUEST)
 
-        if  user.is_login == '1':
+        if user:
+            user.is_login = '1'
             user.save()
+            return Response({"message": "로그인에 성공했습니다."}, status=status.HTTP_200_OK)
+        elif cor_user:
+            cor_user.is_login = '1'
+            cor_user.save()
             return Response({"message": "로그인에 성공했습니다."}, status=status.HTTP_200_OK)
         else:
             return Response(
@@ -200,15 +208,18 @@ class UserLogoutView(GenericAPIView):
         email = request.data.get('email')
 
         user = User.objects.filter(email=email).first()
+        cor_user = Coruser.objects.filter(email=email).first()
 
-        if user is None:
+        if user is None and cor_user is None:
             return Response(
                 {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
         
-        if user.is_login == '1':
+        if user.is_login == '1' or cor_user.is_login == '1':
             user.is_login = '0'
+            cor_user.is_login = '0'
             user.save()
+            cor_user.save()
             return Response(
                 {"message": "로그아웃에 성공하였습니다."}, status=status.HTTP_200_OK
             )
