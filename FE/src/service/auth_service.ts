@@ -21,7 +21,7 @@ interface InVerifyCodeProps {
 }
 
 export const SendEmailVerify = async (email: string) => {
-  const res = await client.post("/send_email_verification/", { email });
+  const res = await client.post("/SendEmail/", { email });
   const data = await res.data;
   return data;
 };
@@ -79,6 +79,21 @@ export const ChangePw = async ({
   password: string;
 }) => {
   const res = await client.put(`/ChangePassword/${email}`, {
+    email,
+    password,
+  });
+  const data = await res.data;
+  return data;
+};
+
+export const Login = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  const res = await client.post(`/Login/`, {
     email,
     password,
   });

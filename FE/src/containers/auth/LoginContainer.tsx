@@ -18,10 +18,41 @@ import {
 import { grey, blue } from "@mui/material/colors";
 import { BsArrowRightShort } from "react-icons/bs";
 import Image from "next/image";
+import { useSnackbar } from "notistack";
+import { useState } from "react";
+import { Login } from "@/service/auth_service";
 
 export default function LoginContainer() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
+
+  const [email, setEmail] = useState<string>("");
+  const [pw, setPw] = useState<string>("");
+
+  const handleLogin = async () => {
+    try {
+      if (!email || !pw) {
+        return enqueueSnackbar("Enter All Login Field", { variant: "warning" });
+      }
+      const emailRule =
+        /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+
+      if (!emailRule.test(email)) {
+        return enqueueSnackbar("Not Email!", { variant: "warning" });
+      }
+      const result = await Login({ email, password: pw });
+      console.log(result);
+    } catch (err: any) {
+      if (err.response.data.message === "존재하지 않는 아이디입니다.") {
+        return enqueueSnackbar("Not User", { variant: "error" });
+      } else {
+        console.error(err);
+        return enqueueSnackbar("Server Error", { variant: "error" });
+      }
+    }
+  };
 
   return (
     <AuthContainer>
@@ -84,8 +115,9 @@ export default function LoginContainer() {
                 type="text"
                 autoComplete="email-id"
                 variant="standard"
+                value={email ? email : ""}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  console.log(event.target.value);
+                  setEmail(event.target.value);
                 }}
               />
               <TextField
@@ -93,12 +125,17 @@ export default function LoginContainer() {
                 type="password"
                 autoComplete="current-password"
                 variant="standard"
+                value={pw ? pw : ""}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  console.log(event.target.value);
+                  setPw(event.target.value);
                 }}
               />
             </Stack>
-            <AuthLoginBtn variant="contained" endIcon={<BsArrowRightShort />}>
+            <AuthLoginBtn
+              onClick={handleLogin}
+              variant="contained"
+              endIcon={<BsArrowRightShort />}
+            >
               SIGN IN
             </AuthLoginBtn>
             <Stack direction={"row"} gap={1} alignItems="center">
