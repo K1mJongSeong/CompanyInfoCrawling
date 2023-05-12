@@ -43,7 +43,9 @@ export default function LoginContainer() {
         return enqueueSnackbar("Not Email!", { variant: "warning" });
       }
       const result = await Login({ email, password: pw });
-      console.log(result);
+      if (result.message === "로그인에 성공했습니다.") {
+        enqueueSnackbar("SUCCESS LOGIN", { variant: "success" });
+      }
     } catch (err: any) {
       if (err.response.data.message === "존재하지 않는 아이디입니다.") {
         return enqueueSnackbar("Not User", { variant: "error" });
