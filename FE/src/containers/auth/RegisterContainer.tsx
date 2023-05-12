@@ -186,9 +186,13 @@ export default function RegisterContainer() {
         });
         return false;
       }
-    } catch (err) {
-      console.error(err);
-      enqueueSnackbar("Server Error", { variant: "error" });
+    } catch (err: any) {
+      if (err.response.data.message === "중복된 이메일이 존재합니다.") {
+        return enqueueSnackbar("Existing Email", { variant: "error" });
+      } else {
+        console.error(err);
+        return enqueueSnackbar("Server Error", { variant: "error" });
+      }
     }
   };
 
