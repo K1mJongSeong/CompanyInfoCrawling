@@ -4,9 +4,10 @@ from django.contrib.auth.admin import UserAdmin
 from django.http import HttpResponseRedirect
 from django.utils.html import format_html
 from django.urls import reverse
+from django.shortcuts import render
 from django.core.exceptions import ValidationError
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
-from .models import Qna, PuchasedSales
+from .models import Qna, PuchasedSales, Instagram
 from .validators import validate_username
 
 admin.site.unregister(Group)
@@ -14,7 +15,7 @@ admin.site.site_header = '기업정보 플랫폼'
 admin.site.index_title = '기업정보 플랫폼'
 
 # admin.site.register(Mkcrawling)
-# admin.site.register(Instagram)
+#admin.site.register(Instagram)
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
@@ -96,5 +97,16 @@ class PuchasedSalesAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         # 변경 권한 없애기
         return False
+    
+    # def change_view(self, request, object_id, form_url='', extra_context=None):
+    # trans_info = User.objects.get(pk=object_id)
+    # obj = self.get_object(request, object_id)
+    
+    # # info_seq 값과 일치하는 nansu 객체들을 가져옵니다.
+    # transaction = User.objects.filter(info_seq=object_id).order_by('-created_at')
+
+    # extra_context = {'transaction': transaction, 'trans_info': obj}
+    # return render(request, 'admin/transaction.html', extra_context)
+
 
 admin.site.register(PuchasedSales, PuchasedSalesAdmin)

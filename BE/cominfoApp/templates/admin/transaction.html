@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}
+    <style>
+        .module caption, .inline-group h2 {
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: contents;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ transaction.template_name }} 거래 로그</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>거래넘버</th>
+                <th>거래날짜</th>
+                <th>거래자유형</th>
+                <th>거래자</th>
+                <th>이메일</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in trans_list %}
+                <tr>
+                    <td>{{ transaction.trans_num }}</td>
+                    <td>{{ transaction.trans_date }}</td>
+                    <td>{{ transaction.trans_item }}</td>
+                    <td>{{ transaction.trans_name }}</td>
+                    <td>{{ email.email }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h1>{{ transaction.template_name }} 결제 정보</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>거래항목</th>
+                <th>기업명</th>
+                <th>결제금액</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in trans_list %}
+                <tr>
+                    <td>{{ transaction.trans_item }}</td>
+                    <td>{{ corUser.corporate_name }}</td>
+                    <td>{{ transaction.payment }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h1>{{ transaction.template_name }} 로그 </h1>
+    {% endif %}
+{% endblock %}
