@@ -364,6 +364,9 @@ class UserLogin(generics.ListCreateAPIView):
         operation_summary=' 일반 로그인 POST API'
     )
     def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if User.objects.filter(email=email).exists():
+            return Response({"message": "중복된 이메일이 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
     
 
@@ -375,6 +378,9 @@ class CorUserLogin(generics.ListCreateAPIView):
         operation_summary=' 법인 로그인 POST API'
     )
     def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if User.objects.filter(email=email).exists():
+            return Response({"message": "중복된 이메일이 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
     
 

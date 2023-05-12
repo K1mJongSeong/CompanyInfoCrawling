@@ -31,15 +31,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-# SWAGGER_SETTINGS = {
-#     'SECURITY_DEFINITIONS' :{
-#         'Bearer':{
-#             'type':'apiKey',
-#             'name':'Authorization',
-#             'in':'header'
-#         }
-#     }
-# }
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS' :{
+        'Bearer':{
+            'type':'apiKey',
+            'name':'Authorization',
+            'in':'header'
+        }
+    }
+}
 
 # Application definition
 X_FRAME_OPTIONS = 'SAMEORIGIN'
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_swagger',
     'drf_yasg',
+    'rangefilter',
 ]
 
 MIDDLEWARE = [

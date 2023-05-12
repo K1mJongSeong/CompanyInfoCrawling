@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.utils.html import format_html
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 from .models import Qna, PuchasedSales
 from .validators import validate_username
 
@@ -72,13 +73,21 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
 class QnaAdmin(admin.ModelAdmin):
+    fields = ['question','question_content','answer','exposure']
+    search_fields = ['question','writer'] #질문, 작성자
+    list_filter = (('create_at', DateRangeFilter), 'question')
     list_display = ('qna_id','question','answer','exposure','create_at')
     list_per_page = 8
+
 
 admin.site.register(Qna, QnaAdmin)    
 
 class PuchasedSalesAdmin(admin.ModelAdmin):
     list_display = ('ps_id','trans_num','trans_item','trans_name','payment','state','pay_method','trans_date')
+    search_fields = ['trans_num','trans_item','trans_name']
+    list_display_links = ('trans_name'),
+    list_filter = ('trans_date', DateRangeFilter),
+    list_per_page = 8
     
     def has_add_permission(self, request, obj=None):
         # 추가 권한 없애기
