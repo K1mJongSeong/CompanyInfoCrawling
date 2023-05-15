@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.core.mail import EmailMessage,send_mail
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.crypto import get_random_string
@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 from . import mkcrawling
 from . import mkcrawling, khcrawling, crawling, khfncrawling
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, QnaSerializer, LoginOutSerializer
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, QnaSerializer, LoginOutSerializer, UserCorUserSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import random
@@ -243,26 +243,34 @@ class UserLogoutView(GenericAPIView):
             )
 
 class UserLoginStatusView(APIView):
-    def get_object(self, email):#GET,PUT,DELETE
-        try:
-            return User.objects.get(email=email)
-        except User.DoesNotExist:
-            raise Response({"message":"에러"},status=status.HTTP_404_NOT_FOUND)
+    def get_objects(self, email):
+        
+        user = User.objects.filter(email=email).first()
+        coruser = Coruser.objects.filter(email=email).first()
+
+        if user is None and coruser is None:
+            raise Http404("회원을 찾지 못했습니다.")
+            
+        return {'user_name': user.name if user else None, 'coruser_name': coruser.name if coruser else None}
+
+
     @swagger_auto_schema(
         operation_summary='로그인 상태',
     )
     def get(self, request, email):
-        login = self.get_object(email)
-        serializer = UserSerializer(login)
+        data = self.get_objects(email)
+        serializer = UserCorUserSerializer(data)
+        
+        if serializer is None:
+            return Response({"message":"아이디가 존재하지 않습니다"}, status=status.HTTP_400_BAD_REQUEST)
+
         user = User.objects.filter(email=email).first()
 
-        if serializer is None:
-            return Response({"message":"아이디가 존재하지 않습니다"},status=status.HTTP_400_BAD_REQUEST)
-
         if user.is_login =='1':
-            return Response({"message":"로그인 상태입니다."},status=status.HTTP_200_OK)
+            return Response({"message":"로그인 상태입니다.", "data": serializer.data}, status=status.HTTP_200_OK)
         else:
-            return Response({"message":"로그아웃 상태입니다."},status=status.HTTP_200_OK)
+            return Response({"message":"로그아웃 상태입니다.", "data": serializer.data}, status=status.HTTP_200_OK)
+
 
 # class UserLoginStatusView(APIView):
 #     serializer_class = UserSerializer

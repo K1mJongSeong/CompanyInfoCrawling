@@ -76,3 +76,7 @@ class LoginOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Login
         fields = ('email',)
+
+class UserCorUserSerializer(serializers.Serializer):
+    user_name = serializers.CharField(allow_null=True)
+    coruser_name = serializers.CharField(allow_null=True)
