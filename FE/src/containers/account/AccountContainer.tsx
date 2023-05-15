@@ -31,6 +31,7 @@ import AccountList, {
   AccountTd,
 } from "@/components/account/AccountList";
 import AccountNoList from "@/components/account/AccountNoList";
+import AccountDialog from "@/components/account/AccountDialog";
 
 const subs = [
   {
@@ -101,139 +102,176 @@ export default function AccountContainer({ id, data }: Props) {
     setCountry(event.target.value);
   };
 
+  const [open, setOpen] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [isModify, setIsModify] = useState<boolean>(true);
+
+  const handleCloseModal = () => {
+    setOpen(false);
+  };
+
+  const handleOpenModify = () => {
+    setOpen(true);
+    setTitle("Do you want to save the changes?");
+    setMessage("");
+    setIsModify(true);
+  };
+  const handleOpenDelete = () => {
+    setOpen(true);
+    setTitle("Are you sure you want to withdraw your membership?");
+    setMessage("You can't sign up again with the withdrawn email account");
+    setIsModify(false);
+  };
+
   return (
-    <AcountContainer>
-      <AcountCard maxWidth={590}>
-        <Stack direction={"column"}>
-          <Typography
-            variant="h2"
-            fontSize={18}
-            fontWeight={"bold"}
-            mb={5}
-            display={"flex"}
-            alignItems={"flex-end"}
-          >
-            MYPAGE
-            <Typography fontSize={12} color={blue[500]} ml={1}>
-              {isCor ? `(Corporate)` : `(Individual)`}
-            </Typography>
-          </Typography>
-          <Stack direction={"column"} gap={2} mb={5}>
-            <TextField
-              label="Name"
-              type="text"
-              autoComplete="userName"
-              variant="standard"
-              name="name"
-              value={name ? name : ""}
-              onChange={handleChangeAcount}
-            />
-            <AcountDisabledFiled
-              label="Email"
-              type="text"
-              autoComplete="userEmail"
-              variant="standard"
-              name="email"
-              value={user?.email}
-              disabled
-            />
-            <TextField
-              label="Password"
-              type="password"
-              autoComplete="new-password"
-              variant="standard"
-              name="pw"
-              value={pw ? pw : ""}
-              onChange={handleChangeAcount}
-            />
-            <FormControl variant="standard">
-              <InputLabel id="demo-simple-select-standard-label">
-                Select Country
-              </InputLabel>
-              <Select value={country} onChange={handleSelect} label="country">
-                <MenuItem value="">
-                  <em>Select Country</em>
-                </MenuItem>
-                {Countries?.map((el: InCountry) => (
-                  <MenuItem key={uuid()} value={el.name}>
-                    {el.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            {isCor && (
-              <>
-                <TextField
-                  label="Corporate Name"
-                  type="text"
-                  autoComplete="CorporateName"
-                  variant="standard"
-                  name="corName"
-                  value={corName ? corName : ""}
-                  onChange={handleChangeAcount}
-                />
-                <TextField
-                  label="Business Number"
-                  type="text"
-                  autoComplete="BusinessNumber"
-                  variant="standard"
-                  name="bsNum"
-                  value={bsNum ? bsNum : ""}
-                  onChange={handleChangeAcount}
-                />
-              </>
-            )}
-          </Stack>
-          <AccountListTitle title={"Subscription history"} goto={"/"} />
-          <AccountList>
-            <AccountListHead>
-              {SUB_COL.map((el) => (
-                <AccountTd key={uuid()}>{el}</AccountTd>
-              ))}
-            </AccountListHead>
-            {subs.map((el) => (
-              <AccountListRow key={uuid()}>
-                <AccountTd>{el.Category}</AccountTd>
-                <AccountTd>{el.Company}</AccountTd>
-                <AccountTd>{el.StartAt}</AccountTd>
-                <AccountTd>{el.EndAt}</AccountTd>
-              </AccountListRow>
-            ))}
-          </AccountList>
-          <AccountListTitle title={"Payment history"} goto={"/"} />
-          <AccountList>
-            <AccountNoList message={"No Payment history"} />
-          </AccountList>
-          <Stack direction={"column"} alignItems={"center"} mb={4}>
-            <Box width={1} maxWidth={300}>
-              <Typography fontSize={10} color={grey[400]} mb={0.5}>
-                To save changes
-              </Typography>
-              <Button variant="contained" fullWidth sx={{ height: 40 }}>
-                CHANGE
-              </Button>
-            </Box>
-          </Stack>
-          <Stack
-            direction={"row"}
-            justifyContent={"center"}
-            alignItems={"center"}
-          >
-            <Typography fontSize={10} color={grey[400]} mr={0.5}>
-              If you no longer use Sentinel Korea KYC?
-            </Typography>
-            <Button
-              sx={{
-                fontSize: 10,
-                color: "#5B7FFF",
-                textDecoration: "underline",
-              }}
+    <>
+      <AcountContainer>
+        <AcountCard maxWidth={590}>
+          <Stack direction={"column"}>
+            <Typography
+              variant="h2"
+              fontSize={18}
+              fontWeight={"bold"}
+              mb={5}
+              display={"flex"}
+              alignItems={"flex-end"}
             >
-              Withdrawal
-            </Button>
+              MYPAGE
+              <Typography fontSize={12} color={blue[500]} ml={1}>
+                {isCor ? `(Corporate)` : `(Individual)`}
+              </Typography>
+            </Typography>
+            <Stack direction={"column"} gap={2} mb={5}>
+              <TextField
+                label="Name"
+                type="text"
+                autoComplete="userName"
+                variant="standard"
+                name="name"
+                value={name ? name : ""}
+                onChange={handleChangeAcount}
+              />
+              <AcountDisabledFiled
+                label="Email"
+                type="text"
+                autoComplete="userEmail"
+                variant="standard"
+                name="email"
+                value={user?.email}
+                disabled
+              />
+              <TextField
+                label="Password"
+                type="password"
+                autoComplete="new-password"
+                variant="standard"
+                name="pw"
+                value={pw ? pw : ""}
+                onChange={handleChangeAcount}
+              />
+              <FormControl variant="standard">
+                <InputLabel id="demo-simple-select-standard-label">
+                  Select Country
+                </InputLabel>
+                <Select value={country} onChange={handleSelect} label="country">
+                  <MenuItem value="">
+                    <em>Select Country</em>
+                  </MenuItem>
+                  {Countries?.map((el: InCountry) => (
+                    <MenuItem key={uuid()} value={el.name}>
+                      {el.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {isCor && (
+                <>
+                  <TextField
+                    label="Corporate Name"
+                    type="text"
+                    autoComplete="CorporateName"
+                    variant="standard"
+                    name="corName"
+                    value={corName ? corName : ""}
+                    onChange={handleChangeAcount}
+                  />
+                  <TextField
+                    label="Business Number"
+                    type="text"
+                    autoComplete="BusinessNumber"
+                    variant="standard"
+                    name="bsNum"
+                    value={bsNum ? bsNum : ""}
+                    onChange={handleChangeAcount}
+                  />
+                </>
+              )}
+            </Stack>
+            <AccountListTitle title={"Subscription history"} goto={"/"} />
+            <AccountList>
+              <AccountListHead>
+                {SUB_COL.map((el) => (
+                  <AccountTd key={uuid()}>{el}</AccountTd>
+                ))}
+              </AccountListHead>
+              {subs.map((el) => (
+                <AccountListRow key={uuid()}>
+                  <AccountTd>{el.Category}</AccountTd>
+                  <AccountTd>{el.Company}</AccountTd>
+                  <AccountTd>{el.StartAt}</AccountTd>
+                  <AccountTd>{el.EndAt}</AccountTd>
+                </AccountListRow>
+              ))}
+            </AccountList>
+            <AccountListTitle title={"Payment history"} goto={"/"} />
+            <AccountList>
+              <AccountNoList message={"No Payment history"} />
+            </AccountList>
+            <Stack direction={"column"} alignItems={"center"} mb={4}>
+              <Box width={1} maxWidth={300}>
+                <Typography fontSize={10} color={grey[400]} mb={0.5}>
+                  To save changes
+                </Typography>
+                <Button
+                  onClick={handleOpenModify}
+                  variant="contained"
+                  fullWidth
+                  sx={{ height: 40 }}
+                >
+                  CHANGE
+                </Button>
+              </Box>
+            </Stack>
+            <Stack
+              direction={"row"}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              <Typography fontSize={10} color={grey[400]} mr={0.5}>
+                If you no longer use Sentinel Korea KYC?
+              </Typography>
+              <Button
+                onClick={handleOpenDelete}
+                sx={{
+                  fontSize: 10,
+                  color: "#5B7FFF",
+                  textDecoration: "underline",
+                }}
+              >
+                Withdrawal
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
-      </AcountCard>
-    </AcountContainer>
+        </AcountCard>
+      </AcountContainer>
+      <AccountDialog
+        title={title}
+        message={message}
+        open={open}
+        close={handleCloseModal}
+        onClick={isModify ? () => alert("수정") : () => alert("삭제")}
+      />
+    </>
   );
 }
