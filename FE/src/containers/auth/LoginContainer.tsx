@@ -28,7 +28,7 @@ export default function LoginContainer() {
   const [email, setEmail] = useState<string>("");
   const [pw, setPw] = useState<string>("");
 
-  const { signIn } = useAuth();
+  const { signIn, loading } = useAuth();
 
   return (
     <AuthContainer>
@@ -110,6 +110,8 @@ export default function LoginContainer() {
             <AuthLoginBtn
               onClick={() => signIn({ email, pw })}
               variant="contained"
+              loading={loading}
+              loadingPosition="end"
               endIcon={<BsArrowRightShort />}
             >
               SIGN IN

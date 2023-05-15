@@ -23,7 +23,8 @@ import HeaderSearch from "./HeaderSearch";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import MoHeaderMemu from "./MoHeaderMemu";
-import { PersonAdd, Settings, Logout } from "@mui/icons-material";
+import { Settings, Logout } from "@mui/icons-material";
+import { useAuth } from "@/contexts/auth.context";
 
 export default function Header() {
   const router = useRouter();
@@ -31,10 +32,10 @@ export default function Header() {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
 
+  const { user, signOut } = useAuth();
+
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
   const [moMenuOpen, setMoMenuOpen] = useState<boolean>(false);
-
-  const [isUser, setIsUser] = useState<boolean>(false);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -49,7 +50,7 @@ export default function Header() {
   }, [pathname]);
 
   const handleClickAuthButton = (event: React.MouseEvent<HTMLElement>) => {
-    if (isUser) {
+    if (user) {
       setAnchorEl(event.currentTarget);
     } else {
       router.push("/auth/login");
@@ -63,9 +64,7 @@ export default function Header() {
     router.push("/account/test");
   };
 
-  const handleLogout = () => {
-    setIsUser(!isUser);
-  };
+  const handleLogout = () => {};
 
   const isIndustry = pathname === "/industry";
   const isService = pathname === "/service";
@@ -127,7 +126,7 @@ export default function Header() {
                   TERMS
                 </StyledLink>
                 <Button variant="contained" onClick={handleClickAuthButton}>
-                  {isUser ? "UserName" : "SIGN IN"}
+                  {user ? "UserName" : "SIGN IN"}
                 </Button>
                 <Menu
                   anchorEl={anchorEl}
@@ -187,7 +186,7 @@ export default function Header() {
                     </ListItemIcon>
                     My Service
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>
+                  <MenuItem onClick={signOut}>
                     <ListItemIcon>
                       <Logout fontSize="small" />
                     </ListItemIcon>

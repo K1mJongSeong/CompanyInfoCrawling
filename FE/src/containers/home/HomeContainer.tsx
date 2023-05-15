@@ -32,7 +32,7 @@ export default function HomeContainer() {
   return (
     <Stack
       direction={"column"}
-      width={1}
+      width={"100vw"}
       height={1}
       minHeight={600}
       position={"relative"}

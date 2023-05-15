@@ -27,9 +27,9 @@ export default function MuiSetup({ children }: Props) {
       <CssBaseline />
       <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
         <SnackbarProvider maxSnack={3}>
-          <AuthUserProvider>
-            <ThemeProvider theme={theme}>{children}</ThemeProvider>
-          </AuthUserProvider>
+          <ThemeProvider theme={theme}>
+            <AuthUserProvider>{children}</AuthUserProvider>
+          </ThemeProvider>
         </SnackbarProvider>
       </NextAppDirEmotionCacheProvider>
     </>

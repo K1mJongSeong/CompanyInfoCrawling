@@ -23,8 +23,8 @@ export default function useFirebaseAuth() {
       const result = await Login({ email, password: pw });
       if (result.message === "로그인에 성공했습니다.") {
         enqueueSnackbar("SUCCESS LOGIN", { variant: "success" });
-        localStorage.setItem("userEmail", email);
         setUser(email);
+        localStorage.setItem("userEmail", email);
       }
     } catch (err: any) {
       if (err.response.data.message === "존재하지 않는 아이디입니다.") {
@@ -44,13 +44,18 @@ export default function useFirebaseAuth() {
 
   const signOut = async () => {
     try {
+      setLoading(true);
       if (!user) return clear();
       const result = await Logout({ email: user });
       if (result) {
         clear();
+        if (result.message === "로그아웃에 성공하였습니다.") {
+          enqueueSnackbar("SUCCESS LOGOUT", { variant: "success" });
+        }
       }
     } catch (err) {
       console.error(err);
+      enqueueSnackbar("Server Error", { variant: "error" });
     }
   };
 
@@ -71,6 +76,7 @@ export default function useFirebaseAuth() {
       }
     } catch (err) {
       console.error(err);
+      clear();
     }
   };
 
