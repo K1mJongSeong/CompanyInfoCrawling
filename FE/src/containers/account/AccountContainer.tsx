@@ -48,12 +48,25 @@ export default function AccountContainer({ id, data }: Props) {
 
   const [isCor, setIsCor] = useState<boolean>(false);
 
-  const [name, setName] = useState<string>("TEST");
-  const [pw, setPw] = useState<string>("TEST");
-  const [country, setCountry] = useState<string>("Austria");
+  const [name, setName] = useState<string>("");
+  const [pw, setPw] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
 
   const [corName, setCorName] = useState<string>("");
   const [bsNum, setBsNum] = useState<string>("");
+
+  useEffect(() => {
+    if (data) {
+      setName(data.name);
+      setPw(data.password);
+      setCountry(data.country);
+    }
+    if (data.corporate_name && data.business_num) {
+      setIsCor(true);
+      setCorName(data.corporate_name);
+      setBsNum(data.business_num);
+    }
+  }, [data]);
 
   const handleChangeAcount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
