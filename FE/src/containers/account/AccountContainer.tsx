@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import {
   AcountContainer,
@@ -24,10 +25,8 @@ import { InCountry } from "@/service/auth_service";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth.context";
 import { redirect } from "next/navigation";
-import { getUserInfo } from "@/service/account_service";
 
-interface Props {
-  id: string;
+interface DataProps {
   data: {
     name: string;
     password: string;
@@ -37,6 +36,9 @@ interface Props {
     business_num?: string;
   };
 }
+interface Props extends DataProps {
+  id: string;
+}
 
 export default function AccountContainer({ id, data }: Props) {
   const { user } = useAuth();
@@ -44,29 +46,39 @@ export default function AccountContainer({ id, data }: Props) {
   if (!user || decodeURI(decodeURIComponent(id)) !== user?.email) {
     redirect("/");
   }
+
+  const [info, setInfo] = useState<DataProps | null>(null);
+
+  useEffect(() => {
+    setInfo({ data });
+  }, []);
+
   console.log(data);
+  console.log(info);
+
+  const [name, setName] = useState<string>(
+    info?.data.name ? info?.data.name : ""
+  );
+  const [pw, setPw] = useState<string>(
+    info?.data.password ? info?.data.password : ""
+  );
+  const [country, setCountry] = useState<string>(
+    info?.data.country ? info?.data.country : ""
+  );
+
+  if (info?.data.name && info?.data.password && info?.data.country) {
+    setName(info?.data.name);
+    setPw(info?.data.password);
+    setCountry(info?.data.country);
+  }
 
   const [isCor, setIsCor] = useState<boolean>(false);
-
-  const [name, setName] = useState<string>("");
-  const [pw, setPw] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
-
   const [corName, setCorName] = useState<string>("");
   const [bsNum, setBsNum] = useState<string>("");
 
-  useEffect(() => {
-    if (data) {
-      setName(data.name);
-      setPw(data.password);
-      setCountry(data.country);
-    }
-    if (data.corporate_name && data.business_num) {
-      setIsCor(true);
-      setCorName(data.corporate_name);
-      setBsNum(data.business_num);
-    }
-  }, [data]);
+  if (info?.data.business_num && info?.data.corporate_name) {
+    setIsCor(true);
+  }
 
   const handleChangeAcount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

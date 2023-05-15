@@ -11,6 +11,6 @@ const AccountPage = async ({ params: { id } }: Props) => {
     email: decodeURI(decodeURIComponent(id)),
   });
 
-  return <AccountContainer id={id} data={result} />;
+  return <AccountContainer id={id} data={result[0]} />;
 };
 export default AccountPage;

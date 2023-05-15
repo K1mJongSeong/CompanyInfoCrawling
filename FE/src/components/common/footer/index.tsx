@@ -23,13 +23,13 @@ export default function Footer() {
           Sentinel Korea Co., Ltd.
         </Typography>
         <Typography fontSize={12} textAlign={"center"}>
-          Representative: Jeong Tae-jin | Business Registration Number:
+          Representative: Tae-jin Chung | Business Registration Number:
           220-88-25224 <br /> Mail Order Sales Business Report: 2018-Seoul
           Yeongdeungpo-1851 <br />
           Tel: 82-2-2183-0640 | Mobile: 82-10-3252-0420 | E-mail:
           inquiry@sentinelkorea.com <br />
-          Address: Daewon Building New Building No. 103 (04328), 49,
-          Thickbawi-ro 60-gil, Yongsan-gu
+          Address: #103 New Annex, Deawon Building, 49, Dutupbawi-ro 60 Gil,
+          Yongsan-gu, Seoul, Korea (04328)
         </Typography>
       </Stack>
       <Box bgcolor={deepPurple[50]} textAlign={"center"} py={2} px={2}>
