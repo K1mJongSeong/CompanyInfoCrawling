@@ -20,12 +20,8 @@ class EmailVerfiSerailizer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('name','password','email','country')
+        fields = ('name','password','email','country','auth_state')
 
-class UserJWTSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('email','password')
 
 class UserPasswordChange(serializers.ModelSerializer):
     class Meta:
@@ -35,7 +31,7 @@ class UserPasswordChange(serializers.ModelSerializer):
 class CorUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coruser
-        fields = ('name','password','email','country','corporate_name','business_num')
+        fields = ('name','password','email','country','corporate_name','business_num','auth_state')
 
 class MkCrawlingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -80,3 +76,15 @@ class LoginOutSerializer(serializers.ModelSerializer):
 class UserCorUserSerializer(serializers.Serializer):
     user_name = serializers.CharField(allow_null=True)
     coruser_name = serializers.CharField(allow_null=True)
+    auth_state = serializers.CharField(allow_null=True)
+
+class UserWithdrawalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('auth_state',)
+
+class CorUserWithdrawalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coruser
+        fields = ('auth_state',)
+
