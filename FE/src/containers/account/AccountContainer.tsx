@@ -8,8 +8,6 @@ import {
 import {
   Button,
   FormControl,
-  Input,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -56,15 +54,9 @@ export default function AccountContainer({ id, data }: Props) {
   console.log(data);
   console.log(info);
 
-  const [name, setName] = useState<string>(
-    info?.data.name ? info?.data.name : ""
-  );
-  const [pw, setPw] = useState<string>(
-    info?.data.password ? info?.data.password : ""
-  );
-  const [country, setCountry] = useState<string>(
-    info?.data.country ? info?.data.country : ""
-  );
+  const [name, setName] = useState<string>("");
+  const [pw, setPw] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
 
   if (info?.data.name && info?.data.password && info?.data.country) {
     setName(info?.data.name);

@@ -23,6 +23,7 @@ export default function useFirebaseAuth() {
       if (!emailRule.test(email)) {
         return enqueueSnackbar("Not Email!", { variant: "warning" });
       }
+      setLoading(true);
       const result = await Login({ email, password: pw });
       if (result.message === "로그인에 성공했습니다.") {
         localStorage.setItem("userEmail", email);

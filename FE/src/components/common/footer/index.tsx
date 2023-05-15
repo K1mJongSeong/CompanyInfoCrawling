@@ -28,7 +28,8 @@ export default function Footer() {
           Yeongdeungpo-1851 <br />
           Tel: 82-2-2183-0640 | Mobile: 82-10-3252-0420 | E-mail:
           inquiry@sentinelkorea.com <br />
-          Address: #103 New Annex, Deawon Building, 49, Dutupbawi-ro 60 Gil,
+          Address: #103 New Annex, Deawon Building,
+          <br /> 49, Dutupbawi-ro 60 Gil, <br />
           Yongsan-gu, Seoul, Korea (04328)
         </Typography>
       </Stack>
