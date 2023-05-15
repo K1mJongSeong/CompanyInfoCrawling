@@ -188,7 +188,9 @@ export default function RegisterContainer() {
       }
     } catch (err: any) {
       if (err.response.data.message === "중복된 이메일이 존재합니다.") {
-        return enqueueSnackbar("Existing Email", { variant: "error" });
+        return enqueueSnackbar("Existing Email, try again", {
+          variant: "error",
+        });
       } else {
         console.error(err);
         return enqueueSnackbar("Server Error", { variant: "error" });

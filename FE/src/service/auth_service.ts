@@ -100,3 +100,17 @@ export const Login = async ({
   const data = await res.data;
   return data;
 };
+
+export const Logout = async ({ email }: { email: string }) => {
+  const res = await client.post(`/UserLogout/`, {
+    email,
+  });
+  const data = await res.data;
+  return data;
+};
+
+export const LoginCheck = async ({ email }: { email: string }) => {
+  const res = await client.get(`/UserLoginStatus/${email}/`);
+  const data = await res.data;
+  return data;
+};

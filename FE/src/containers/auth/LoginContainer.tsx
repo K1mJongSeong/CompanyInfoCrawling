@@ -18,43 +18,17 @@ import {
 import { grey, blue } from "@mui/material/colors";
 import { BsArrowRightShort } from "react-icons/bs";
 import Image from "next/image";
-import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { Login } from "@/service/auth_service";
+import { useAuth } from "@/contexts/auth.context";
 
 export default function LoginContainer() {
-  const { enqueueSnackbar } = useSnackbar();
-
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
 
   const [email, setEmail] = useState<string>("");
   const [pw, setPw] = useState<string>("");
 
-  const handleLogin = async () => {
-    try {
-      if (!email || !pw) {
-        return enqueueSnackbar("Enter All Login Field", { variant: "warning" });
-      }
-      const emailRule =
-        /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
-
-      if (!emailRule.test(email)) {
-        return enqueueSnackbar("Not Email!", { variant: "warning" });
-      }
-      const result = await Login({ email, password: pw });
-      if (result.message === "로그인에 성공했습니다.") {
-        enqueueSnackbar("SUCCESS LOGIN", { variant: "success" });
-      }
-    } catch (err: any) {
-      if (err.response.data.message === "존재하지 않는 아이디입니다.") {
-        return enqueueSnackbar("Not User", { variant: "error" });
-      } else {
-        console.error(err);
-        return enqueueSnackbar("Server Error", { variant: "error" });
-      }
-    }
-  };
+  const { signIn } = useAuth();
 
   return (
     <AuthContainer>
@@ -134,7 +108,7 @@ export default function LoginContainer() {
               />
             </Stack>
             <AuthLoginBtn
-              onClick={handleLogin}
+              onClick={() => signIn({ email, pw })}
               variant="contained"
               endIcon={<BsArrowRightShort />}
             >

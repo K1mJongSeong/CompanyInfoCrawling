@@ -7,6 +7,7 @@ import { SnackbarProvider } from "notistack";
 
 import theme from "./styles/theme";
 import DefaultLoading from "./loading";
+import { AuthUserProvider } from "@/contexts/auth.context";
 
 type Props = {
   children: React.ReactNode;
@@ -26,7 +27,9 @@ export default function MuiSetup({ children }: Props) {
       <CssBaseline />
       <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
         <SnackbarProvider maxSnack={3}>
-          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+          <AuthUserProvider>
+            <ThemeProvider theme={theme}>{children}</ThemeProvider>
+          </AuthUserProvider>
         </SnackbarProvider>
       </NextAppDirEmotionCacheProvider>
     </>
