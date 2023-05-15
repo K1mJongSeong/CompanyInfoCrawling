@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 from . import mkcrawling
 from . import mkcrawling, khcrawling, crawling, khfncrawling
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, QnaSerializer
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, QnaSerializer, LoginOutSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import random
@@ -187,10 +187,16 @@ class UserLoginView2(GenericAPIView):
 
         if user:
             user.is_login = '1'
+            login_record, created = Login.objects.get_or_create(email=email)
+            login_record.last_login = datetime.now()
+            login_record.save()
             user.save()
             return Response({"message": "로그인에 성공했습니다."}, status=status.HTTP_200_OK)
         elif cor_user:
             cor_user.is_login = '1'
+            login_record, created = Login.objects.get_or_create(email=email)
+            login_record.last_login = datetime.now()
+            login_record.save()
             cor_user.save()
             return Response({"message": "로그인에 성공했습니다."}, status=status.HTTP_200_OK)
         else:
@@ -200,7 +206,7 @@ class UserLoginView2(GenericAPIView):
 
 
 class UserLogoutView(GenericAPIView):
-    serializer_class = LoginSerializer
+    serializer_class = LoginOutSerializer
     @swagger_auto_schema(
         operation_summary='로그아웃 POST API',
     )
@@ -209,19 +215,27 @@ class UserLogoutView(GenericAPIView):
 
         user = User.objects.filter(email=email).first()
         cor_user = Coruser.objects.filter(email=email).first()
+        login = Login.objects.filter(email=email).first()
 
         if user is None and cor_user is None:
             return Response(
                 {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
         
-        if user.is_login == '1' or cor_user.is_login == '1':
+        if user and user.is_login == '1':
             user.is_login = '0'
-            cor_user.is_login = '0'
+
             user.save()
+            logout_msg = "로그아웃에 성공하였습니다."
+        if cor_user and cor_user.is_login == '1':
+            cor_user.is_login = '0'
+
             cor_user.save()
+            logout_msg = "로그아웃에 성공하였습니다."
+
+        if logout_msg:
             return Response(
-                {"message": "로그아웃에 성공하였습니다."}, status=status.HTTP_200_OK
+                {"message": logout_msg}, status=status.HTTP_200_OK
             )
         else:
             return Response(

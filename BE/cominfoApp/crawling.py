@@ -13,7 +13,7 @@ import threading
 import concurrent.futures
 
 
-
+#네이버
 
 
 def get_article_info(driver, keyword, crawl_date, press_list, title_list, link_list, date_list, more_news_base_url=None, more_news=False, max_page=20):

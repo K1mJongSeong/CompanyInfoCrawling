@@ -3,6 +3,7 @@ import re
 import time
 from instaloader import Instaloader, Profile
 from django.utils import timezone
+from googletrans import Translator
 from .models import Instagram
 
 def clean_string(s):
@@ -12,6 +13,7 @@ def clean_string(s):
 def get_instagram_posts(username, insta_username, insta_password):
     custom_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'
     L = Instaloader(user_agent=custom_user_agent)
+    translator = Translator()
     #L = instaloader.Instaloader()
 
 
@@ -28,6 +30,7 @@ def get_instagram_posts(username, insta_username, insta_password):
         post_url = post.shortcode
         content = clean_string(post.caption) if post.caption else ''
         post_date = post.date
+        translated_summary = translator.translate(content, dest='en').text()
 
         time.sleep(2)
 
@@ -36,7 +39,7 @@ def get_instagram_posts(username, insta_username, insta_password):
             title="",
             news_date=post_date,
             link=post_url,
-            content=content,
+            content=translated_summary, #한글 -> 영어로 번역 시킨 후 DB 저장
             img=img_url,
             collect_date=timezone.now().date()
         )

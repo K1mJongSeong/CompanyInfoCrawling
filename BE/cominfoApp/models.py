@@ -89,6 +89,8 @@ class User(models.Model): #일반로그인
     email = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
     is_login = models.CharField(max_length=1, blank=True, null=True)
+    auth_state = models.CharField(max_length=10, blank=True, null=True)
+    sus_reason = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -103,15 +105,19 @@ class Coruser(models.Model): #법인 로그인
     corporate_name = models.CharField(max_length=255, blank=True, null=True)
     business_num = models.CharField(max_length=100, blank=True, null=True)
     is_login = models.CharField(max_length=1, blank=True, null=True)
+    auth_state = models.CharField(max_length=10, blank=True, null=True)
+    sus_reason = models.CharField(max_length=255, blank=True, null=True)
+    
 
     class Meta:
         managed = False
         db_table = 'corUser'
 
 class Login(models.Model):
-    login_id = models.IntegerField(primary_key=True)
+    login_id = models.AutoField(primary_key=True)
     email = models.CharField(max_length=100, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
+    last_login = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
