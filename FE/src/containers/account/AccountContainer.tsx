@@ -47,30 +47,17 @@ export default function AccountContainer({ id, data }: Props) {
 
   const [info, setInfo] = useState<DataProps | null>(null);
 
-  useEffect(() => {
-    setInfo({ data });
-  }, []);
-
-  console.log(data);
-  console.log(info);
-
-  const [name, setName] = useState<string>("");
-  const [pw, setPw] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
-
-  if (info?.data.name && info?.data.password && info?.data.country) {
-    setName(info?.data.name);
-    setPw(info?.data.password);
-    setCountry(info?.data.country);
-  }
+  const [name, setName] = useState<string>(data.name);
+  const [pw, setPw] = useState<string>(data.password);
+  const [country, setCountry] = useState<string>(data.country);
 
   const [isCor, setIsCor] = useState<boolean>(false);
-  const [corName, setCorName] = useState<string>("");
-  const [bsNum, setBsNum] = useState<string>("");
-
-  if (info?.data.business_num && info?.data.corporate_name) {
-    setIsCor(true);
-  }
+  const [corName, setCorName] = useState<string>(
+    data.corporate_name ? data.corporate_name : ""
+  );
+  const [bsNum, setBsNum] = useState<string>(
+    data.business_num ? data.business_num : ""
+  );
 
   const handleChangeAcount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

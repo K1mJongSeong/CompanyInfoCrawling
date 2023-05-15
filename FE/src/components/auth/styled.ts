@@ -1,8 +1,8 @@
 import { media } from "@/app/styles/theme";
 import styled from "@emotion/styled";
 import { LoadingButton } from "@mui/lab";
-import { Box, Button, Checkbox, Container, Tab, Tabs } from "@mui/material";
-import { blue, deepPurple, grey, indigo } from "@mui/material/colors";
+import { Box, Checkbox, Container, Tab, Tabs } from "@mui/material";
+import { grey, indigo } from "@mui/material/colors";
 
 export const AuthContainer = styled(Container)`
   padding: 80px 1rem;
