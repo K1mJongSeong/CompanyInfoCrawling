@@ -1,7 +1,8 @@
 import { media } from "@/app/styles/theme";
 import styled from "@emotion/styled";
-import { Box, Button, Checkbox, Container, Tab, Tabs } from "@mui/material";
-import { blue, deepPurple, grey, indigo } from "@mui/material/colors";
+import { LoadingButton } from "@mui/lab";
+import { Box, Checkbox, Container, Tab, Tabs } from "@mui/material";
+import { grey, indigo } from "@mui/material/colors";
 
 export const AuthContainer = styled(Container)`
   padding: 80px 1rem;
@@ -23,7 +24,7 @@ export const AuthCard = styled(Box)`
   box-shadow: 4px 4px 20px rgba(23, 33, 122, 0.3);
   padding: 50px 1.5rem;
 `;
-export const AuthLoginBtn = styled(Button)`
+export const AuthLoginBtn = styled(LoadingButton)`
   width: 100%;
   max-width: 192px;
   margin-bottom: 50px;

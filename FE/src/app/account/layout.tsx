@@ -1,3 +1,4 @@
+import AuthLayoutBlock from "@/components/common/AuthLayoutBlock";
 import BgContainer from "@/components/common/BgContainer";
 import { Metadata } from "next/types";
 
@@ -11,5 +12,9 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <BgContainer>{children}</BgContainer>;
+  return (
+    <AuthLayoutBlock Authentication={true}>
+      <BgContainer>{children}</BgContainer>
+    </AuthLayoutBlock>
+  );
 }
