@@ -6,7 +6,10 @@ import { useEffect, useState } from "react";
 export default function useFirebaseAuth() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<{
+    email: string;
+    data: { user_name: string };
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   const signIn = async ({ email, pw }: { email: string; pw: string }) => {
@@ -23,8 +26,8 @@ export default function useFirebaseAuth() {
       const result = await Login({ email, password: pw });
       if (result.message === "로그인에 성공했습니다.") {
         enqueueSnackbar("SUCCESS LOGIN", { variant: "success" });
-        setUser(email);
         localStorage.setItem("userEmail", email);
+        check();
       }
     } catch (err: any) {
       if (err.response.data.message === "존재하지 않는 아이디입니다.") {
@@ -46,7 +49,7 @@ export default function useFirebaseAuth() {
     try {
       setLoading(true);
       if (!user) return clear();
-      const result = await Logout({ email: user });
+      const result = await Logout({ email: user.email });
       if (result) {
         clear();
         if (result.message === "로그아웃에 성공하였습니다.") {
@@ -68,7 +71,10 @@ export default function useFirebaseAuth() {
       } else {
         const result = await LoginCheck({ email: userEmail });
         if (result) {
-          setUser(userEmail);
+          setUser({
+            email: userEmail,
+            data: { user_name: result.data.user_name },
+          });
           setLoading(false);
         } else {
           clear();

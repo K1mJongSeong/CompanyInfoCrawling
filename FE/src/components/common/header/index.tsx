@@ -61,10 +61,8 @@ export default function Header() {
   };
 
   const handleClickAccount = () => {
-    router.push("/account/test");
+    router.push(`/account/${user?.data.user_name}`);
   };
-
-  const handleLogout = () => {};
 
   const isIndustry = pathname === "/industry";
   const isService = pathname === "/service";
@@ -126,7 +124,7 @@ export default function Header() {
                   TERMS
                 </StyledLink>
                 <Button variant="contained" onClick={handleClickAuthButton}>
-                  {user ? "UserName" : "SIGN IN"}
+                  {user ? user.data.user_name : "SIGN IN"}
                 </Button>
                 <Menu
                   anchorEl={anchorEl}
@@ -175,7 +173,7 @@ export default function Header() {
                         welcome!
                       </Typography>
                       <Stack direction={"row"} alignItems={"center"}>
-                        <Avatar /> Nickname
+                        <Avatar /> {user && user.data.user_name}
                       </Stack>
                     </Stack>
                   </MenuItem>

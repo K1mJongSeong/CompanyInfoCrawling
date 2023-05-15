@@ -3,7 +3,7 @@ import React, { createContext, useContext } from "react";
 import useAuthHook from "@/hooks/useAuth";
 
 interface InAuthUserContext {
-  user: string | null;
+  user: { email: string; data: { user_name: string } } | null;
   loading: boolean;
   signIn: ({ email, pw }: { email: string; pw: string }) => void;
   signOut: () => void;
