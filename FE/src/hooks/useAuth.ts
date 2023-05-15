@@ -25,9 +25,9 @@ export default function useFirebaseAuth() {
       }
       const result = await Login({ email, password: pw });
       if (result.message === "로그인에 성공했습니다.") {
-        enqueueSnackbar("SUCCESS LOGIN", { variant: "success" });
         localStorage.setItem("userEmail", email);
         check();
+        enqueueSnackbar("SUCCESS LOGIN", { variant: "success" });
       }
     } catch (err: any) {
       if (err.response.data.message === "존재하지 않는 아이디입니다.") {
@@ -70,12 +70,16 @@ export default function useFirebaseAuth() {
         return;
       } else {
         const result = await LoginCheck({ email: userEmail });
-        if (result) {
+        if (result.data.auth_state === "정상") {
           setUser({
             email: userEmail,
             data: { user_name: result.data.user_name },
           });
           setLoading(false);
+        } else if (result.data.auth_state === "정지") {
+          enqueueSnackbar("Deleted user", { variant: "error" });
+          clear();
+          return;
         } else {
           clear();
         }

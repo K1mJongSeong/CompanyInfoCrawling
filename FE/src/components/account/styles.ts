@@ -1,6 +1,6 @@
 import { media } from "@/app/styles/theme";
 import styled from "@emotion/styled";
-import { Box, Container, Stack } from "@mui/material";
+import { Box, Container, Stack, TextField } from "@mui/material";
 
 export const AcountContainer = styled(Container)`
   padding: 80px 1rem;
@@ -21,4 +21,13 @@ export const AcountCard = styled(Box)`
   background-color: white;
   box-shadow: 4px 4px 20px rgba(23, 33, 122, 0.3);
   padding: 30px 1.5rem;
+`;
+
+export const AcountDisabledFiled = styled(TextField)`
+  .css-1gaifrj {
+    transform: translateY(0) scale(0.75);
+  }
+  .css-mnn31.Mui-disabled {
+    background-color: #eee;
+  }
 `;

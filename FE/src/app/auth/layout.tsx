@@ -13,7 +13,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthLayoutBlock>
+    <AuthLayoutBlock Authentication={false}>
       <BgContainer>{children}</BgContainer>
     </AuthLayoutBlock>
   );

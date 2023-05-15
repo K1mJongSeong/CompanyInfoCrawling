@@ -61,7 +61,7 @@ export default function Header() {
   };
 
   const handleClickAccount = () => {
-    router.push(`/account/${user?.data.user_name}`);
+    router.push(`/account/${user?.email}`);
   };
 
   const isIndustry = pathname === "/industry";
