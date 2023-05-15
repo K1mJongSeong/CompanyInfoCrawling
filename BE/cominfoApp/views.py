@@ -3,7 +3,7 @@ from rest_framework_swagger.renderers import SwaggerUIRenderer
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
 from rest_framework.decorators import api_view, permission_classes#api
-from rest_framework import status, generics
+from rest_framework import status, generics, mixins
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 from . import mkcrawling
 from . import mkcrawling, khcrawling, crawling, khfncrawling
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, QnaSerializer, LoginOutSerializer, UserCorUserSerializer
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, QnaSerializer, LoginOutSerializer, UserCorUserSerializer, UserWithdrawalSerializer, CorUserWithdrawalSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import random
@@ -250,8 +250,13 @@ class UserLoginStatusView(APIView):
 
         if user is None and coruser is None:
             raise Http404("회원을 찾지 못했습니다.")
-            
-        return {'user_name': user.name if user else None, 'coruser_name': coruser.name if coruser else None}
+        
+        user_name = user.name if user else None
+        coruser_name = coruser.name if coruser else None
+        auth_state = user.auth_state if user else coruser.auth_state if coruser else None
+
+        return {'user_name': user_name, 'coruser_name': coruser_name, 'auth_state': auth_state}
+        #return {'user_name': user.name if user else None, 'coruser_name': coruser.name if coruser else None}
 
 
     @swagger_auto_schema(
@@ -297,37 +302,78 @@ class UserLoginStatusView(APIView):
 #             return Response({"message":"로그아웃 상태입니다."},status=status.HTTP_400_BAD_REQUEST)
 
 
-header_params = [
-    openapi.Parameter(
-        "access_token",
-        openapi.IN_HEADER,
-        description="access_token",
-        type=openapi.TYPE_STRING,
-    ),
-    openapi.Parameter(
-        "refresh_token",
-        openapi.IN_HEADER,
-        description="refresh_token",
-        type=openapi.TYPE_STRING,
-    ),
-]
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
 
-@swagger_auto_schema(
-    operation_summary="JWT토큰 전달 POST API",
-    method="post",
-    manual_parameters=header_params,
-    security=[{"Bearer": []}],
-)
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def example_post_api(request):
-    access_token = request.META.get("HTTP_ACCESS_TOKEN")
-    refresh_token = request.META.get("HTTP_REFRESH_TOKEN")
-
-    return Response({"message": "Success", "field1": access_token, "field2": refresh_token})
+    @swagger_auto_schema(
+            operation_summary='일반회원 GET API'
+    )
+    def get_queryset(self):
+        email = self.kwargs['email']
+        return User.objects.filter(email=email)
 
 
-    
+class UserUpdateView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'email'
+
+    @swagger_auto_schema(
+        operation_summary='일반회원 PUT API'
+    )
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({"message":"변경되었습니다.", "data": response.data})
+
+
+
+class CorUserListView(generics.ListAPIView):
+    serializer_class = CorUserSerializer
+
+    @swagger_auto_schema(
+            operation_summary='법인회원 GET API'
+    )
+    def get_queryset(self):
+        email = self.kwargs['email']
+        return User.objects.filter(email=email)
+
+
+class CorUserUpdateView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = CorUserSerializer
+    lookup_field = 'email'
+
+    @swagger_auto_schema(
+        operation_summary='법인회원 PUT API'
+    )
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({"message":"변경되었습니다.", "data": response.data})
+
+
+class UserWithdrawalUpdate(generics.UpdateAPIView, mixins.UpdateModelMixin):
+        serializer_class = UserWithdrawalSerializer
+        queryset = User.objects.all()
+        lookup_field = 'email'
+        @swagger_auto_schema(
+                operation_summary='일반 회원탈퇴 PUT'
+        )
+        def put(self, request, *args, **kwargs):
+            response = super().put(request, *args, **kwargs)
+            return Response({"message":"변경되었습니다.", "data": response.data})
+
+class CorUserWithdrawalUpdate(generics.UpdateAPIView, mixins.UpdateModelMixin):
+        serializer_class = CorUserWithdrawalSerializer
+        queryset = Coruser.objects.all()
+        lookup_field = 'email'
+        @swagger_auto_schema(
+                operation_summary='법인 회원탈퇴 PUT'
+        )
+        def put(self, request, *args, **kwargs):
+            response = super().put(request, *args, **kwargs)
+            return Response({"message":"변경되었습니다.", "data": response.data})
+
+
 # class LoginView(GenericAPIView):
 #     serializer_class = LoginSerializer
 #     @swagger_auto_schema(

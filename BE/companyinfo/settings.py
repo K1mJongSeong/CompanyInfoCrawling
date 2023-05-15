@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-f6gtxue2eu3s13jnzwwqv-h1hd#+)4=s5ey1!p%@kiet^7mam9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*","www.sentinelkoreakyc.com"]
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS' :{
@@ -162,12 +162,14 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
 	# 허용할 Origin 추가
+    "http://sentinelkoreakyc.com",
+    "http://116.124.133.159",
     "http://localhost:3000",
-    #"http://116.124.133.159:3002",
 ]
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000/",
-    #"http://116.124.133.159:3002/"
+    "http://sentinelkoreakyc.com",
+    "http://116.124.133.159",
 )
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
