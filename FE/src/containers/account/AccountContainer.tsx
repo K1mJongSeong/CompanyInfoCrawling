@@ -6,6 +6,7 @@ import {
   AcountDisabledFiled,
 } from "@/components/account/styles";
 import {
+  Box,
   Button,
   FormControl,
   InputLabel,
@@ -16,13 +17,42 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { blue } from "@mui/material/colors";
+import { blue, grey } from "@mui/material/colors";
 import Countries from "@/data/countries.json";
 import uuid from "react-uuid";
 import { InCountry } from "@/service/auth_service";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/auth.context";
 import { redirect } from "next/navigation";
+import AccountListTitle from "@/components/account/AccountListTitle";
+import AccountList, {
+  AccountListHead,
+  AccountListRow,
+  AccountTd,
+} from "@/components/account/AccountList";
+import AccountNoList from "@/components/account/AccountNoList";
+
+const subs = [
+  {
+    Category: "dd1",
+    Company: "Samsung",
+    StartAt: "2023.00.00",
+    EndAt: "2023.00.00",
+  },
+  {
+    Category: "dd2",
+    Company: "LG",
+    StartAt: "2023.00.00",
+    EndAt: "2023.00.00",
+  },
+  {
+    Category: "dd1",
+    Company: "SK",
+    StartAt: "2023.00.00",
+    EndAt: "2023.00.00",
+  },
+];
+const SUB_COL = ["Category", "Company", "Start At", "End At"];
 
 interface DataProps {
   data: {
@@ -88,7 +118,7 @@ export default function AccountContainer({ id, data }: Props) {
               {isCor ? `(Corporate)` : `(Individual)`}
             </Typography>
           </Typography>
-          <Stack direction={"column"} gap={2}>
+          <Stack direction={"column"} gap={2} mb={5}>
             <TextField
               label="Name"
               type="text"
@@ -153,6 +183,54 @@ export default function AccountContainer({ id, data }: Props) {
                 />
               </>
             )}
+          </Stack>
+          <AccountListTitle title={"Subscription history"} goto={"/"} />
+          <AccountList>
+            <AccountListHead>
+              {SUB_COL.map((el) => (
+                <AccountTd key={uuid()}>{el}</AccountTd>
+              ))}
+            </AccountListHead>
+            {subs.map((el) => (
+              <AccountListRow key={uuid()}>
+                <AccountTd>{el.Category}</AccountTd>
+                <AccountTd>{el.Company}</AccountTd>
+                <AccountTd>{el.StartAt}</AccountTd>
+                <AccountTd>{el.EndAt}</AccountTd>
+              </AccountListRow>
+            ))}
+          </AccountList>
+          <AccountListTitle title={"Payment history"} goto={"/"} />
+          <AccountList>
+            <AccountNoList message={"No Payment history"} />
+          </AccountList>
+          <Stack direction={"column"} alignItems={"center"} mb={4}>
+            <Box width={1} maxWidth={300}>
+              <Typography fontSize={10} color={grey[400]} mb={0.5}>
+                To save changes
+              </Typography>
+              <Button variant="contained" fullWidth sx={{ height: 40 }}>
+                CHANGE
+              </Button>
+            </Box>
+          </Stack>
+          <Stack
+            direction={"row"}
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            <Typography fontSize={10} color={grey[400]} mr={0.5}>
+              If you no longer use Sentinel Korea KYC?
+            </Typography>
+            <Button
+              sx={{
+                fontSize: 10,
+                color: "#5B7FFF",
+                textDecoration: "underline",
+              }}
+            >
+              Withdrawal
+            </Button>
           </Stack>
         </Stack>
       </AcountCard>
