@@ -18,9 +18,12 @@ class EmailVerfiSerailizer(serializers.ModelSerializer):
         fields = ('email','auth_num')
 
 class UserSerializer(serializers.ModelSerializer):
+    auth_state = serializers.CharField(default='정상')
+
     class Meta:
         model = User
         fields = ('name','password','email','country','auth_state')
+
 
 
 class UserPasswordChange(serializers.ModelSerializer):
@@ -29,9 +32,12 @@ class UserPasswordChange(serializers.ModelSerializer):
         fields = ('email','password')
 
 class CorUserSerializer(serializers.ModelSerializer):
+    auth_state = serializers.CharField(default='정상')
+
     class Meta:
         model = Coruser
         fields = ('name','password','email','country','corporate_name','business_num','auth_state')
+
 
 class MkCrawlingSerializer(serializers.ModelSerializer):
     class Meta:

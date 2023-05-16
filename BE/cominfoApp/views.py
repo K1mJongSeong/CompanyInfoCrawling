@@ -207,6 +207,7 @@ class UserLoginView2(GenericAPIView):
 
 class UserLogoutView(GenericAPIView):
     serializer_class = LoginOutSerializer
+
     @swagger_auto_schema(
         operation_summary='로그아웃 POST API',
     )
@@ -222,14 +223,15 @@ class UserLogoutView(GenericAPIView):
                 {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
         
+        logout_msg = ""  # 변수 초기화
+
         if user and user.is_login == '1':
             user.is_login = '0'
-
             user.save()
             logout_msg = "로그아웃에 성공하였습니다."
+
         if cor_user and cor_user.is_login == '1':
             cor_user.is_login = '0'
-
             cor_user.save()
             logout_msg = "로그아웃에 성공하였습니다."
 
@@ -242,9 +244,9 @@ class UserLogoutView(GenericAPIView):
                 {"message": "이미 로그아웃 상태입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class UserLoginStatusView(APIView):
     def get_objects(self, email):
-        
         user = User.objects.filter(email=email).first()
         coruser = Coruser.objects.filter(email=email).first()
 
@@ -256,8 +258,6 @@ class UserLoginStatusView(APIView):
         auth_state = user.auth_state if user else coruser.auth_state if coruser else None
 
         return {'user_name': user_name, 'coruser_name': coruser_name, 'auth_state': auth_state}
-        #return {'user_name': user.name if user else None, 'coruser_name': coruser.name if coruser else None}
-
 
     @swagger_auto_schema(
         operation_summary='로그인 상태',
@@ -271,10 +271,13 @@ class UserLoginStatusView(APIView):
 
         user = User.objects.filter(email=email).first()
 
-        if user.is_login =='1':
+        coruser = Coruser.objects.filter(email=email).first()
+
+        if (user and user.is_login == '1') or (coruser and coruser.is_login =='1'):
             return Response({"message":"로그인 상태입니다.", "data": serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({"message":"로그아웃 상태입니다.", "data": serializer.data}, status=status.HTTP_200_OK)
+
 
 
 # class UserLoginStatusView(APIView):
@@ -335,11 +338,11 @@ class CorUserListView(generics.ListAPIView):
     )
     def get_queryset(self):
         email = self.kwargs['email']
-        return User.objects.filter(email=email)
+        return Coruser.objects.filter(email=email)
 
 
 class CorUserUpdateView(generics.UpdateAPIView):
-    queryset = User.objects.all()
+    queryset = Coruser.objects.all()
     serializer_class = CorUserSerializer
     lookup_field = 'email'
 

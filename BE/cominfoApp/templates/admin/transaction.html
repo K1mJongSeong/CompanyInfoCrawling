@@ -1,59 +1,71 @@
-{% extends "admin/base_site.html" %}
+{% extends 'admin/base_site.html' %} <!--change_list-->
 
 {% block extrastyle %}
     <style>
-        .module caption, .inline-group h2 {
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            display: contents;
+        .card-body td {
+            border: 1px solid #eee;
         }
     </style>
 {% endblock %}
 
 {% block content %}
-    <h1>{{ transaction.template_name }} 거래 로그</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>거래넘버</th>
-                <th>거래날짜</th>
-                <th>거래자유형</th>
-                <th>거래자</th>
-                <th>이메일</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transaction in trans_list %}
-                <tr>
-                    <td>{{ transaction.trans_num }}</td>
-                    <td>{{ transaction.trans_date }}</td>
-                    <td>{{ transaction.trans_item }}</td>
-                    <td>{{ transaction.trans_name }}</td>
-                    <td>{{ email.email }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <h1>{{ transaction.template_name }} 결제 정보</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>거래항목</th>
-                <th>기업명</th>
-                <th>결제금액</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transaction in trans_list %}
-                <tr>
-                    <td>{{ transaction.trans_item }}</td>
-                    <td>{{ corUser.corporate_name }}</td>
-                    <td>{{ transaction.payment }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <h1>{{ transaction.template_name }} 로그 </h1>
-    {% endif %}
+    <div class="card">
+        <h3>검색</h3>
+        <div class="option1">
+            <body>
+                <select>
+                    <option value="question">질문</option>
+                    <option value="writer">작성자</option>
+                    <option value="exposure">노출여부</option>
+                </select>
+                <input type="search">
+            </body>
+        <h3>등록일</h3>
+        <input type="date">
+        <h3>~</h3>
+        <input type="date">
+        <button>검색</button>
+        <button>추가</button>
+        </div>
+        <div class="card-body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>거래번호</th>
+                        <th>거래항목</th>
+                        <th>거래자</th>
+                        <th>결제금액</th>
+                        <th>상태</th>
+                        <th>결제방식</th>
+                        <th>거래일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transction in cl.result_list %}
+                        <tr>
+                            <td>{{ transction.ps_id }}</td>
+                            <td>{{ transction.trans_num }}</td>
+                            <td>{{ transction.trans_item }}</td>
+                            <td>{{ transction.trans_name }}</td>
+                            <td>{{ transction.payment }}</td>
+                            <td>{{ transction.state }}</td>
+                            <td>{{ transction.pay_method }}</td>
+                            <td>{{ transction.trans_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="pagination justify-content-center mt-4">
+        {% if cl.has_previous %}
+            <a class="btn btn-primary" href="?page={{ cl.previous_page_number }}">이전</a>
+        {% endif %}
+        <span class="current-page mx-2">{{ cl.page_number }}</span>
+        {% if cl.has_next %}
+            <a class="btn btn-primary" href="?page={{ cl.next_page_number }}">다음</a>
+        {% endif %}
+    </div>
 {% endblock %}
