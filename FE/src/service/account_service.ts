@@ -63,3 +63,18 @@ export async function changeCorUserInfo({
   const data = await res.data;
   return data;
 }
+
+export async function deleteUser({ email }: { email: string }) {
+  const res = await client.put(`/UserWithdrawalUpdate/${email}/`, {
+    auth_state: "정지",
+  });
+  const data = await res.data;
+  return data;
+}
+export async function deleteCorUser({ email }: { email: string }) {
+  const res = await client.put(`/CorUserWithdrawalUpdate/${email}/`, {
+    auth_state: "정지",
+  });
+  const data = await res.data;
+  return data;
+}

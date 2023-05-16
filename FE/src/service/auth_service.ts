@@ -46,6 +46,7 @@ export const UserRegister = async ({
     password,
     email,
     country,
+    auth_state: "정상",
   });
   const data = await res.data;
   return data;
@@ -66,6 +67,7 @@ export const CoUserRegister = async ({
     country,
     corporate_name,
     business_num,
+    auth_state: "정상",
   });
   const data = await res.data;
   return data;

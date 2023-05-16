@@ -32,7 +32,12 @@ import AccountList, {
 } from "@/components/account/AccountList";
 import AccountNoList from "@/components/account/AccountNoList";
 import AccountDialog from "@/components/account/AccountDialog";
-import { changeCorUserInfo, changeUserInfo } from "@/service/account_service";
+import {
+  changeCorUserInfo,
+  changeUserInfo,
+  deleteCorUser,
+  deleteUser,
+} from "@/service/account_service";
 import { useSnackbar } from "notistack";
 
 const subs = [
@@ -72,7 +77,7 @@ interface Props extends DataProps {
 }
 
 export default function AccountContainer({ id, data }: Props) {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
   if (!user || decodeURI(decodeURIComponent(id)) !== user?.email) {
@@ -164,6 +169,36 @@ export default function AccountContainer({ id, data }: Props) {
       if (result.message === "변경되었습니다.") {
         enqueueSnackbar("Change successful", { variant: "success" });
         setOpen(false);
+      }
+    } catch (err) {
+      console.error(err);
+      enqueueSnackbar("Server Error", { variant: "error" });
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      if (!user) return;
+      const result = await deleteUser({ email: user.email });
+      if (result.message === "변경되었습니다.") {
+        enqueueSnackbar("Deactivated successful", { variant: "success" });
+        setOpen(false);
+        signOut();
+      }
+    } catch (err) {
+      console.error(err);
+      enqueueSnackbar("Server Error", { variant: "error" });
+    }
+  };
+
+  const handleDeleteCorUser = async () => {
+    try {
+      if (!user) return;
+      const result = await deleteCorUser({ email: user.email });
+      if (result.message === "변경되었습니다.") {
+        enqueueSnackbar("Deactivated successful", { variant: "success" });
+        setOpen(false);
+        signOut();
       }
     } catch (err) {
       console.error(err);
@@ -318,9 +353,11 @@ export default function AccountContainer({ id, data }: Props) {
         open={open}
         close={handleCloseModal}
         onClick={
-          !isModify
-            ? () => alert("삭제")
-            : isCor
+          !isModify && isCor
+            ? handleDeleteCorUser
+            : !isModify && !isCor
+            ? handleDeleteUser
+            : isModify && isCor
             ? handleModifyCorUser
             : handleModifyUser
         }
