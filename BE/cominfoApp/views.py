@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from django.shortcuts import render
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from django.contrib.auth import authenticate, login
@@ -73,6 +74,16 @@ def fetch_and_save_fb_data(request): #페이스북 크롤링
 #-----------------------------------------------------크롤링 동작
 
 #-----------------------------------------------------API
+class QnaListAPI(generics.ListAPIView):
+    serializer_class = QnaSerializer
+
+    @swagger_auto_schema(
+            operation_summary='Q&A GET API'
+    )
+    def get_queryset(self):
+        page_num = self.kwargs['page_num']
+        return Qna.objects.filter(page_num=page_num)
+
 class SendEmailVerificationView(GenericAPIView):
     serializer_class = EmailSerializer
     
@@ -465,5 +476,4 @@ class CorUserLogin(generics.ListCreateAPIView):
             return Response({"message": "중복된 이메일이 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
     
-
 #-----------------------------------------------------API

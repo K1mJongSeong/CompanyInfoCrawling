@@ -7,7 +7,6 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = '__all__'
 
-
 class QnaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Qna

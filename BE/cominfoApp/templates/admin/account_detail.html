@@ -1,0 +1,74 @@
+{% extends 'admin/base_site.html' %}
+
+{% block extrastyle %}
+    <style>
+        .card-body td {
+            border: 1px solid #eee;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>일반 계정 관리</h1>
+    <div class="card">
+        <h3>검색</h3>
+        <div class="option1">
+            <form method="get">
+                <h3>회원명</h3>
+                <input type="text" name="name">
+                <h3>이메일</h3>
+                <input type="text" name="search_keyword" placeholder="검색어를 입력해주세요">
+                <div class="option1">
+                    <body>
+                        <select>
+                            <option value="normal">정상</option>
+                            <option value="suspende">정지</option>
+                        </select>
+                        <input type="search" placeholder="검색어를 입력해주세요">
+                    </body>
+                </div>
+            </form>
+        </div>
+        <div class="card-body">
+            <h2>거래 목록</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>거래번호</th>
+                        <th>기업명</th>
+                        <th>구매자</th>
+                        <th>거래방식</th>
+                        <th>결제금액</th>
+                        <th>상태</th>
+                        <th>거래일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in cl.result_list %}
+                        <tr>
+                            <td>{{ transaction.ps_id }}</td>
+                            <td>{{ transaction.trans_num }}</td>
+                            <td>{{ transaction.corporate_name }}</td>
+                            <td>{{ transaction.trans_name }}</td>
+                            <td>{{ transaction.pay_method }}</td>
+                            <td>{{ transaction.payment }}</td>
+                            <td>{{ transaction.state }}</td>
+                            <td>{{ transaction.trans_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="pagination justify-content-center mt-4">
+        {% if cl.has_previous %}
+            <a class="btn btn-primary" href="?page={{ cl.previous_page_number }}">이전</a>
+        {% endif %}
+        <span class="current-page mx-2">{{ cl.page_number }}</span>
+        {% if cl.has_next %}
+            <a class="btn btn-primary" href="?page={{ cl.next_page_number }}">다음</a>
+        {% endif %}
+    </div>
+{% endblock %}
