@@ -1,7 +1,10 @@
+from typing import Dict, Optional
 from django.contrib import admin, messages
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.http import HttpResponseRedirect
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse
 from django.utils.html import format_html
 from django.urls import reverse
 from django.shortcuts import render
@@ -9,6 +12,9 @@ from django.core.exceptions import ValidationError
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 from .models import Qna, PuchasedSales, Instagram
 from .validators import validate_username
+
+
+
 
 admin.site.unregister(Group)
 admin.site.site_header = '기업정보 플랫폼'
@@ -67,11 +73,12 @@ class CustomUserAdmin(UserAdmin):
         else:
             return HttpResponseRedirect(reverse("admin:auth_user_changelist"))
 
-# Unregister the default UserAdmin
+# # Unregister the default UserAdmin
 admin.site.unregister(User)
 
 # Register the CustomUserAdmin
 admin.site.register(User, CustomUserAdmin)
+
 
 class QnaAdmin(admin.ModelAdmin):
     fields = ['question','question_content','answer','exposure']
@@ -79,9 +86,11 @@ class QnaAdmin(admin.ModelAdmin):
     list_filter = (('create_at', DateRangeFilter), 'question')
     list_display = ('qna_id','question','answer','exposure','create_at')
     list_per_page = 8
+    change_list_template = 'admin/qna.html'
 
 
 admin.site.register(Qna, QnaAdmin)    
+
 
 class PuchasedSalesAdmin(admin.ModelAdmin):
     list_display = ('ps_id','trans_num','trans_item','trans_name','payment','state','pay_method','trans_date')
@@ -89,6 +98,7 @@ class PuchasedSalesAdmin(admin.ModelAdmin):
     list_display_links = ('trans_name'),
     list_filter = ('trans_date', DateRangeFilter),
     list_per_page = 8
+    change_list_template = 'admin/transaction.html'
     
     def has_add_permission(self, request, obj=None):
         # 추가 권한 없애기
@@ -110,3 +120,7 @@ class PuchasedSalesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(PuchasedSales, PuchasedSalesAdmin)
+
+class UserManagementAdmin(admin.ModelAdmin):
+    list_per_page = 8
+#admin.site.register(User,UserManagementAdmin)

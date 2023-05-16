@@ -167,7 +167,7 @@ class Qna(models.Model):
 
 class PuchasedSales(models.Model):
     ps_id = models.AutoField(primary_key=True,verbose_name='NO')
-    trans_num = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래넘버')
+    trans_num = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래번호')
     trans_item = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래항목')
     trans_name = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래자')
     trans_date = models.DateField(blank=True, null=True,verbose_name='거래일')
