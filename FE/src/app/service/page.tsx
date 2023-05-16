@@ -2,7 +2,10 @@ export default function ServicePage() {
   return (
     <div
       className="w-screen relative flex items-center justify-center py-10 bg-fixed  min-h-[900px]"
-      style={{ background: "url('/assets/images/service_bg.png" }}
+      style={{
+        backgroundImage: "url('/assets/images/service_bg.png",
+        backgroundPosition: "center",
+      }}
     >
       <div className="w-[calc(100%-32px)] max-w-7xl bg-white rounded-lg py-8 px-5 pb-11 flex flex-col items-center">
         <h2 className="mb-1 text-lg font-bold uppercase">SERVICE</h2>
