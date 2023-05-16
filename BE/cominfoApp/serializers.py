@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser
-from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi, Qna
+from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi, Qna, Payment
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = '__all__'
+
 
 class QnaSerializer(serializers.ModelSerializer):
     class Meta:

@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block content %}
+    <h1>Q&A</h1>
     <div class="card">
         <h3>검색</h3>
         <div class="option1">
@@ -18,14 +19,14 @@
                     <option value="writer">작성자</option>
                     <option value="exposure">노출여부</option>
                 </select>
-                <input type="search">
+                <input placeholder="검색어를 입력해주세요">
             </body>
         <h3>등록일</h3>
         <input type="date">
         <h3>~</h3>
         <input type="date">
         <button>검색</button>
-        <button>추가</button>
+        <a href="{% url 'admin:cominfoApp_qna_add' %}">추가</a>
         </div>
         <div class="card-body">
             <table>

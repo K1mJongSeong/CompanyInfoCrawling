@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from django.contrib import admin, messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin
 from django.http import HttpResponseRedirect
@@ -10,12 +11,11 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.core.exceptions import ValidationError
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
-from .models import Qna, PuchasedSales, Instagram
+from .models import Qna, PuchasedSales, Instagram, User
 from .validators import validate_username
 
 
-
-
+admin.site.unregister(get_user_model())
 admin.site.unregister(Group)
 admin.site.site_header = '기업정보 플랫폼'
 admin.site.index_title = '기업정보 플랫폼'
@@ -23,62 +23,71 @@ admin.site.index_title = '기업정보 플랫폼'
 # admin.site.register(Mkcrawling)
 #admin.site.register(Instagram)
 
-class CustomUserAdmin(UserAdmin):
-    fieldsets = (
-        (None, {'fields': ('username','password')}),
-    )
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2'),
-        }),
-    )
-    readonly_fields = ('password_change_link',)
+# class CustomUserAdmin(UserAdmin):
+#     fieldsets = (
+#         (None, {'fields': ('username','password')}),
+#     )
+#     add_fieldsets = (
+#         (None, {
+#             'classes': ('wide',),
+#             'fields': ('username', 'password1', 'password2'),
+#         }),
+#     )
+#     readonly_fields = ('password_change_link',)
 
-    def password_change_link(self, obj):
-        url = reverse('admin:auth_user_password_change', args=[obj.pk])
-        return format_html('<a href="{}">비밀번호 변경</a>', url)
+#     def password_change_link(self, obj):
+#         url = reverse('admin:auth_user_password_change', args=[obj.pk])
+#         return format_html('<a href="{}">비밀번호 변경</a>', url)
 
-    password_change_link.short_description = '비밀번호 변경'
+#     password_change_link.short_description = '비밀번호 변경'
 
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = super(CustomUserAdmin, self).get_fieldsets(request, obj)
-        if obj:
-            fieldsets = list(fieldsets)
-            fieldsets[0] = (None, {'fields': ('username', 'password_change_link')})
-        return fieldsets
-    list_display = ('username','is_staff')
-    list_filter = ('is_staff', 'is_superuser', 'groups')
-    search_fields = ('username', 'first_name', 'last_name', 'email')
-    ordering = ('username',)
+#     def get_fieldsets(self, request, obj=None):
+#         fieldsets = super(CustomUserAdmin, self).get_fieldsets(request, obj)
+#         if obj:
+#             fieldsets = list(fieldsets)
+#             fieldsets[0] = (None, {'fields': ('username', 'password_change_link')})
+#         return fieldsets
+#     list_display = ('username','is_staff')
+#     list_filter = ('is_staff', 'is_superuser', 'groups')
+#     search_fields = ('username', 'first_name', 'last_name', 'email')
+#     ordering = ('username',)
 
-    def save_model(self, request, obj, form, change):
-        try:
-            validate_username(obj.username)
-        except ValidationError as e:
-            messages.error(request, e.messages[0])
-            form.errors['username'] = e.messages
-            return
-        super().save_model(request, obj, form, change)
+#     def save_model(self, request, obj, form, change):
+#         try:
+#             validate_username(obj.username)
+#         except ValidationError as e:
+#             messages.error(request, e.messages[0])
+#             form.errors['username'] = e.messages
+#             return
+#         super().save_model(request, obj, form, change)
 
-    def response_add(self, request, obj, post_url_continue=None):
-        if "_continue" in request.POST or "_saveasnew" in request.POST:
-            return super().response_add(request, obj, post_url_continue)
-        else:
-            return HttpResponseRedirect(reverse("admin:auth_user_changelist"))
+#     def response_add(self, request, obj, post_url_continue=None):
+#         if "_continue" in request.POST or "_saveasnew" in request.POST:
+#             return super().response_add(request, obj, post_url_continue)
+#         else:
+#             return HttpResponseRedirect(reverse("admin:auth_user_changelist"))
 
-    def response_change(self, request, obj):
-        if "_continue" in request.POST or "_saveasnew" in request.POST or "_addanother" in request.POST:
-            return super().response_change(request, obj)
-        else:
-            return HttpResponseRedirect(reverse("admin:auth_user_changelist"))
+#     def response_change(self, request, obj):
+#         if "_continue" in request.POST or "_saveasnew" in request.POST or "_addanother" in request.POST:
+#             return super().response_change(request, obj)
+#         else:
+#             return HttpResponseRedirect(reverse("admin:auth_user_changelist"))
 
-# # Unregister the default UserAdmin
-admin.site.unregister(User)
 
-# Register the CustomUserAdmin
-admin.site.register(User, CustomUserAdmin)
+# # # Unregister the default UserAdmin
+# #
 
+# # Register the CustomUserAdmin
+# admin.site.register(User, CustomUserAdmin)
+
+#admin.site.unregister(User)
+
+class MyUserAdmin(admin.ModelAdmin):
+    # fields = ['user_id','name','auth_state','sub_date','last_login']
+    # list_per_page = 8
+    change_list_template = 'admin/account.html'
+
+admin.site.register(User, MyUserAdmin)
 
 class QnaAdmin(admin.ModelAdmin):
     fields = ['question','question_content','answer','exposure']
