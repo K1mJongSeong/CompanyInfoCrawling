@@ -97,8 +97,8 @@ class User(models.Model): #일반로그인
     class Meta:
         managed = False
         db_table = 'User'
-        verbose_name = '회원정보'
-        verbose_name_plural = '회원정보'
+        verbose_name = '회원관리'
+        verbose_name_plural = '회원관리'
 
 class Coruser(models.Model): #법인 로그인
     cor_id = models.AutoField(primary_key=True)
@@ -154,6 +154,8 @@ class Qna(models.Model):
     modified_at = models.DateTimeField(blank=True, null=True)
     writer = models.CharField(max_length=50, blank=True, null=True,verbose_name='작성자')
     question_content = models.TextField(blank=True, null=True,verbose_name='내용')
+    page_num = models.CharField(max_length=10, blank=True, null=True)
+    total_page_num = models.CharField(max_length=10, blank=True, null=True)
     
 
     EXPOSURE_STATE_CHOICES = [
