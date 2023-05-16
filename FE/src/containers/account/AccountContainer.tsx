@@ -32,6 +32,8 @@ import AccountList, {
 } from "@/components/account/AccountList";
 import AccountNoList from "@/components/account/AccountNoList";
 import AccountDialog from "@/components/account/AccountDialog";
+import { changeCorUserInfo, changeUserInfo } from "@/service/account_service";
+import { useSnackbar } from "notistack";
 
 const subs = [
   {
@@ -71,6 +73,7 @@ interface Props extends DataProps {
 
 export default function AccountContainer({ id, data }: Props) {
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
 
   if (!user || decodeURI(decodeURIComponent(id)) !== user?.email) {
     redirect("/");
@@ -82,7 +85,8 @@ export default function AccountContainer({ id, data }: Props) {
   const [pw, setPw] = useState<string>(data.password);
   const [country, setCountry] = useState<string>(data.country);
 
-  const [isCor, setIsCor] = useState<boolean>(false);
+  const isCorCheck = data.corporate_name && data.business_num ? true : false;
+  const [isCor, setIsCor] = useState<boolean>(isCorCheck);
   const [corName, setCorName] = useState<string>(
     data.corporate_name ? data.corporate_name : ""
   );
@@ -122,6 +126,49 @@ export default function AccountContainer({ id, data }: Props) {
     setTitle("Are you sure you want to withdraw your membership?");
     setMessage("You can't sign up again with the withdrawn email account");
     setIsModify(false);
+  };
+
+  const handleModifyUser = async () => {
+    try {
+      if (!name || !pw || !country)
+        return enqueueSnackbar("Enter all field", { variant: "warning" });
+      const result = await changeUserInfo({
+        name,
+        password: pw,
+        email: user.email,
+        country,
+        auth_state: "정상",
+      });
+      if (result.message === "변경되었습니다.") {
+        enqueueSnackbar("Change successful", { variant: "success" });
+        setOpen(false);
+      }
+    } catch (err) {
+      console.error(err);
+      enqueueSnackbar("Server Error", { variant: "error" });
+    }
+  };
+  const handleModifyCorUser = async () => {
+    try {
+      if (!name || !pw || !country || !corName || !bsNum)
+        return enqueueSnackbar("Enter all field", { variant: "warning" });
+      const result = await changeCorUserInfo({
+        name,
+        password: pw,
+        email: user.email,
+        country,
+        corporate_name: corName,
+        business_num: bsNum,
+        auth_state: "정상",
+      });
+      if (result.message === "변경되었습니다.") {
+        enqueueSnackbar("Change successful", { variant: "success" });
+        setOpen(false);
+      }
+    } catch (err) {
+      console.error(err);
+      enqueueSnackbar("Server Error", { variant: "error" });
+    }
   };
 
   return (
@@ -270,7 +317,13 @@ export default function AccountContainer({ id, data }: Props) {
         message={message}
         open={open}
         close={handleCloseModal}
-        onClick={isModify ? () => alert("수정") : () => alert("삭제")}
+        onClick={
+          !isModify
+            ? () => alert("삭제")
+            : isCor
+            ? handleModifyCorUser
+            : handleModifyUser
+        }
       />
     </>
   );

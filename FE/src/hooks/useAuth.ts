@@ -8,7 +8,7 @@ export default function useFirebaseAuth() {
 
   const [user, setUser] = useState<{
     email: string;
-    data: { user_name: string };
+    data: { user_name: string | null; coruser_name: string | null };
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -74,7 +74,12 @@ export default function useFirebaseAuth() {
         if (result.data.auth_state === "정상") {
           setUser({
             email: userEmail,
-            data: { user_name: result.data.user_name },
+            data: {
+              user_name: result.data.user_name ? result.data.user_name : null,
+              coruser_name: result.data.coruser_name
+                ? result.data.coruser_name
+                : null,
+            },
           });
           setLoading(false);
         } else if (result.data.auth_state === "정지") {
