@@ -147,6 +147,7 @@ export default function AccountContainer({ id, data }: Props) {
       if (result.message === "변경되었습니다.") {
         enqueueSnackbar("Change successful", { variant: "success" });
         setOpen(false);
+        window.location.reload();
       }
     } catch (err) {
       console.error(err);
@@ -169,6 +170,7 @@ export default function AccountContainer({ id, data }: Props) {
       if (result.message === "변경되었습니다.") {
         enqueueSnackbar("Change successful", { variant: "success" });
         setOpen(false);
+        window.location.reload();
       }
     } catch (err) {
       console.error(err);
