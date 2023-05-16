@@ -83,18 +83,22 @@ class Instagram(models.Model):
         db_table = 'instagram'
 
 class User(models.Model): #일반로그인
-    user_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100, blank=True, null=True)
+    user_id = models.IntegerField(primary_key=True, verbose_name="NO")
+    name = models.CharField(max_length=100, blank=True, null=True,verbose_name="회원이름")
     password = models.CharField(max_length=100, blank=True, null=True)
-    email = models.CharField(max_length=100, blank=True, null=True)
+    email = models.CharField(max_length=100, blank=True, null=True,verbose_name="이메일")
     country = models.CharField(max_length=100, blank=True, null=True)
     is_login = models.CharField(max_length=1, blank=True, null=True)
-    auth_state = models.CharField(max_length=10, blank=True, null=True)
+    auth_state = models.CharField(max_length=10, blank=True, null=True,verbose_name="계정상태")
     sus_reason = models.CharField(max_length=255, blank=True, null=True)
+    sub_date = models.DateTimeField(blank=True, null=True,verbose_name="가입일")
+    last_login = models.DateTimeField(blank=True, null=True,verbose_name="최근 접속")
 
     class Meta:
         managed = False
         db_table = 'User'
+        verbose_name = '회원정보'
+        verbose_name_plural = '회원정보'
 
 class Coruser(models.Model): #법인 로그인
     cor_id = models.AutoField(primary_key=True)
@@ -184,3 +188,18 @@ class PuchasedSales(models.Model):
         db_table = 'Puchased_sales'
         verbose_name = '거래목록'
         verbose_name_plural = '거래목록'
+
+class Payment(models.Model):
+    payment_id = models.AutoField(primary_key=True)
+    company_name = models.CharField(max_length=100, blank=True, null=True)
+    company_code = models.CharField(max_length=100, blank=True, null=True)
+    category = models.CharField(max_length=100, blank=True, null=True)
+    price = models.BigIntegerField(blank=True, null=True)
+    note = models.CharField(max_length=255, blank=True, null=True)
+    create_at = models.DateTimeField(blank=True, null=True)
+    user_id = models.CharField(max_length=100, blank=True, null=True)
+    page_num = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Payment'
