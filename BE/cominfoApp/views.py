@@ -3,7 +3,7 @@ from rest_framework_swagger.renderers import SwaggerUIRenderer
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
 from rest_framework.decorators import api_view, permission_classes#api
-from rest_framework import status, generics
+from rest_framework import status, generics, mixins
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema, force_serializer_instance
 from drf_yasg import openapi
 from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.core.mail import EmailMessage,send_mail
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.crypto import get_random_string
@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 from . import mkcrawling
 from . import mkcrawling, khcrawling, crawling, khfncrawling
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, UserJWTSerializer, QnaSerializer
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, QnaSerializer, LoginOutSerializer, UserCorUserSerializer, UserWithdrawalSerializer, CorUserWithdrawalSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import random
@@ -174,16 +174,30 @@ class UserLoginView2(GenericAPIView):
         password = request.data.get('password')
 
         user = User.objects.filter(email=email).first()
+        cor_user = Coruser.objects.filter(email=email).first()
 
-        if user is None:
+        print(user)
+        print(cor_user)
+        if user is None and cor_user is None:
             return Response(
                 {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
-        if user.password != password:
+        if (user and user.password != password) or (cor_user and cor_user.password != password):
             return Response({"message":"비밀번호가 틀렸습니다."},status=status.HTTP_400_BAD_REQUEST)
 
-        if  user.is_login == '1':
+        if user:
+            user.is_login = '1'
+            login_record, created = Login.objects.get_or_create(email=email)
+            login_record.last_login = datetime.now()
+            login_record.save()
             user.save()
+            return Response({"message": "로그인에 성공했습니다."}, status=status.HTTP_200_OK)
+        elif cor_user:
+            cor_user.is_login = '1'
+            login_record, created = Login.objects.get_or_create(email=email)
+            login_record.last_login = datetime.now()
+            login_record.save()
+            cor_user.save()
             return Response({"message": "로그인에 성공했습니다."}, status=status.HTTP_200_OK)
         else:
             return Response(
@@ -192,7 +206,8 @@ class UserLoginView2(GenericAPIView):
 
 
 class UserLogoutView(GenericAPIView):
-    serializer_class = LoginSerializer
+    serializer_class = LoginOutSerializer
+
     @swagger_auto_schema(
         operation_summary='로그아웃 POST API',
     )
@@ -200,44 +215,70 @@ class UserLogoutView(GenericAPIView):
         email = request.data.get('email')
 
         user = User.objects.filter(email=email).first()
+        cor_user = Coruser.objects.filter(email=email).first()
+        login = Login.objects.filter(email=email).first()
 
-        if user is None:
+        if user is None and cor_user is None:
             return Response(
                 {"message": "존재하지 않는 아이디입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
         
-        if user.is_login == '1':
+        logout_msg = ""  # 변수 초기화
+
+        if user and user.is_login == '1':
             user.is_login = '0'
             user.save()
+            logout_msg = "로그아웃에 성공하였습니다."
+
+        if cor_user and cor_user.is_login == '1':
+            cor_user.is_login = '0'
+            cor_user.save()
+            logout_msg = "로그아웃에 성공하였습니다."
+
+        if logout_msg:
             return Response(
-                {"message": "로그아웃에 성공하였습니다."}, status=status.HTTP_200_OK
+                {"message": logout_msg}, status=status.HTTP_200_OK
             )
         else:
             return Response(
                 {"message": "이미 로그아웃 상태입니다."}, status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class UserLoginStatusView(APIView):
-    def get_object(self, email):#GET,PUT,DELETE
-        try:
-            return User.objects.get(email=email)
-        except User.DoesNotExist:
-            raise Response({"message":"에러"},status=status.HTTP_404_NOT_FOUND)
+    def get_objects(self, email):
+        user = User.objects.filter(email=email).first()
+        coruser = Coruser.objects.filter(email=email).first()
+
+        if user is None and coruser is None:
+            raise Http404("회원을 찾지 못했습니다.")
+        
+        user_name = user.name if user else None
+        coruser_name = coruser.name if coruser else None
+        auth_state = user.auth_state if user else coruser.auth_state if coruser else None
+
+        return {'user_name': user_name, 'coruser_name': coruser_name, 'auth_state': auth_state}
+
     @swagger_auto_schema(
         operation_summary='로그인 상태',
     )
     def get(self, request, email):
-        login = self.get_object(email)
-        serializer = UserSerializer(login)
+        data = self.get_objects(email)
+        serializer = UserCorUserSerializer(data)
+        
+        if serializer is None:
+            return Response({"message":"아이디가 존재하지 않습니다"}, status=status.HTTP_400_BAD_REQUEST)
+
         user = User.objects.filter(email=email).first()
 
-        if serializer is None:
-            return Response({"message":"아이디가 존재하지 않습니다"},status=status.HTTP_400_BAD_REQUEST)
+        coruser = Coruser.objects.filter(email=email).first()
 
-        if user.is_login =='1':
-            return Response({"message":"로그인 상태입니다."},status=status.HTTP_200_OK)
+        if (user and user.is_login == '1') or (coruser and coruser.is_login =='1'):
+            return Response({"message":"로그인 상태입니다.", "data": serializer.data}, status=status.HTTP_200_OK)
         else:
-            return Response({"message":"로그아웃 상태입니다."},status=status.HTTP_200_OK)
+            return Response({"message":"로그아웃 상태입니다.", "data": serializer.data}, status=status.HTTP_200_OK)
+
+
 
 # class UserLoginStatusView(APIView):
 #     serializer_class = UserSerializer
@@ -264,37 +305,78 @@ class UserLoginStatusView(APIView):
 #             return Response({"message":"로그아웃 상태입니다."},status=status.HTTP_400_BAD_REQUEST)
 
 
-header_params = [
-    openapi.Parameter(
-        "access_token",
-        openapi.IN_HEADER,
-        description="access_token",
-        type=openapi.TYPE_STRING,
-    ),
-    openapi.Parameter(
-        "refresh_token",
-        openapi.IN_HEADER,
-        description="refresh_token",
-        type=openapi.TYPE_STRING,
-    ),
-]
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
 
-@swagger_auto_schema(
-    operation_summary="JWT토큰 전달 POST API",
-    method="post",
-    manual_parameters=header_params,
-    security=[{"Bearer": []}],
-)
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def example_post_api(request):
-    access_token = request.META.get("HTTP_ACCESS_TOKEN")
-    refresh_token = request.META.get("HTTP_REFRESH_TOKEN")
-
-    return Response({"message": "Success", "field1": access_token, "field2": refresh_token})
+    @swagger_auto_schema(
+            operation_summary='일반회원 GET API'
+    )
+    def get_queryset(self):
+        email = self.kwargs['email']
+        return User.objects.filter(email=email)
 
 
-    
+class UserUpdateView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'email'
+
+    @swagger_auto_schema(
+        operation_summary='일반회원 PUT API'
+    )
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({"message":"변경되었습니다.", "data": response.data})
+
+
+
+class CorUserListView(generics.ListAPIView):
+    serializer_class = CorUserSerializer
+
+    @swagger_auto_schema(
+            operation_summary='법인회원 GET API'
+    )
+    def get_queryset(self):
+        email = self.kwargs['email']
+        return Coruser.objects.filter(email=email)
+
+
+class CorUserUpdateView(generics.UpdateAPIView):
+    queryset = Coruser.objects.all()
+    serializer_class = CorUserSerializer
+    lookup_field = 'email'
+
+    @swagger_auto_schema(
+        operation_summary='법인회원 PUT API'
+    )
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        return Response({"message":"변경되었습니다.", "data": response.data})
+
+
+class UserWithdrawalUpdate(generics.UpdateAPIView, mixins.UpdateModelMixin):
+        serializer_class = UserWithdrawalSerializer
+        queryset = User.objects.all()
+        lookup_field = 'email'
+        @swagger_auto_schema(
+                operation_summary='일반 회원탈퇴 PUT'
+        )
+        def put(self, request, *args, **kwargs):
+            response = super().put(request, *args, **kwargs)
+            return Response({"message":"변경되었습니다.", "data": response.data})
+
+class CorUserWithdrawalUpdate(generics.UpdateAPIView, mixins.UpdateModelMixin):
+        serializer_class = CorUserWithdrawalSerializer
+        queryset = Coruser.objects.all()
+        lookup_field = 'email'
+        @swagger_auto_schema(
+                operation_summary='법인 회원탈퇴 PUT'
+        )
+        def put(self, request, *args, **kwargs):
+            response = super().put(request, *args, **kwargs)
+            return Response({"message":"변경되었습니다.", "data": response.data})
+
+
 # class LoginView(GenericAPIView):
 #     serializer_class = LoginSerializer
 #     @swagger_auto_schema(
@@ -364,6 +446,9 @@ class UserLogin(generics.ListCreateAPIView):
         operation_summary=' 일반 로그인 POST API'
     )
     def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if User.objects.filter(email=email).exists():
+            return Response({"message": "중복된 이메일이 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
     
 
@@ -375,6 +460,9 @@ class CorUserLogin(generics.ListCreateAPIView):
         operation_summary=' 법인 로그인 POST API'
     )
     def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if User.objects.filter(email=email).exists():
+            return Response({"message": "중복된 이메일이 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
     
 

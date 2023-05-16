@@ -89,6 +89,8 @@ class User(models.Model): #일반로그인
     email = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
     is_login = models.CharField(max_length=1, blank=True, null=True)
+    auth_state = models.CharField(max_length=10, blank=True, null=True)
+    sus_reason = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -102,15 +104,20 @@ class Coruser(models.Model): #법인 로그인
     country = models.CharField(max_length=100, blank=True, null=True)
     corporate_name = models.CharField(max_length=255, blank=True, null=True)
     business_num = models.CharField(max_length=100, blank=True, null=True)
+    is_login = models.CharField(max_length=1, blank=True, null=True)
+    auth_state = models.CharField(max_length=10, blank=True, null=True)
+    sus_reason = models.CharField(max_length=255, blank=True, null=True)
+    
 
     class Meta:
         managed = False
         db_table = 'corUser'
 
 class Login(models.Model):
-    login_id = models.IntegerField(primary_key=True)
+    login_id = models.AutoField(primary_key=True)
     email = models.CharField(max_length=100, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
+    last_login = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -137,11 +144,20 @@ class EmailVerfi(models.Model):
 
 class Qna(models.Model):
     qna_id = models.AutoField(primary_key=True,verbose_name='NO')
-    question = models.TextField(blank=True, null=True,verbose_name='질문')
-    answer = models.TextField(blank=True, null=True,verbose_name='작성자')
+    question = models.TextField(blank=True, null=True,verbose_name='제목')
+    answer = models.TextField(blank=True, null=True,verbose_name='답변')
     create_at = models.DateTimeField(blank=True, null=True,verbose_name='등록일')
     modified_at = models.DateTimeField(blank=True, null=True)
-    exposure = models.CharField(max_length=45, blank=True, null=True,verbose_name='노출여부')
+    writer = models.CharField(max_length=50, blank=True, null=True,verbose_name='작성자')
+    question_content = models.TextField(blank=True, null=True,verbose_name='내용')
+    
+
+    EXPOSURE_STATE_CHOICES = [
+        ('메인','메인'),
+        ('노출','노출'),
+        ('미노출','미노출'),
+    ]
+    exposure = models.CharField(max_length=45, blank=True, null=True,verbose_name='노출여부',choices=EXPOSURE_STATE_CHOICES)
 
     class Meta:
         managed = False
@@ -151,14 +167,18 @@ class Qna(models.Model):
 
 class PuchasedSales(models.Model):
     ps_id = models.AutoField(primary_key=True,verbose_name='NO')
-    trans_num = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래넘버')
+    trans_num = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래번호')
     trans_item = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래항목')
     trans_name = models.CharField(max_length=100, blank=True, null=True,verbose_name='거래자')
     trans_date = models.DateField(blank=True, null=True,verbose_name='거래일')
     payment = models.CharField(max_length=100, blank=True, null=True,verbose_name='결제금액')
-    state = models.CharField(max_length=10, blank=True, null=True,verbose_name='상태')
     pay_method = models.CharField(max_length=100, blank=True, null=True,verbose_name='결제방식')
 
+    STATE_CHOICES = [
+        ('거래완료','거래완료'),
+        ('거래취소','거래취소'),
+    ]
+    state = models.CharField(max_length=10, blank=True, null=True,verbose_name='상태',choices=STATE_CHOICES)
     class Meta:
         managed = False
         db_table = 'Puchased_sales'

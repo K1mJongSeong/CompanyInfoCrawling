@@ -1,0 +1,65 @@
+{% extends 'admin/base_site.html' %}
+
+{% block extrastyle %}
+    <style>
+        .card-body td {
+            border: 1px solid #eee;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h3>검색</h3>
+        <div class="option1">
+            <body>
+                <select>
+                    <option value="question">질문</option>
+                    <option value="writer">작성자</option>
+                    <option value="exposure">노출여부</option>
+                </select>
+                <input type="search">
+            </body>
+        <h3>등록일</h3>
+        <input type="date">
+        <h3>~</h3>
+        <input type="date">
+        <button>검색</button>
+        <button>추가</button>
+        </div>
+        <div class="card-body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>질문</th>
+                        <th>작성자</th>
+                        <th>노출여부</th>
+                        <th>등록일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for qna in cl.result_list %}
+                        <tr>
+                            <td>{{ qna.qna_id }}</td>
+                            <td>{{ qna.question }}</td>
+                            <td>{{ qna.writer }}</td>
+                            <td>{{ qna.exposure }}</td>
+                            <td>{{ qna.create_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="pagination justify-content-center mt-4">
+        {% if cl.has_previous %}
+            <a class="btn btn-primary" href="?page={{ cl.previous_page_number }}">이전</a>
+        {% endif %}
+        <span class="current-page mx-2">{{ cl.page_number }}</span>
+        {% if cl.has_next %}
+            <a class="btn btn-primary" href="?page={{ cl.next_page_number }}">다음</a>
+        {% endif %}
+    </div>
+{% endblock %}

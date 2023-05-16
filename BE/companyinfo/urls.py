@@ -22,7 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
 from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling, fetch_and_save_fb_data, get_instagram_posts
-from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, SendEmailVerificationView, VerifyEmailView, ChangePasswordView, UserLoginView2, UserLogoutView, UserLoginStatusView
+from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, SendEmailVerificationView, VerifyEmailView, ChangePasswordView, UserLoginView2, UserLogoutView, UserLoginStatusView, UserListView, UserUpdateView, CorUserUpdateView, CorUserListView, UserWithdrawalUpdate, CorUserWithdrawalUpdate
 schema_view = get_schema_view(
     openapi.Info(
         title="Open API", #타이틀
@@ -44,7 +44,7 @@ urlpatterns = [
     path('start_khcrawling/',start_khcrawling), #헤럴드경제
     path('start_khfncrawling/',start_khfncrawling), #헤럴드 파이넨스
     path('start_mkcrawling/',start_mkcrawling), #매일경제 모든 뉴스
-    path('fetch_and_save_fb_data/',fetch_and_save_fb_data), #페이스북
+    path('start_facebook/',fetch_and_save_fb_data), #페이스북
     path('get_instagram_posts/',get_instagram_posts), #인스타그램
     path('KhCrwawlingGet/',KhCrwawlingGet.as_view()), #헤럴드 경제 GET API
     path('MkCrwawlingGet/',MkCrwawlingGet.as_view()), #매일경제 GET API  
@@ -59,5 +59,11 @@ urlpatterns = [
     path("Login/", UserLoginView2.as_view()),
     path("UserLogout/", UserLogoutView.as_view()),
     path("UserLoginStatus/<str:email>/", UserLoginStatusView.as_view()),
+    path("UserPUT/<str:email>/",UserUpdateView.as_view()),
+    path("UserGET/<str:email>/", UserListView.as_view()),
+    path("CorUserGET/<str:email>/",CorUserListView.as_view()),
+    path("CorUserPUT/<str:email>/",CorUserUpdateView.as_view()),
+    path("UserWithdrawalUpdate/<str:email>/", UserWithdrawalUpdate.as_view()),
+    path("CorUserWithdrawalUpdate/<str:email>/", CorUserWithdrawalUpdate.as_view()),
     #path('email/',send_email_verification),
 ]
