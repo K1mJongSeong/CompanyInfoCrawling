@@ -1,7 +1,11 @@
-export default function ServicePage() {
+import CustomizedAccordions from "@/components/service/Accordion";
+import { getQnaList } from "@/service/service_service";
+
+export default async function ServicePage() {
+  const qnaList = await getQnaList({ page: "1" });
   return (
     <div
-      className="w-screen relative flex items-center justify-center py-10 bg-fixed  min-h-[900px]"
+      className="w-screen relative flex flex-col items-center justify-center gap-6 py-10 bg-fixed  min-h-[900px]"
       style={{
         backgroundImage: "url('/assets/images/service_bg.png",
         backgroundPosition: "center",
@@ -53,6 +57,20 @@ export default function ServicePage() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="w-[calc(100%-32px)] max-w-7xl bg-white rounded-lg py-8 px-5 pb-11 flex flex-col items-center">
+        <h2 className="mb-1 text-lg font-bold uppercase">FAQs</h2>
+        <p className="text-sm text-gray-700 mb-[40px]">
+          frequently asked questions
+        </p>
+        <div className="flex flex-col justify-between w-full mb-5">
+          <CustomizedAccordions data={qnaList} />
+        </div>
+        <div className="flex justify-end w-full md:px-10">
+          <button className="w-full max-w-[200px] h-[40px] bg-indigo-900 text-white rounded-md hover:bg-indigo-800">
+            VIEW ALL
+          </button>
         </div>
       </div>
     </div>
