@@ -42,7 +42,7 @@
                 <tbody>
                     {% for qna in cl.result_list %}
                         <tr>
-                            <td>{{ qna.qna_id }}</td>
+                            <td><a href="{% url 'admin:cominfoApp_qna_change' qna.qna_id %}">{{ qna.qna_id }}</a></td>
                             <td>{{ qna.question }}</td>
                             <td>{{ qna.writer }}</td>
                             <td>{{ qna.exposure }}</td>

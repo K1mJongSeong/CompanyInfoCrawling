@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 from .models import Qna, PuchasedSales, Instagram, User
 from .validators import validate_username
+from .forms import MyUserForm
 
 
 admin.site.unregister(get_user_model())
@@ -86,6 +87,9 @@ class MyUserAdmin(admin.ModelAdmin):
     # fields = ['user_id','name','auth_state','sub_date','last_login']
     # list_per_page = 8
     change_list_template = 'admin/account.html'
+    change_form_template = 'admin/account_detail.html'
+    form = MyUserForm
+    
 
 admin.site.register(User, MyUserAdmin)
 
@@ -108,6 +112,7 @@ class PuchasedSalesAdmin(admin.ModelAdmin):
     list_filter = ('trans_date', DateRangeFilter),
     list_per_page = 8
     change_list_template = 'admin/transaction.html'
+    change_form_template = 'admin/trans_log.html'
     
     def has_add_permission(self, request, obj=None):
         # 추가 권한 없애기
