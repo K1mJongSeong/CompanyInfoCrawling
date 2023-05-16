@@ -43,16 +43,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for transction in cl.result_list %}
+                    {% for puchasedsales in cl.result_list %}
                         <tr>
-                            <td>{{ transction.ps_id }}</td>
-                            <td>{{ transction.trans_num }}</td>
-                            <td>{{ transction.trans_item }}</td>
-                            <td>{{ transction.trans_name }}</td>
-                            <td>{{ transction.payment }}</td>
-                            <td>{{ transction.state }}</td>
-                            <td>{{ transction.pay_method }}</td>
-                            <td>{{ transction.trans_date }}</td>
+                            <td><a href="{% url 'admin:cominfoApp_puchasedsales_change' puchasedsales.ps_id %}">{{ puchasedsales.ps_id }}</a></td>
+                            <td>{{ puchasedsales.trans_num }}</td>
+                            <td>{{ puchasedsales.trans_item }}</td>
+                            <td>{{ puchasedsales.trans_name }}</td>
+                            <td>{{ puchasedsales.payment }}</td>
+                            <td>{{ puchasedsales.state }}</td>
+                            <td>{{ puchasedsales.pay_method }}</td>
+                            <td>{{ puchasedsales.trans_date }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -24,9 +24,12 @@
                             <option value="normal">정상</option>
                             <option value="suspende">정지</option>
                         </select>
-                        <input type="search" placeholder="검색어를 입력해주세요">
                     </body>
+                    <h3>사유작성</h3>
+                    <input type="text">
                 </div>
+                <button type="submit">저장</button>
+                <button type="submit">삭제</button>
             </form>
         </div>
         <div class="card-body">
@@ -36,7 +39,6 @@
                     <tr>
                         <th>NO</th>
                         <th>거래번호</th>
-                        <th>기업명</th>
                         <th>구매자</th>
                         <th>거래방식</th>
                         <th>결제금액</th>
@@ -45,16 +47,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for transaction in cl.result_list %}
+                    {% for Puchased_sales in cl.result_list %}
                         <tr>
-                            <td>{{ transaction.ps_id }}</td>
-                            <td>{{ transaction.trans_num }}</td>
-                            <td>{{ transaction.corporate_name }}</td>
-                            <td>{{ transaction.trans_name }}</td>
-                            <td>{{ transaction.pay_method }}</td>
-                            <td>{{ transaction.payment }}</td>
-                            <td>{{ transaction.state }}</td>
-                            <td>{{ transaction.trans_date }}</td>
+                            <td>{{ Puchased_sales.ps_id }}</td>
+                            <td>{{ Puchased_sales.trans_num }}</td>
+                            <td>{{ Puchased_sales.trans_name }}</td>
+                            <td>{{ Puchased_sales.pay_method }}</td>
+                            <td>{{ Puchased_sales.payment }}</td>
+                            <td>{{ Puchased_sales.state }}</td>
+                            <td>{{ Puchased_sales.trans_date }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -1,0 +1,17 @@
+{% extends 'admin/base_site.html' %} <!--change_list-->
+
+{% block extrastyle %}
+    <style>
+        .card-body td {
+            border: 1px solid #eee;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>거래로그</h1>
+    <div class="card">
+        <h3>거래넘버</h3>
+        <p>{{transaction.trans_num}}</p>
+    </div>
+{% endblock %}

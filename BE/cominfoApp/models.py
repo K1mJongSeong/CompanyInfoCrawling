@@ -85,12 +85,12 @@ class Instagram(models.Model):
 class User(models.Model): #일반로그인
     user_id = models.IntegerField(primary_key=True, verbose_name="NO")
     name = models.CharField(max_length=100, blank=True, null=True,verbose_name="회원이름")
-    password = models.CharField(max_length=100, blank=True, null=True)
+    password = models.CharField(max_length=100, blank=True, null=True,verbose_name="비밀번호")
     email = models.CharField(max_length=100, blank=True, null=True,verbose_name="이메일")
-    country = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True,verbose_name="나라")
     is_login = models.CharField(max_length=1, blank=True, null=True)
     auth_state = models.CharField(max_length=10, blank=True, null=True,verbose_name="계정상태")
-    sus_reason = models.CharField(max_length=255, blank=True, null=True)
+    sus_reason = models.CharField(max_length=255, blank=True, null=True,verbose_name="정지사유")
     sub_date = models.DateTimeField(blank=True, null=True,verbose_name="가입일")
     last_login = models.DateTimeField(blank=True, null=True,verbose_name="최근 접속")
 
@@ -159,7 +159,6 @@ class Qna(models.Model):
     
 
     EXPOSURE_STATE_CHOICES = [
-        ('메인','메인'),
         ('노출','노출'),
         ('미노출','미노출'),
     ]
