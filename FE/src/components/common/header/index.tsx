@@ -42,6 +42,12 @@ export default function Header() {
 
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
+    setMoMenuOpen(false);
+  };
+
+  const handleMoMenuOpen = () => {
+    setMoMenuOpen(!moMenuOpen);
+    setSearchOpen(false);
   };
 
   useEffect(() => {
@@ -207,7 +213,7 @@ export default function Header() {
               </>
             </Hidden>
             <Hidden mdUp>
-              <IconButton onClick={() => setMoMenuOpen(!moMenuOpen)}>
+              <IconButton onClick={handleMoMenuOpen}>
                 <HiBars3BottomRight />
               </IconButton>
             </Hidden>
