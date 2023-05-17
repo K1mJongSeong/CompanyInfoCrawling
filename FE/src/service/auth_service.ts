@@ -1,3 +1,4 @@
+import moment from "moment";
 import client from "./api/client";
 
 export interface InBasicRegisterProps {
@@ -47,6 +48,7 @@ export const UserRegister = async ({
     email,
     country,
     auth_state: "정상",
+    sub_date: moment().format(),
   });
   const data = await res.data;
   return data;
@@ -68,6 +70,7 @@ export const CoUserRegister = async ({
     corporate_name,
     business_num,
     auth_state: "정상",
+    sub_date: moment().format(),
   });
   const data = await res.data;
   return data;
