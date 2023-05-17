@@ -1,6 +1,9 @@
 "use client";
 
+import { useAuth } from "@/contexts/auth.context";
+import { Logout } from "@mui/icons-material";
 import {
+  Avatar,
   Box,
   Button,
   Link,
@@ -15,11 +18,23 @@ import { grey } from "@mui/material/colors";
 import { useRouter } from "next/navigation";
 
 export default function MoHeaderMemu() {
+  const { user, signOut } = useAuth();
   const router = useRouter();
-  const handleGotoLogin = () => {
-    router.push("/auth/login");
+  const handleGotoAccount = () => {
+    if (!user) return;
+    if (user.data.user_name) {
+      router.push(`/account/individual/${user?.email}`);
+    } else if (user.data.coruser_name) {
+      router.push(`/account/corporate/${user?.email}`);
+    }
   };
-
+  const userState = !user
+    ? "not user"
+    : user.data.user_name
+    ? user.data.user_name
+    : user.data.coruser_name
+    ? user.data.coruser_name
+    : "unknown";
   return (
     <Stack
       direction={"column"}
@@ -34,6 +49,35 @@ export default function MoHeaderMemu() {
       py={2}
       gap={2}
     >
+      {user && (
+        <>
+          <Stack
+            direction={"row"}
+            pb={1}
+            borderBottom={1}
+            borderColor={grey[200]}
+          >
+            <Stack direction={"column"}>
+              <Typography
+                variant="body1"
+                fontSize={"small"}
+                mb={1}
+                color={grey[500]}
+              >
+                welcome!
+              </Typography>
+              <Stack
+                direction={"row"}
+                alignItems={"center"}
+                gap={1}
+                onClick={handleGotoAccount}
+              >
+                <Avatar /> {userState}
+              </Stack>
+            </Stack>
+          </Stack>
+        </>
+      )}
       <List
         component="nav"
         subheader={
@@ -66,15 +110,29 @@ export default function MoHeaderMemu() {
         justifyContent={"flex-end"}
         borderColor={grey[200]}
       >
-        <Typography fontSize="small" color={grey[500]}>
-          Is this your first time?
-        </Typography>
-        <Link
-          href={"/auth/login"}
-          sx={{ textDecoration: "none", fontWeight: 700 }}
-        >
-          Sign In
-        </Link>
+        {user ? (
+          <>
+            <Button
+              variant="outlined"
+              startIcon={<Logout fontSize="small" />}
+              onClick={signOut}
+            >
+              Logout
+            </Button>
+          </>
+        ) : (
+          <>
+            <Typography fontSize="small" color={grey[500]}>
+              Is this your first time?
+            </Typography>
+            <Link
+              href={"/auth/login"}
+              sx={{ textDecoration: "none", fontWeight: 700 }}
+            >
+              Sign In
+            </Link>
+          </>
+        )}
       </Stack>
     </Stack>
   );
