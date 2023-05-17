@@ -16,12 +16,14 @@ export async function changeUserInfo({
   password,
   email,
   country,
+  phone,
   auth_state,
 }: {
   name: string;
   password: string;
   email: string;
   country: string;
+  phone: string;
   auth_state: string;
 }) {
   const res = await client.put(`/UserPUT/${email}/`, {
@@ -29,6 +31,7 @@ export async function changeUserInfo({
     password,
     email,
     country,
+    phone,
     auth_state,
   });
   const data = await res.data;
@@ -39,6 +42,7 @@ export async function changeCorUserInfo({
   password,
   email,
   country,
+  phone,
   corporate_name,
   business_num,
   auth_state,
@@ -47,6 +51,7 @@ export async function changeCorUserInfo({
   password: string;
   email: string;
   country: string;
+  phone: string;
   corporate_name: string;
   business_num: string;
   auth_state: string;
@@ -56,6 +61,7 @@ export async function changeCorUserInfo({
     password,
     email,
     country,
+    phone,
     auth_state,
     corporate_name,
     business_num,

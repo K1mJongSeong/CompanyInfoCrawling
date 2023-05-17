@@ -30,6 +30,11 @@ export default function LoginContainer() {
 
   const { signIn, loading } = useAuth();
 
+  const handleSubmitLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    signIn({ email, pw });
+  };
+
   return (
     <AuthContainer>
       <AuthCard maxWidth={matches ? 800 : "none"} mx={"auto"}>
@@ -85,7 +90,13 @@ export default function LoginContainer() {
               <br />
               password to SIGN IN
             </Typography>
-            <Stack direction="column" gap={1} mb={4}>
+            <Stack
+              component={"form"}
+              onSubmit={handleSubmitLogin}
+              direction="column"
+              gap={1}
+              mb={6}
+            >
               <TextField
                 label="Email"
                 type="text"
@@ -106,16 +117,16 @@ export default function LoginContainer() {
                   setPw(event.target.value);
                 }}
               />
+              <AuthLoginBtn
+                type="submit"
+                variant="contained"
+                loading={loading}
+                loadingPosition="end"
+                endIcon={<BsArrowRightShort />}
+              >
+                SIGN IN
+              </AuthLoginBtn>
             </Stack>
-            <AuthLoginBtn
-              onClick={() => signIn({ email, pw })}
-              variant="contained"
-              loading={loading}
-              loadingPosition="end"
-              endIcon={<BsArrowRightShort />}
-            >
-              SIGN IN
-            </AuthLoginBtn>
             <Stack direction={"row"} gap={1} alignItems="center">
               <Link
                 href="/auth/findPassword/1"

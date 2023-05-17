@@ -27,7 +27,7 @@ export const AuthCard = styled(Box)`
 export const AuthLoginBtn = styled(LoadingButton)`
   width: 100%;
   max-width: 192px;
-  margin-bottom: 50px;
+  margin-top: 32px;
 `;
 
 export const RegisterTabs = styled(Tabs)`

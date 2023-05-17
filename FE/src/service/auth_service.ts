@@ -6,6 +6,7 @@ export interface InBasicRegisterProps {
   password: string;
   email: string;
   country: string;
+  phone: string;
 }
 export interface InCorUserRegisterProps extends InBasicRegisterProps {
   corporate_name: string;
@@ -13,6 +14,7 @@ export interface InCorUserRegisterProps extends InBasicRegisterProps {
 }
 export interface InCountry {
   name: string;
+  dial_code: string;
   code: string;
 }
 
@@ -41,12 +43,14 @@ export const UserRegister = async ({
   password,
   email,
   country,
+  phone,
 }: InBasicRegisterProps): Promise<{ message: string }> => {
   const res = await client.post("/UserJoin/", {
     name,
     password,
     email,
     country,
+    phone,
     auth_state: "정상",
     sub_date: moment().format(),
   });
@@ -59,6 +63,7 @@ export const CoUserRegister = async ({
   password,
   email,
   country,
+  phone,
   corporate_name,
   business_num,
 }: InCorUserRegisterProps): Promise<{ message: string }> => {
@@ -69,6 +74,7 @@ export const CoUserRegister = async ({
     country,
     corporate_name,
     business_num,
+    phone,
     auth_state: "정상",
     sub_date: moment().format(),
   });
