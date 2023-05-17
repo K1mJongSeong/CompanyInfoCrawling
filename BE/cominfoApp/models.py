@@ -89,16 +89,23 @@ class User(models.Model): #일반로그인
     email = models.CharField(max_length=100, blank=True, null=True,verbose_name="이메일")
     country = models.CharField(max_length=100, blank=True, null=True,verbose_name="나라")
     is_login = models.CharField(max_length=1, blank=True, null=True)
-    auth_state = models.CharField(max_length=10, blank=True, null=True,verbose_name="계정상태")
     sus_reason = models.CharField(max_length=255, blank=True, null=True,verbose_name="정지사유")
     sub_date = models.DateTimeField(blank=True, null=True,verbose_name="가입일")
     last_login = models.DateTimeField(blank=True, null=True,verbose_name="최근 접속")
+    phone = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'User'
         verbose_name = '회원관리'
         verbose_name_plural = '회원관리'
+    
+    AUTH_STATE_CHOICES = [
+        ('정상','정상'),
+        ('정지','정지'),
+    ]
+    auth_state = models.CharField(max_length=10, blank=True, null=True,verbose_name="계정상태",choices=AUTH_STATE_CHOICES)
+
 
 class Coruser(models.Model): #법인 로그인
     cor_id = models.AutoField(primary_key=True)
@@ -111,6 +118,9 @@ class Coruser(models.Model): #법인 로그인
     is_login = models.CharField(max_length=1, blank=True, null=True)
     auth_state = models.CharField(max_length=10, blank=True, null=True)
     sus_reason = models.CharField(max_length=255, blank=True, null=True)
+    sub_date = models.DateTimeField(blank=True, null=True,verbose_name="가입일")
+    last_login = models.DateTimeField(blank=True, null=True,verbose_name="최근 접속")
+    phone = models.CharField(max_length=100, blank=True, null=True)
     
 
     class Meta:

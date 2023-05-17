@@ -1,0 +1,16 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n %}
+
+{% block filters %}
+    {% if cl.has_filters %}
+        <div id="changelist-filter">
+            <h2>{% trans "Filter" %}</h2>
+            {% for spec in cl.filter_specs %}
+                {% if spec.has_output %}
+                    <h3>{% trans spec.title %}</h3>
+                    {% include spec.template %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
