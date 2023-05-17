@@ -1,9 +1,38 @@
-{% extends 'admin/base_site.html' %} <!--change_list-->
+{% extends 'admin/change_form.html' %} <!--change_list-->
 
 {% block extrastyle %}
     <style>
-        .card-body td {
-            border: 1px solid #eee;
+        .a::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .a > * {
+            float: left;
+            margin-right: 10px;
+        }
+        
+        .b::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .b > * {
+            float: left;
+            margin-right: 10px;
+        }
+
+        .c::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .c > * {
+            float: left;
+            margin-right: 10px;
         }
     </style>
 {% endblock %}
@@ -11,7 +40,23 @@
 {% block content %}
     <h1>거래로그</h1>
     <div class="card">
-        <h3>거래넘버</h3>
-        <p>{{transaction.trans_num}}</p>
+        <div class="a">
+            <h3>거래넘버</h3>
+            <p>{{original.trans_num}}</p>
+            <h3>거래날짜</h3>
+            <p>{{original.trans_date}}</p>
+        </div>
+        <div class="b">
+            <h3>거래자</h3>
+            <p>{{original.trans_name}}</p>
+            <h3>이메일</h3>
+            <p>{{original.email}}</p>
+        </div>
+        <div class="c">
+            <h3>거래항목</h3>
+            <p>{{original.trans_item}}</p>
+            <h3>결제금액</h3>
+            <p>{{original.payment}}</p>
+        </div>
     </div>
 {% endblock %}

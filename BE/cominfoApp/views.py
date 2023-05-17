@@ -21,7 +21,7 @@ from django.views.generic import View
 from datetime import datetime, timedelta
 from . import mkcrawling
 from . import mkcrawling, khcrawling, crawling, khfncrawling
-from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna, PuchasedSales
 from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, QnaSerializer, LoginOutSerializer, UserCorUserSerializer, UserWithdrawalSerializer, CorUserWithdrawalSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
@@ -30,6 +30,11 @@ from datetime import datetime, timedelta
 
 
 #-----------------------------------------------------크롤링 동작
+def my_view(request):
+    purchased_sales = PuchasedSales.objects.get(pk=1)  # 예시: pk=1인 인스턴스 가져오기
+    context = {'transaction': purchased_sales}
+    return render(request, 'admin/trans_log.html', context)
+
 def start_crawling(request):
     crawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
     return JsonResponse({"status": "정상", "message": "네이버 뉴스 크롤링 시작."})
@@ -74,6 +79,8 @@ def fetch_and_save_fb_data(request): #페이스북 크롤링
 #-----------------------------------------------------크롤링 동작
 
 #-----------------------------------------------------API
+
+
 class QnaListAPI(generics.ListAPIView):
     serializer_class = QnaSerializer
 

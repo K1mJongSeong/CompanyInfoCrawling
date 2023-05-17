@@ -178,6 +178,7 @@ class PuchasedSales(models.Model):
     trans_date = models.DateField(blank=True, null=True,verbose_name='거래일')
     payment = models.CharField(max_length=100, blank=True, null=True,verbose_name='결제금액')
     pay_method = models.CharField(max_length=100, blank=True, null=True,verbose_name='결제방식')
+    email = models.CharField(max_length=100, blank=True, null=True,verbose_name='이메일')
 
     STATE_CHOICES = [
         ('거래완료','거래완료'),
