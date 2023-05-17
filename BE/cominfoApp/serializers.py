@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser
 from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi, Qna, Payment
+from datetime import datetime
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,10 +25,11 @@ class EmailVerfiSerailizer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     auth_state = serializers.CharField(default='정상')
+    sub_date = serializers.DateTimeField(default=datetime.now())
 
     class Meta:
         model = User
-        fields = ('name','password','email','country','auth_state')
+        fields = ('name','password','email','country','auth_state','sub_date','phone')
 
 
 
@@ -38,10 +40,11 @@ class UserPasswordChange(serializers.ModelSerializer):
 
 class CorUserSerializer(serializers.ModelSerializer):
     auth_state = serializers.CharField(default='정상')
+    sub_date = serializers.DateTimeField(default=datetime.now())
 
     class Meta:
         model = Coruser
-        fields = ('name','password','email','country','corporate_name','business_num','auth_state')
+        fields = ('name','password','email','country','corporate_name','business_num','auth_state','sub_date','phone')
 
 
 class MkCrawlingSerializer(serializers.ModelSerializer):

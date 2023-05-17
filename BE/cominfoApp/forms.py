@@ -9,6 +9,9 @@ class MyUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('name', 'email', 'auth_state', 'sus_reason')
+        widgets = {
+            'auth_state': forms.Select(choices=User.AUTH_STATE_CHOICES),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

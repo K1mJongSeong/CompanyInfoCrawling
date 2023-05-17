@@ -1,4 +1,5 @@
 {% extends 'admin/base_site.html' %}
+{% load i18n %}
 
 {% block extrastyle %}
     <style>
@@ -19,24 +20,41 @@
     </style>
 {% endblock %}
 
+{% block filters %}
+    {% if cl.has_filters %}
+        <div id="changelist-filter">
+            <h2>{% trans "Filter" %}</h2>
+            {% for spec in cl.filter_specs %}
+                {% if spec.has_output %}
+                    <h3>{% trans spec.title %}</h3>
+                    {% include spec.template %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+
 {% block content %}
     <h1>일반 계정 관리</h1>
     <div class="card">
         <div class="option1">
-            <h3>검색</h3>
-            <body>
-                <select>
-                    <option value="all">전체</option>
-                    <option value="name">이름</option>
-                    <option value="email">이메일</option>
-                </select>
-                <input type="text" name="search_keyword" placeholder="검색어를 입력해주세요">
-            </body>
-            <h3>가입일</h3>
-            <input type="date" name="start_date">
-            <h3>~</h3>
-            <input type="date" name="end_date">
-            <button type="submit">검색</button>
+            <form method="get">
+                <h3>검색</h3>
+                <body>
+                    <select name="search_option">
+                        <option value="all">전체</option>
+                        <option value="name">이름</option>
+                        <option value="email">이메일</option>
+                    </select>
+                    <input type="text" name="search_keyword" placeholder="검색어를 입력해주세요">
+                </body>
+                <h3>가입일</h3>
+                <input type="date" name="start_date">
+                <h3>~</h3>
+                <input type="date" name="end_date">
+                <button type="submit">검색</button>
+            </form>
         </div>
         <div class="card-body">
             <table>
@@ -65,6 +83,7 @@
             </table>
         </div>
     </div>
+
 
     <div class="pagination justify-content-center mt-4">
         {% if cl.has_previous %}

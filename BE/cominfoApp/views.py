@@ -30,11 +30,6 @@ from datetime import datetime, timedelta
 
 
 #-----------------------------------------------------크롤링 동작
-def my_view(request):
-    purchased_sales = PuchasedSales.objects.get(pk=1)  # 예시: pk=1인 인스턴스 가져오기
-    context = {'transaction': purchased_sales}
-    return render(request, 'admin/trans_log.html', context)
-
 def start_crawling(request):
     crawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
     return JsonResponse({"status": "정상", "message": "네이버 뉴스 크롤링 시작."})
@@ -205,6 +200,7 @@ class UserLoginView2(GenericAPIView):
 
         if user:
             user.is_login = '1'
+            user.last_login = datetime.now()
             login_record, created = Login.objects.get_or_create(email=email)
             login_record.last_login = datetime.now()
             login_record.save()
@@ -212,6 +208,7 @@ class UserLoginView2(GenericAPIView):
             return Response({"message": "로그인에 성공했습니다."}, status=status.HTTP_200_OK)
         elif cor_user:
             cor_user.is_login = '1'
+            cor_user.last_login = datetime.now()
             login_record, created = Login.objects.get_or_create(email=email)
             login_record.last_login = datetime.now()
             login_record.save()

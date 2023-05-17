@@ -1,4 +1,5 @@
-from typing import Dict, Optional
+from collections import OrderedDict
+from typing import Any, Dict, Optional
 from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, User
@@ -86,22 +87,35 @@ admin.site.index_title = '기업정보 플랫폼'
 #admin.site.unregister(User)
 
 class MyUserAdmin(admin.ModelAdmin):
-    # fields = ['user_id','name','auth_state','sub_date','last_login']
-    # list_per_page = 8
-    change_list_template = 'admin/account.html'
-    change_form_template = 'admin/account_detail.html'
+    #fields = ['user_id','name','auth_state','sub_date','last_login']
+    list_display = ('user_id','name','auth_state','sub_date','last_login')
+    search_fields = ('name','email')
+    list_filter = (('sub_date', DateRangeFilter),)
+    list_per_page = 8
+    #change_list_template = 'admin/account_filter.html'
+    # change_form_template = 'admin/account_detail.html'
     form = MyUserForm
-    
 
+    def get_actions(self, request):
+        return []
+
+    def has_add_permission(self, request, obj=None):
+        # 추가 권한 없애기
+        return False
+    
 admin.site.register(User, MyUserAdmin)
+
 
 class QnaAdmin(admin.ModelAdmin):
     fields = ['question','question_content','answer','exposure']
     search_fields = ['question','writer'] #질문, 작성자
-    list_filter = (('create_at', DateRangeFilter), 'question')
+    list_filter = (('create_at', DateRangeFilter),)
     list_display = ('qna_id','question','answer','exposure','create_at')
     list_per_page = 8
-    change_list_template = 'admin/qna.html'
+    #change_list_template = 'admin/qna.html'
+    
+    def get_actions(self, request):
+        return []
 
 
 admin.site.register(Qna, QnaAdmin)    
@@ -113,9 +127,12 @@ class PuchasedSalesAdmin(admin.ModelAdmin):
     list_display_links = ('trans_name'),
     list_filter = ('trans_date', DateRangeFilter),
     list_per_page = 8
-    change_list_template = 'admin/transaction.html'
-    change_form_template = 'admin/trans_log.html'
+    # change_list_template = 'admin/transaction.html'
+    # change_form_template = 'admin/trans_log.html'
     
+    def get_actions(self, request):
+        return []
+
     def has_add_permission(self, request, obj=None):
         # 추가 권한 없애기
         return False
@@ -136,7 +153,3 @@ class PuchasedSalesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(PuchasedSales, PuchasedSalesAdmin)
-
-class UserManagementAdmin(admin.ModelAdmin):
-    list_per_page = 8
-#admin.site.register(User,UserManagementAdmin)
