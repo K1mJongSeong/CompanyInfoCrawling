@@ -1,11 +1,12 @@
 "use client";
 
 import { useAuth } from "@/contexts/auth.context";
-import { Logout } from "@mui/icons-material";
+import { Logout, Settings } from "@mui/icons-material";
 import {
   Avatar,
   Box,
   Button,
+  IconButton,
   Link,
   List,
   ListItemButton,
@@ -56,6 +57,8 @@ export default function MoHeaderMemu() {
             pb={1}
             borderBottom={1}
             borderColor={grey[200]}
+            alignItems={"center"}
+            justifyContent={"space-between"}
           >
             <Stack direction={"column"}>
               <Typography
@@ -66,15 +69,13 @@ export default function MoHeaderMemu() {
               >
                 welcome!
               </Typography>
-              <Stack
-                direction={"row"}
-                alignItems={"center"}
-                gap={1}
-                onClick={handleGotoAccount}
-              >
+              <Stack direction={"row"} alignItems={"center"} gap={1}>
                 <Avatar /> {userState}
               </Stack>
             </Stack>
+            <IconButton color="primary" onClick={handleGotoAccount}>
+              <Settings fontSize="small" />
+            </IconButton>
           </Stack>
         </>
       )}
