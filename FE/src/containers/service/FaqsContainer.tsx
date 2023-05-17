@@ -20,7 +20,6 @@ export default function FaqsContainer() {
       keepPreviousData: true,
       refetchOnWindowFocus: false,
       onSuccess: (data: Array<InFaqProps>) => {
-        console.log("data", data);
         setList(data);
         setTotalPage(parseInt(data[0].total_page_num, 10));
         setExpanded("panel0");
