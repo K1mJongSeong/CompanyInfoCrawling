@@ -52,17 +52,17 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 export default function CustomizedAccordions({
   data,
+  expanded,
+  handleChange,
 }: {
   data: Array<InFaqProps>;
+  expanded: string | false;
+  handleChange: (
+    panel: string
+  ) => (event: React.SyntheticEvent, newExpanded: boolean) => void;
 }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
-  const [expanded, setExpanded] = useState<string | false>("panel0");
-
-  const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    };
 
   const [mounted, setMounted] = useState<boolean>(false);
   useEffect(() => {

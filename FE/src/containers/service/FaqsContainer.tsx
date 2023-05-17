@@ -10,6 +10,8 @@ export default function FaqsContainer() {
   const [page, setPage] = useState<number>(1);
   const [totalPage, setTotalPage] = useState<number>(1);
   const [list, setList] = useState<Array<InFaqProps>>([]);
+  const [expanded, setExpanded] = useState<string | false>("panel0");
+
   const faqsListQueryKey = ["faqsList", page];
   useQuery(
     faqsListQueryKey,
@@ -21,9 +23,14 @@ export default function FaqsContainer() {
         console.log("data", data);
         setList(data);
         setTotalPage(parseInt(data[0].total_page_num, 10));
+        setExpanded("panel0");
       },
     }
   );
+  const handleChangeAct =
+    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+    };
 
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
@@ -45,7 +52,11 @@ export default function FaqsContainer() {
           frequently asked questions
         </p>
         <div className="flex flex-col justify-between w-full mb-5">
-          <CustomizedAccordions data={list} />
+          <CustomizedAccordions
+            data={list}
+            expanded={expanded}
+            handleChange={handleChangeAct}
+          />
         </div>
         <div className="flex justify-center w-full md:px-10">
           <PaginationBox

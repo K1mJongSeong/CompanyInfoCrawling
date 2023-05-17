@@ -13,7 +13,11 @@ export interface InFaqProps {
   writer: string;
 }
 
-export const getQnaList = async ({ page }: { page?: string }) => {
+export const getQnaList = async ({
+  page,
+}: {
+  page?: string;
+}): Promise<Array<InFaqProps>> => {
   const res = await client.get(`/QnaListAPI/${page ? page : "1"}`);
   const data = await res.data;
   return data;
