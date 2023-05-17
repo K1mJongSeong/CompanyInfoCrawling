@@ -42,6 +42,12 @@ export default function Header() {
 
   const handleSearchOpen = () => {
     setSearchOpen(!searchOpen);
+    setMoMenuOpen(false);
+  };
+
+  const handleMoMenuOpen = () => {
+    setMoMenuOpen(!moMenuOpen);
+    setSearchOpen(false);
   };
 
   useEffect(() => {
@@ -61,12 +67,25 @@ export default function Header() {
   };
 
   const handleClickAccount = () => {
-    router.push(`/account/${user?.email}`);
+    if (!user) return;
+    if (user.data.user_name) {
+      router.push(`/account/individual/${user?.email}`);
+    } else if (user.data.coruser_name) {
+      router.push(`/account/corporate/${user?.email}`);
+    }
   };
 
   const isIndustry = pathname === "/industry";
   const isService = pathname === "/service";
   const isTerms = pathname === "/terms";
+
+  const userState = !user
+    ? "SIGN IN"
+    : user.data.user_name
+    ? user.data.user_name
+    : user.data.coruser_name
+    ? user.data.coruser_name
+    : "unknown";
 
   return (
     <>
@@ -124,7 +143,7 @@ export default function Header() {
                   TERMS
                 </StyledLink>
                 <Button variant="contained" onClick={handleClickAuthButton}>
-                  {user ? user.data.user_name : "SIGN IN"}
+                  {userState}
                 </Button>
                 <Menu
                   anchorEl={anchorEl}
@@ -173,7 +192,7 @@ export default function Header() {
                         welcome!
                       </Typography>
                       <Stack direction={"row"} alignItems={"center"}>
-                        <Avatar /> {user && user.data.user_name}
+                        <Avatar /> {userState}
                       </Stack>
                     </Stack>
                   </MenuItem>
@@ -194,7 +213,7 @@ export default function Header() {
               </>
             </Hidden>
             <Hidden mdUp>
-              <IconButton onClick={() => setMoMenuOpen(!moMenuOpen)}>
+              <IconButton onClick={handleMoMenuOpen}>
                 <HiBars3BottomRight />
               </IconButton>
             </Hidden>

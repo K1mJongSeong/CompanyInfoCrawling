@@ -35,6 +35,13 @@ export default function SearchContainer({ slug }: Props) {
       return true;
     }
   };
+
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    console.log(value);
+  };
   return (
     <SearchLayoutContainer>
       <SearchTop searchValue={searchValue} />
@@ -62,7 +69,7 @@ export default function SearchContainer({ slug }: Props) {
               <SearchItem onClick={handleClickItem} />
               <SearchItem onClick={handleClickItem} />
             </SearchList>
-            <PaginationBox />
+            <PaginationBox onChange={handleChangePage} />
           </>
         ) : (
           <NoSearch />

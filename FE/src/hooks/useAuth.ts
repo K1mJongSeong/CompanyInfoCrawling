@@ -8,9 +8,15 @@ export default function useFirebaseAuth() {
 
   const [user, setUser] = useState<{
     email: string;
-    data: { user_name: string };
+    data: { user_name: string | null; coruser_name: string | null };
   } | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const clear = () => {
+    setUser(null);
+    setLoading(false);
+    localStorage.clear();
+  };
 
   const signIn = async ({ email, pw }: { email: string; pw: string }) => {
     try {
@@ -27,23 +33,24 @@ export default function useFirebaseAuth() {
       const result = await Login({ email, password: pw });
       if (result.message === "로그인에 성공했습니다.") {
         localStorage.setItem("userEmail", email);
-        check();
+        const result = await check();
+        if (!result) return;
         enqueueSnackbar("SUCCESS LOGIN", { variant: "success" });
       }
     } catch (err: any) {
+      clear();
       if (err.response.data.message === "존재하지 않는 아이디입니다.") {
-        return enqueueSnackbar("Not User", { variant: "error" });
+        enqueueSnackbar("Not User", { variant: "error" });
+        return;
+      }
+      if (err.response.data.message === "비밀번호가 틀렸습니다.") {
+        enqueueSnackbar("Check Login Field", { variant: "error" });
+        return;
       } else {
         console.error(err);
         return enqueueSnackbar("Server Error", { variant: "error" });
       }
     }
-  };
-
-  const clear = () => {
-    setUser(null);
-    setLoading(false);
-    localStorage.clear();
   };
 
   const signOut = async () => {
@@ -60,6 +67,7 @@ export default function useFirebaseAuth() {
     } catch (err) {
       console.error(err);
       enqueueSnackbar("Server Error", { variant: "error" });
+      clear();
     }
   };
 
@@ -68,26 +76,34 @@ export default function useFirebaseAuth() {
       const userEmail = localStorage.getItem("userEmail");
       if (!userEmail) {
         clear();
-        return;
+        return false;
       } else {
         const result = await LoginCheck({ email: userEmail });
         if (result.data.auth_state === "정상") {
           setUser({
             email: userEmail,
-            data: { user_name: result.data.user_name },
+            data: {
+              user_name: result.data.user_name ? result.data.user_name : null,
+              coruser_name: result.data.coruser_name
+                ? result.data.coruser_name
+                : null,
+            },
           });
           setLoading(false);
+          return true;
         } else if (result.data.auth_state === "정지") {
-          enqueueSnackbar("Deleted user", { variant: "error" });
+          enqueueSnackbar("Deactivated account", { variant: "error" });
           clear();
-          return;
+          return false;
         } else {
           clear();
+          return false;
         }
       }
     } catch (err) {
       console.error(err);
       clear();
+      return false;
     }
   };
 

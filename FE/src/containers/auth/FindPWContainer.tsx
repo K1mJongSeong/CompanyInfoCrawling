@@ -60,9 +60,16 @@ export default function FindPWContainer() {
         enqueueSnackbar("Checkout Code", { variant: "warning" });
         return false;
       }
-    } catch (err) {
-      enqueueSnackbar("Server Error", { variant: "error" });
-      return false;
+    } catch (err: any) {
+      if (err.response.data.message === "인증번호가 일치하지 않습니다.") {
+        enqueueSnackbar("Not match Code", {
+          variant: "error",
+        });
+        return false;
+      } else {
+        enqueueSnackbar("Server Error", { variant: "error" });
+        return false;
+      }
     }
   };
 
@@ -103,13 +110,13 @@ export default function FindPWContainer() {
           });
         }
         const result = await ChangePw({ email: lsEmail, password: pw });
-        if (result.detail === "비밀번호가 변경되었습니다.") {
+        if (result.message === "비밀번호가 변경되었습니다.") {
           enqueueSnackbar("Change password Done", {
             variant: "success",
           });
           localStorage.clear();
           router.push("/auth/findPassword/3");
-        } else if (result.detail === "찾을 수 없습니다.") {
+        } else if (result.message === "찾을 수 없습니다.") {
           localStorage.clear();
           enqueueSnackbar("Can Not Found User", {
             variant: "warning",

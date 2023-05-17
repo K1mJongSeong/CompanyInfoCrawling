@@ -1,5 +1,7 @@
 import AccountContainer from "@/containers/account/AccountContainer";
-import { getUserInfo } from "@/service/account_service";
+import { getCorUserInfo } from "@/service/account_service";
+
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: {
@@ -7,7 +9,7 @@ type Props = {
   };
 };
 const AccountPage = async ({ params: { id } }: Props) => {
-  const result = await getUserInfo({
+  const result = await getCorUserInfo({
     email: decodeURI(decodeURIComponent(id)),
   });
 

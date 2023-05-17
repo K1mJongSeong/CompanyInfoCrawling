@@ -31,7 +31,7 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiFillCheckCircle, AiOutlineCheckCircle } from "react-icons/ai";
 import Countries from "@/data/countries.json";
 import uuid from "react-uuid";
@@ -69,6 +69,8 @@ export default function RegisterContainer() {
   const [corName, setCorName] = useState<string>("");
   const [bsNum, setbsNum] = useState<string>("");
   const [country, setCountry] = useState<string>("");
+  const [diCode, setDiCode] = useState<string>("");
+  const [phoneNum, setPhoneNum] = useState<string>("");
 
   const [email, setEmail] = useState<string>("");
   const [code, setCode] = useState<string>("");
@@ -89,15 +91,40 @@ export default function RegisterContainer() {
     if (name === "name") setName(value);
     if (name === "corName") setCorName(value);
     if (name === "bsNum") setbsNum(value);
+    if (name === "phone_num") {
+      const regex = /^[0-9\b -]{0,13}$/;
+      if (regex.test(e.target.value)) {
+        setPhoneNum(value);
+      }
+    }
     if (name === "email") setEmail(value);
     if (name === "code") setCode(value);
     if (name === "pw") setPw(value);
     if (name === "pwConfirm") setPwConfirm(value);
   };
+  useEffect(() => {
+    if (phoneNum.length === 10) {
+      setPhoneNum(phoneNum.replace(/(\d{2})(\d{4})(\d{4})/, "$1-$2-$3"));
+    }
+    if (phoneNum.length === 13) {
+      setPhoneNum(
+        phoneNum.replace(/-/g, "").replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3")
+      );
+    }
+  }, [phoneNum]);
 
   const handleSelect = (event: SelectChangeEvent) => {
     setCountry(event.target.value);
   };
+
+  useEffect(() => {
+    if (country) {
+      const findDiCountry = Countries.filter((el) => el.name === country);
+      setDiCode(findDiCountry[0].dial_code);
+    } else {
+      setDiCode("");
+    }
+  }, [country]);
 
   const handleClicSendEmail = async () => {
     const result = await verifyEmail(email, enqueueSnackbar);
@@ -129,8 +156,16 @@ export default function RegisterContainer() {
   const handleRegister = async () => {
     try {
       let result;
-      if (!name || !email || !country || !pw || !pwConfirm) {
+      if (!name || !email || !country || !phoneNum || !pw || !pwConfirm) {
         enqueueSnackbar("Please enter all the information", {
+          variant: "warning",
+        });
+        return false;
+      }
+      // 일반 전화번호 표현식
+      const regPhone = /^\d{2,3}-?\d{3,4}-?\d{4}$/;
+      if (!regPhone.test(phoneNum)) {
+        enqueueSnackbar("Doesn't fit the phone number form", {
           variant: "warning",
         });
         return false;
@@ -157,7 +192,13 @@ export default function RegisterContainer() {
         return false;
       }
       if (tabValue === 0) {
-        result = await UserRegister({ name, email, password: pw, country });
+        result = await UserRegister({
+          name,
+          email,
+          password: pw,
+          country,
+          phone: `${diCode})${phoneNum}`,
+        });
       } else if (tabValue === 1) {
         if (!bsNum || !corName) {
           enqueueSnackbar("Please enter all the information", {
@@ -170,6 +211,7 @@ export default function RegisterContainer() {
           email,
           password: pw,
           country,
+          phone: `${diCode})${phoneNum}`,
           corporate_name: corName,
           business_num: bsNum,
         });
@@ -282,6 +324,22 @@ export default function RegisterContainer() {
                 ))}
               </Select>
             </FormControl>
+            <Stack direction={"row"} alignItems={"flex-end"}>
+              <FormControl variant="standard" sx={{ width: 80 }}>
+                <InputLabel htmlFor="dicode">Dial</InputLabel>
+                <Input id="dicode" value={diCode ? diCode : ""} readOnly />
+              </FormControl>
+              <FormControl variant="standard" sx={{ flex: 1 }}>
+                <InputLabel htmlFor="userPhone">Phone</InputLabel>
+                <Input
+                  id="userPhone"
+                  type={"text"}
+                  value={phoneNum ? phoneNum : ""}
+                  name="phone_num"
+                  onChange={handleChangeRegisterField}
+                />
+              </FormControl>
+            </Stack>
             <FormControl variant="standard">
               <InputLabel htmlFor="userEmail">Email</InputLabel>
               <Input

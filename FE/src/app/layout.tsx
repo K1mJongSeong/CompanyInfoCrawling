@@ -4,6 +4,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import Header from "@/components/common/header";
 import Footer from "@/components/common/footer";
+import ReactQuerySetup from "./ReactQuerySetup";
 
 const pretendard = localFont({
   src: [
@@ -41,14 +42,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={pretendard.className}>
-        <MuiSetup>
-          <Header />
-          {children}
-          <Footer />
-        </MuiSetup>
-      </body>
-    </html>
+    <ReactQuerySetup>
+      <html lang="en">
+        <body className={pretendard.className}>
+          <MuiSetup>
+            <Header />
+            {children}
+            <Footer />
+          </MuiSetup>
+        </body>
+      </html>
+    </ReactQuerySetup>
   );
 }
