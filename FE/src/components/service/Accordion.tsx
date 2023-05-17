@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { Stack, useMediaQuery, useTheme } from "@mui/material";
 import uuid from "react-uuid";
 import { grey } from "@mui/material/colors";
+import { InFaqProps } from "@/service/service_service";
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -49,7 +50,11 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
-export default function CustomizedAccordions({ data }: { data: Array<any> }) {
+export default function CustomizedAccordions({
+  data,
+}: {
+  data: Array<InFaqProps>;
+}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.up("md"));
   const [expanded, setExpanded] = useState<string | false>("panel0");
@@ -67,31 +72,29 @@ export default function CustomizedAccordions({ data }: { data: Array<any> }) {
   if (!mounted) {
     return <>Loading...</>;
   }
-  console.log(data);
 
   return (
     <Stack direction={"column"} gap={1} px={matches ? 5 : 0}>
-      {mounted &&
-        data.map((el, idx) => (
-          <Accordion
-            key={uuid()}
-            expanded={expanded === `panel${idx}`}
-            onChange={handleChange(`panel${idx}`)}
+      {data.map((el, idx) => (
+        <Accordion
+          key={uuid()}
+          expanded={expanded === `panel${idx}`}
+          onChange={handleChange(`panel${idx}`)}
+        >
+          <AccordionSummary
+            aria-controls={`panel${idx}-content`}
+            id={`panel${idx}-header`}
           >
-            <AccordionSummary
-              aria-controls={`panel${idx}-content`}
-              id={`panel${idx}-header`}
-            >
-              <Typography fontWeight={"bold"}>{el.question}</Typography>
-              <Typography fontSize={12} color={grey[500]}>
-                {el.question_content}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography fontSize={14}>{el.answer}</Typography>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+            <Typography fontWeight={"bold"}>{el.question}</Typography>
+            <Typography fontSize={12} color={grey[500]}>
+              {el.question_content}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography fontSize={14}>{el.answer}</Typography>
+          </AccordionDetails>
+        </Accordion>
+      ))}
     </Stack>
   );
 }

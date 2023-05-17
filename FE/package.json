@@ -29,6 +29,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
     "react-pdf": "^6.2.2",
+    "react-query": "^3.39.3",
     "react-read-pdf": "^2.0.9",
     "react-uuid": "^2.0.0",
     "tss-react": "^4.8.3",
