@@ -5,27 +5,38 @@
         .card-body td {
             border: 1px solid #eee;
         }
+
+        .option1::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .option1 > * {
+            float: left;
+            margin-right: 10px;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
     <h1>일반 계정 관리</h1>
     <div class="card">
-        <h3>검색</h3>
         <div class="option1">
-            <form method="get">
-                <select name="search_option">
+            <h3>검색</h3>
+            <body>
+                <select>
                     <option value="all">전체</option>
                     <option value="name">이름</option>
                     <option value="email">이메일</option>
                 </select>
                 <input type="text" name="search_keyword" placeholder="검색어를 입력해주세요">
-                <h3>가입일</h3>
-                <input type="date" name="start_date">
-                <h3>~</h3>
-                <input type="date" name="end_date">
-                <button type="submit">검색</button>
-            </form>
+            </body>
+            <h3>가입일</h3>
+            <input type="date" name="start_date">
+            <h3>~</h3>
+            <input type="date" name="end_date">
+            <button type="submit">검색</button>
         </div>
         <div class="card-body">
             <table>

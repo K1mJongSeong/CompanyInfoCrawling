@@ -16,6 +16,8 @@ from .validators import validate_username
 from .forms import MyUserForm
 
 
+
+
 admin.site.unregister(get_user_model())
 admin.site.unregister(Group)
 admin.site.site_header = '기업정보 플랫폼'

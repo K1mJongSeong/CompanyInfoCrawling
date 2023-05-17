@@ -5,14 +5,26 @@
         .card-body td {
             border: 1px solid #eee;
         }
+
+        .option1::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .option1 > * {
+            float: left;
+            margin-right: 10px;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
     <h1>거래목록</h1>
     <div class="card">
-        <h3>검색</h3>
+        
         <div class="option1">
+            <h3>검색</h3>
             <body>
                 <select>
                     <option value="all">전체</option>                    
