@@ -6,7 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime,timedelta
 from newspaper import Article
-from .models import Crawling
+from googletrans import Translator
+from .models import Mkcrawling
 import time
 import nltk
 
@@ -14,6 +15,7 @@ import nltk
 nltk.download('punkt')
 
 def start_mk2():
+    translator = Translator()
     companies = ["넷플릭스", "삼성전자", "LG전자"]
     keywords = [["경찰조사수사","검찰조사수사","횡령배임","증여","사기","자금세탁"], 
                 ["법원소송","법원판결","공정거래위원회처분시정제재","금융감독원처분행정지도"], 
@@ -23,7 +25,7 @@ def start_mk2():
     today = datetime.now()
     yesterday = today - timedelta(days=1)
     yesterday_str = yesterday.strftime("%Y-%m-%d")
-    base_url = "https://www.mk.co.kr/search?word={company}{keyword}&dateType=1day&startDate={startDate}&endDate={endDate}"
+    base_url = "https://www.mk.co.kr/search?word={company}{keyword}"#&dateType=1day&startDate={startDate}&endDate={endDate}
 
 
     chrome_options = webdriver.ChromeOptions()
@@ -37,7 +39,7 @@ def start_mk2():
             for keyword in keyword_list:
                 print(f"{company} 크롤링 시작.")
 
-                url = base_url.format(company=company, keyword=keyword, startDate=yesterday_str, endDate=today.strftime("%Y-%m-%d"))
+                url = base_url.format(company=company, keyword=keyword) #startDate=yesterday_str, endDate=today.strftime("%Y-%m-%d"))
                 driver.get(url)
 
                 # 더보기 버튼 클릭
@@ -79,12 +81,22 @@ def start_mk2():
                         print("뉴스 내용이 없습니다.")
                         continue
 
-
+                    
+                    
                     image_tags = content_soup.select(".news_cnt_detail_wrap img")
+
+                    date_tags = content_soup.select_one("dl.registration dd")
+
 
                     image_urls = []# 이미지 URL을 저장할 리스트 생성
 
-                    
+                    if date_tags is not None:
+                        date_str = date_tags.text.strip()
+                    else:
+                        print("날짜 정보가 없습니다.")
+
+                    date = datetime.strptime(date_str,"%Y-%m-%d %H:%M:%S")
+
                     for image_tag in image_tags: # 이미지 태그에서 src 속성을 가져와서 리스트에 추가
                         image_url = image_tag["src"]
                         image_urls.append(image_url)
@@ -99,6 +111,8 @@ def start_mk2():
                     link = link_tag["href"] #링크 태그 잘라서 링크만 가져옴.
 
 
+                    translated_title = translator.translate(title,dest='en').text
+
                     # 뉴스 내용 요약
                     article = Article(link_tag["href"])
                     article.download()
@@ -106,7 +120,9 @@ def start_mk2():
                     article.nlp()
                     summary = article.summary
 
-                    mkDB=Crawling(title=title, news_date=yesterday_str, link=link, news_agency="매일경제", content=summary, img=img, collect_date=datetime.now())
+                    translated_content = translator.translate(summary, dest='en').text
+
+                    mkDB=Mkcrawling(title=translated_title, news_date=date, link=link, news_agency="매일경제", content=translated_content, img=img, collect_date=datetime.now())
                     mkDB.save()
 
                     driver.back()
