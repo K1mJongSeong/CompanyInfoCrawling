@@ -19,7 +19,7 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.views.generic import View
 from datetime import datetime, timedelta
-from . import mkcrawling
+from . import mkcrawling2
 from . import mkcrawling, khcrawling, crawling, khfncrawling
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna, PuchasedSales
 from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, QnaSerializer, LoginOutSerializer, UserCorUserSerializer, UserWithdrawalSerializer, CorUserWithdrawalSerializer
@@ -45,6 +45,10 @@ def start_khfncrawling(requset):
 
 def start_mkcrawling(requset):
     mkcrawling.start_mk()
+    return JsonResponse({"message":"매일경제 모든 뉴스 크롤링 시작."})
+
+def start_mkcrawling2(requset):
+    mkcrawling2.start_mk2()
     return JsonResponse({"message":"매일경제 모든 뉴스 크롤링 시작."})
 
 def get_instagram_posts(request):
