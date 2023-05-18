@@ -12,6 +12,9 @@ import requests
 import time
 
 def start_khfn():
+    keywords = [["경찰조사수사","검찰조사수사","횡령배임","증여","사기","자금세탁"], 
+                ["법원소송","법원판결","공정거래위원회처분시정제재","금융감독원처분행정지도"], 
+                ["친환경에너지기술","탄소배출권","윤리경영","사회공헌","기업지배구조"]]
     url = "https://www.koreaherald.com/list.php?ct=021900000000" #헤럴드 파이넨스
     next_button = "https://www.koreaherald.com//list.php?ct=021900000000&np=1&mp=1" #페이지네이션 다음 버튼
 
