@@ -31,37 +31,22 @@ def start_kh():
     chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
 
     driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
-    base_url3 = "http://biz.heraldcorp.com/search/index.php?q={company}{keyword}&sort=1&np={page}"
+    base_url3 = "http://biz.heraldcorp.com/search/index.php?q={company}{keyword}&sort=1&np=1"
 
     translator = Translator() #googletrans 번역 라이브러리 사용.
 
     for company in companies: #회사
         for keyword_list in keywords: #키워드
             for keyword in keyword_list: #회사+키워드
-                #article_url2= base_url3.format(company=company, keyword=keyword)
-                #http://biz.heraldcorp.com/search/index.php?q=%ED%98%84%EB%8C%80%EC%B0%A8%ED%83%84%EC%86%8C%EB%B0%B0%EC%B6%9C%EA%B6%8C&sort=1&np=2
                 print(f"{company} {keyword} 크롤링 시작.")
-
-
-                
-
-                # parsed_url = urlparse(base_url3)
-                # params = parse_qs(parsed_url.query)
-                #if ('np' in params and params['np'][0] == '1'):
-
-                
-                page = 1
+                article_url = base_url.format(company=company, keyword=keyword) # URL에 회사명과 키워드 포함
 
                 while True:
-                    article_url = base_url3.format(company=company, keyword=keyword, page=page) # URL에 회사명과 키워드 포함
+                    
                     driver.get(article_url)
 
                     article_soup = BeautifulSoup(driver.page_source, 'html.parser')
                     news_items = article_soup.select("div.list > ul > li")
-                    if len(news_items) == 0:
-                        print(f"{company}{keyword}에 대한 뉴스 기사가 없습니다.")
-                        #continue
-                        break
                     
 
                     print(f"news_items length: {len(news_items)}")
@@ -72,11 +57,9 @@ def start_kh():
                         if not title_tag:
                             print(f"{article_url}에서 제목을 찾을 수 없습니다.")
                             continue
-
                         
                         title = title_tag.text.strip()
                         print(title)
-
 
                         date_tags = news_item.select_one("div.l_date")
                         date = datetime.strptime(date_tags.text.strip(), "%Y.%m.%d %H:%M")
@@ -132,33 +115,29 @@ def start_kh():
                         # translated_summary = translator.translate(summary, dest='en').text
                         # translated_title = translator.translate(title,dest='en').text
 
+
                         img_tag = content_soup.select_one('#heraldbizimg01')
                         img = img_tag['src'] if img_tag else None
+                        print('aaa')
+                        print(img)
 
                         # 데이터베이스에 저장
                         khDB = Khcrawling(title=translated_title, news_date=date, link=full_url, news_agency="헤럴드경제", content=translated_summary, img=img, collect_date=datetime.now())
                         khDB.save()
-                        
-                        
-                        # last_news = news_items[-1]
-                        
-                        # if news_item == last_news:
-                        #     try: # 다음페이지 클릭
-                        #         print(news_item)
-                        #         driver.get(article_url)
-                        #         more_button = WebDriverWait(driver, 20).until(
-                        #             EC.presence_of_element_located((By.CSS_SELECTOR, "a.arrow.next"))
-                        #         )
-                        #         link_button = more_button.get_attribute('href')
 
-                        #         more_button.click()
-                        #         print(link_button) # 이렇게하면 "삼성전자경찰조사수사" 검색 후 바로 다음 페이지로 이동함.
-                        #     except:
-                        #         print(f"{company}{keyword} 페이지가 더 이상 없습니다.")
-                        #         break
+                    try: # 다음페이지 클릭
+                        more_button = WebDriverWait(driver, 20).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, "a.arrow.next"))
+                        )
+                        link_button = more_button.get_attribute('href')
 
-                    print(f"{company} {keyword} 크롤링 완료.")
-                    page += 1
+                        more_button.click()
+                        print(link_button) # 이렇게하면 "삼성전자경찰조사수사" 검색 후 바로 다음 페이지로 이동함.
+                    except:
+                        print(f"{company}{keyword} 페이지가 더 이상 없습니다.")
+                        break
+
+                print(f"{company} {keyword} 크롤링 완료.")
 
             print("마지막 기사입니다.")
 
