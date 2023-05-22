@@ -34,10 +34,6 @@ def start_crawling(request):
     crawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
     return JsonResponse({"status": "정상", "message": "네이버 뉴스 크롤링 시작."})
 
-def start_khcrawling2(requset):
-    khcrawling2.start_kh()
-    return JsonResponse({"message":"헤럴드경제 크롤링 시작."})
-
 def start_khcrawling(requset):
     khcrawling.start_kh()
     return JsonResponse({"message":"헤럴드경제 크롤링 시작."})
