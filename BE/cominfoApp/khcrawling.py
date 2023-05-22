@@ -11,8 +11,8 @@ from newspaper import Article
 from newspaper.article import ArticleException
 from sumy.nlp.tokenizers import Tokenizer as SumyTokenizer
 from urllib.parse import urlparse, parse_qs
-import requests
-import time
+
+
 
 def start_kh():
     today = datetime.now()
@@ -42,14 +42,10 @@ def start_kh():
                 #http://biz.heraldcorp.com/search/index.php?q=%ED%98%84%EB%8C%80%EC%B0%A8%ED%83%84%EC%86%8C%EB%B0%B0%EC%B6%9C%EA%B6%8C&sort=1&np=2
                 print(f"{company} {keyword} 크롤링 시작.")
 
-
-                
-
                 # parsed_url = urlparse(base_url3)
                 # params = parse_qs(parsed_url.query)
                 #if ('np' in params and params['np'][0] == '1'):
 
-                
                 page = 1
 
                 while True:
@@ -120,13 +116,13 @@ def start_kh():
                         try:
                             translated_summary = translator.translate(summary, dest='en').text
                         except TypeError:
-                            print("Translation failed for this summary, moving to next article.")
+                            print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
                             continue  # Skip the rest of this loop iteration and move to next news item
 
                         try:
                             translated_title = translator.translate(title,dest='en').text
                         except TypeError:
-                            print("Translation failed for this title, moving to next article.")
+                            print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
                             continue  # Skip the rest of this loop iteration and move to next news item
 
                         # translated_summary = translator.translate(summary, dest='en').text

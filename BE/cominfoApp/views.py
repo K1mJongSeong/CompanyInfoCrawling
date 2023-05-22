@@ -20,7 +20,7 @@ from django.conf import settings
 from django.views.generic import View
 from datetime import datetime, timedelta
 from . import mkcrawling2
-from . import mkcrawling, khcrawling, crawling, khfncrawling, khcrawling2
+from . import mkcrawling, khcrawling, crawling, khfncrawling
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna, PuchasedSales
 from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, QnaSerializer, LoginOutSerializer, UserCorUserSerializer, UserWithdrawalSerializer, CorUserWithdrawalSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
