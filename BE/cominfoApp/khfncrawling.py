@@ -79,10 +79,17 @@ def start_khfn():
                         print(title)#제목
                         #content = article_soup.find('div', {'class': 'view_con_t'}).text.strip()
 
-                        img_table = article_soup.find('table', {'style': 'margin:auto;margin-bottom: 10px; width: 500px; margin-top: 10px'})
-                        img_tag = img_table.find('img') if img_table else None
-                        img = img_tag['src'] if img_tag else None #이미지
-                        print(img)
+                        # img_table = article_soup.find('table', {'style': 'margin:auto;margin-bottom: 10px; width: 500px; margin-top: 10px'})
+                        # print(img_table)    
+                        # img_tag = img_table.find('img') if img_table else None
+                        # img = img_tag['src'] if img_tag else None #이미지
+                        # print(img)
+                        #print(article_soup)
+                        div_tag = article_soup.find('div', {'class': 'main_l_img'})
+                        img_tag = div_tag.find('img') if div_tag else None
+                        img_src = img_tag['src'] if img_tag else None
+                        print(img_src)
+
 
                         def fix_month_name(date_string):
                             return date_string.replace('Sept', 'Sep')
@@ -132,7 +139,7 @@ def start_khfn():
 
                         print(full_url)
                         # 데이터베이스에 저장
-                        khfnDB = Khfncrawling(title=translated_title,news_date=date, link=full_url, content=translated_content, img=img, collect_date=datetime.now(),news_agency="헤럴드 Finance")
+                        khfnDB = Khfncrawling(title=translated_title,news_date=date, link=full_url, content=translated_content, img=img_src, collect_date=datetime.now(),news_agency="헤럴드 Finance")
                         khfnDB.save()
 
                     page += 1
