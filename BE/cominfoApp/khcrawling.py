@@ -11,7 +11,33 @@ from newspaper import Article
 from newspaper.article import ArticleException
 from sumy.nlp.tokenizers import Tokenizer as SumyTokenizer
 from urllib.parse import urlparse, parse_qs
+import mysql.connector
 
+# # DB 연결
+# db = mysql.connector.connect(
+#     host="116.124.133.159",
+#     user="search",
+#     password="rldjqwjdqh",
+#     database="cominfo"
+# )
+
+# cursor = db.cursor()
+
+# # SQL 쿼리 실행
+# cursor.execute("SELECT * FROM searchcom.cmp_info")
+
+# # 모든 결과 가져오기
+# companies = cursor.fetchall()
+
+# # DB 연결 종료
+# cursor.close()
+# db.close()
+
+# # 이제 companies는 DB에서 가져온 회사 이름들을 담은 튜플의 리스트입니다.
+# # 이를 사용하여 크롤링을 진행하면 됩니다.
+# for company in companies:
+#     company = company[0]  # 튜플의 첫 번째 요소만 선택
+#     print(company)  # 또는 여기서 크롤링을 시작합니다.
 
 
 def start_kh():
@@ -110,20 +136,21 @@ def start_kh():
                             article.nlp()
                         except ArticleException:
                             print(f"Article download failed for URL: {full_url}, moving to next article.")
-                            continue  # Skip the rest of this loop iteration and move to next news item
+                            continue  
 
                         summary = article.summary
+                        print(f"내용:{summary}")
                         try:
                             translated_summary = translator.translate(summary, dest='en').text
                         except TypeError:
                             print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
-                            continue  # Skip the rest of this loop iteration and move to next news item
+                            continue  
 
                         try:
                             translated_title = translator.translate(title,dest='en').text
                         except TypeError:
                             print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
-                            continue  # Skip the rest of this loop iteration and move to next news item
+                            continue  
 
                         # translated_summary = translator.translate(summary, dest='en').text
                         # translated_title = translator.translate(title,dest='en').text

@@ -21,7 +21,7 @@ from rest_framework.decorators import api_view
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
-from cominfoApp.views import start_crawling, start_mkcrawling, start_khcrawling, start_khfncrawling, fetch_and_save_fb_data, get_instagram_posts, start_mkcrawling2
+from cominfoApp.views import start_navercrawling, start_mkcrawling, start_khcrawling, start_khfncrawling, fetch_and_save_fb_data, get_instagram_posts, start_mkcrawling2, start_navercrawling2
 from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, SendEmailVerificationView, VerifyEmailView, ChangePasswordView, UserLoginView2, UserLogoutView, UserLoginStatusView, UserListView, UserUpdateView, CorUserUpdateView, CorUserListView, UserWithdrawalUpdate, CorUserWithdrawalUpdate, QnaListAPI
 schema_view = get_schema_view(
     openapi.Info(
@@ -40,7 +40,8 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),#Swagger API PATH
     path('admin/', admin.site.urls),
-    path('start_crawling/',start_crawling), #네이버뉴스(네이버API 따로 제공 받을 예정.)
+    #path('start_navercrawling/',start_navercrawling), #네이버뉴스(네이버API 따로 제공 받을 예정.)
+    path('start_navercrawling2/',start_navercrawling2), #네이버뉴스(네이버API 따로 제공 받을 예정.)
     path('start_khcrawling/',start_khcrawling), #헤럴드경제
     path('start_khfncrawling/',start_khfncrawling), #헤럴드 파이넨스
     path('start_mkcrawling/',start_mkcrawling), #매일경제 모든 뉴스
