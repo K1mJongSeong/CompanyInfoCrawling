@@ -72,8 +72,9 @@ def start_khfn():
                         article_soup = BeautifulSoup(article_response.text, 'html.parser')
                         title_tag = news_item.select_one("div.main_l_t1")
                         #title_tag = news_item.find('h1', {'class': 'view_tit'}).text.strip()[:255]
-                        if not title_tag:
-                            print(f"{url}에서 제목을 찾을 수 없습니다.")
+                        # if not title_tag:
+                        #     print(f"{url}에서 제목을 찾을 수 없습니다.")
+
 
                         title = title_tag.text.strip()
                         print(title)#제목
@@ -115,15 +116,20 @@ def start_khfn():
 
                         #제목,내용,이미지,링크,기사시간
                         # 요약 생성
+                        def remove_sentence_from_text(text, sentence):
+                            return text.replace(sentence, '')
                         article = Article(full_url)
                         try:
                             article.download()
                             article.parse()
+                            modified_text = remove_sentence_from_text(article.text, "[H.eco Forum] 'We are in this together,' solidarity an essential pillar in overcoming climate crisis")
+                            article.set_text(modified_text)
                             article.nlp()
                         except ArticleException:
-                            print(f"Article download failed for URL: {full_url}, moving to next article.")
+                            print(f"요약에 실패했습니다. URL: {full_url}, 다음 기사로 이동합니다.")
                             continue  # Skip the rest of this loop iteration and move to next news item
                         summary = article.summary
+                        #print(f"내용: {summary}")
 
                         try:
                             translated_content = translator.translate(summary, dest='en').text
@@ -139,7 +145,14 @@ def start_khfn():
 
                         print(full_url)
                         # 데이터베이스에 저장
-                        khfnDB = Khfncrawling(title=translated_title,news_date=date, link=full_url, content=translated_content, img=img_src, collect_date=datetime.now(),news_agency="헤럴드 Finance")
+                        khfnDB = Khfncrawling(title=translated_title,
+                                            news_date=date, 
+                                            link=full_url, 
+                                            en_content=translated_content, 
+                                            img=img_src, 
+                                            collect_date=datetime.now(),
+                                            news_agency="헤럴드 Finance",
+                                            kr_content=summary)
                         khfnDB.save()
 
                     page += 1

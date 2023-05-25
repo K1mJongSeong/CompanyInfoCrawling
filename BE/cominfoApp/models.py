@@ -7,9 +7,10 @@ class Crawling(models.Model):
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
     news_agency = models.CharField(max_length=45, blank=True, null=True)
-    content = models.TextField(blank=True, null=True)
+    en_content = models.TextField(blank=True, null=True)
     img = models.TextField(blank=True, null=True)
     collect_date = models.DateTimeField(blank=True, null=True)
+    kr_content = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -22,9 +23,10 @@ class Khcrawling(models.Model):
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
     news_agency = models.CharField(max_length=45, blank=True, null=True)
-    content = models.TextField(blank=True, null=True)
+    en_content = models.TextField(blank=True, null=True)
     img = models.TextField(blank=True, null=True)
     collect_date = models.DateField(blank=True, null=True)
+    kr_content = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -37,9 +39,10 @@ class Mkcrawling(models.Model):
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
     news_agency = models.CharField(max_length=45, blank=True, null=True)
-    content = models.TextField(blank=True, null=True)
+    en_content = models.TextField(blank=True, null=True)
     img = models.TextField(blank=True, null=True)
     collect_date = models.DateField(blank=True, null=True)
+    kr_content = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -51,9 +54,10 @@ class Khfncrawling(models.Model):
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
     news_agency = models.CharField(max_length=45, blank=True, null=True)
-    content = models.TextField(blank=True, null=True)
+    en_content = models.TextField(blank=True, null=True)
     img = models.TextField(blank=True, null=True)
     collect_date = models.DateField(blank=True, null=True)
+    kr_content = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False

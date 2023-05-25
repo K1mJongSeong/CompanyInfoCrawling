@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime,timedelta
 from newspaper import Article
+from newspaper.article import ArticleException
 from googletrans import Translator
 from .models import Mkcrawling
 import time
@@ -102,12 +103,12 @@ def start_mk2():
                         image_urls.append(image_url)
 
                     
-                    print("이미지 URL 리스트:", image_urls)# 이미지 URL 리스트 출력
+                    #print("이미지 URL 리스트:", image_urls)# 이미지 URL 리스트 출력
 
                     img = image_urls
-                    print(img)
                     #content = content_tag.get_text(strip=True)  # 내용 태그에서 내용 text만 가져옴.
                     title = title_tag.text.strip() #제목 태그 잘라서 제목 text만 가져옴.
+                    print(title)
                     link = link_tag["href"] #링크 태그 잘라서 링크만 가져옴.
 
 
@@ -115,20 +116,28 @@ def start_mk2():
 
                     # 뉴스 내용 요약
                     article = Article(link_tag["href"])
-                    article.download()
-                    article.parse()
-                    article.nlp()
+                    try:
+                        article.download()
+                        article.parse()
+                        article.nlp()
+                    except ArticleException:
+                        print(f"요약에 실패했습니다. URL: {article} ")
+                        continue
                     summary = article.summary
 
                     translated_content = translator.translate(summary, dest='en').text
 
-                    mkDB=Mkcrawling(title=translated_title, news_date=date, link=link, news_agency="매일경제", content=translated_content, img=img, collect_date=datetime.now())
+                    mkDB=Mkcrawling(title=translated_title, 
+                                    news_date=date, 
+                                    link=link, 
+                                    news_agency="매일경제", 
+                                    en_content=translated_content, 
+                                    img=img, 
+                                    collect_date=datetime.now(),
+                                    kr_content=summary)
                     mkDB.save()
 
                     driver.back()
-
-                    time.sleep(7)
-
 
         print(f"이 기업의 크롤링이 완료 되었습니다. {company}")
 
