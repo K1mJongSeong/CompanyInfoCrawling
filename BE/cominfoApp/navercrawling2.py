@@ -131,7 +131,14 @@ def start_navercrawling2():
                             print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
                             continue 
 
-                        naverDB = Crawling(title=translated_title, news_date=news_date, link=link, content=translated_summary, img=img, collect_date=datetime.now(),news_agency=news_agency)
+                        naverDB = Crawling(title=translated_title, 
+                                        news_date=news_date, 
+                                        link=link, 
+                                        en_content=translated_summary, 
+                                        img=img, 
+                                        collect_date=datetime.now(),
+                                        news_agency=news_agency,
+                                        kr_content=summary)
                         naverDB.save()
                     print(f"{company}{keyword} 크롤링 완료.")
                     page += 10

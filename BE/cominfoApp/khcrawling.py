@@ -128,6 +128,7 @@ def start_kh():
                             continue
                         #content = content_tag.text.strip()
 
+                        #driver.set_page_load_timeout(10)
                         # 요약 생성
                         article = Article(full_url)
                         try:
@@ -139,7 +140,7 @@ def start_kh():
                             continue  
 
                         summary = article.summary
-                        print(f"내용:{summary}")
+                        #print(f"내용:{summary}")
                         try:
                             translated_summary = translator.translate(summary, dest='en').text
                         except TypeError:
@@ -159,7 +160,14 @@ def start_kh():
                         img = img_tag['src'] if img_tag else None
 
                         # 데이터베이스에 저장
-                        khDB = Khcrawling(title=translated_title, news_date=date, link=full_url, news_agency="헤럴드경제", content=translated_summary, img=img, collect_date=datetime.now())
+                        khDB = Khcrawling(title=translated_title, 
+                                        news_date=date,
+                                        link=full_url, 
+                                        news_agency="헤럴드경제", 
+                                        en_content=translated_summary, 
+                                        img=img, 
+                                        collect_date=datetime.now(),
+                                        kr_content=summary)
                         khDB.save()
                         
                         

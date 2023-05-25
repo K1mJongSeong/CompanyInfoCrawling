@@ -14,6 +14,7 @@ def get_instagram_posts(username, insta_username, insta_password):
     custom_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'
     L = Instaloader(user_agent=custom_user_agent)
     translator = Translator()
+    base_url = "https://www.instagram.com/p/"
     #L = instaloader.Instaloader()
 
 
@@ -33,12 +34,13 @@ def get_instagram_posts(username, insta_username, insta_password):
         translated_summary = translator.translate(content, dest='en').text()
 
         time.sleep(2)
+        full_url = base_url + post_url
 
         # DB저장
         ins_post = Instagram(
             title="",
             news_date=post_date,
-            link=post_url,
+            link=full_url,
             content=translated_summary, #한글 -> 영어로 번역 시킨 후 DB 저장
             img=img_url,
             collect_date=timezone.now().date()
@@ -47,7 +49,7 @@ def get_instagram_posts(username, insta_username, insta_password):
 
 
 def scrape_instagram():
-    username = 'kbsnews' #크롤링할 태그네임
+    username = 'kbsnews' #크롤링할 태그네임 ,jtbcnews, kbsnews, sbsnews, sbsnews
     insta_username = 'thesoftlabs@daum.net' #인스타 로그인
     insta_password = 'thvmxmfoqtm'
     get_instagram_posts(username, insta_username, insta_password)
