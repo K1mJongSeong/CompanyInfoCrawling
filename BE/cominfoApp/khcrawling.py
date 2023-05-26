@@ -206,10 +206,10 @@ def start_kh():
 
 schedule.every().day.at("00:00").do(start_kh)
 
-while True:
-    schedule.run_pending()
+# while True:
+#     schedule.run_pending()
 
-    time.sleep(1)
+#     time.sleep(1)
 
 class Command(BaseCommand):
     help = '헤럴드경제 뉴스 크롤링'

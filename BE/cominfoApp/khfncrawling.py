@@ -123,48 +123,49 @@ def start_khfn():
                                 print("뉴스 내용이 없습니다.")
                                 continue
 
-                            #제목,내용,이미지,링크,기사시간
-                            # 요약 생성
-                            def remove_sentence_from_text(text, sentence):
-                                return text.replace(sentence, '')
-                            article = Article(full_url)
-                            try:
-                                article.download()
-                                article.parse()
-                                modified_text = remove_sentence_from_text(article.text, "[H.eco Forum] 'We are in this together,' solidarity an essential pillar in overcoming climate crisis")
-                                article.set_text(modified_text)
-                                article.nlp()
-                            except ArticleException:
-                                print(f"요약에 실패했습니다. URL: {full_url}, 다음 기사로 이동합니다.")
-                                continue  # Skip the rest of this loop iteration and move to next news item
-                            summary = article.summary
-                            #print(f"내용: {summary}")
+                            if existing_link is None:
+                                #제목,내용,이미지,링크,기사시간
+                                # 요약 생성
+                                def remove_sentence_from_text(text, sentence):
+                                    return text.replace(sentence, '')
+                                article = Article(full_url)
+                                try:
+                                    article.download()
+                                    article.parse()
+                                    modified_text = remove_sentence_from_text(article.text, "[H.eco Forum] 'We are in this together,' solidarity an essential pillar in overcoming climate crisis")
+                                    article.set_text(modified_text)
+                                    article.nlp()
+                                except ArticleException:
+                                    print(f"요약에 실패했습니다. URL: {full_url}, 다음 기사로 이동합니다.")
+                                    continue  # Skip the rest of this loop iteration and move to next news item
+                                summary = article.summary
+                                #print(f"내용: {summary}")
 
-                            try:
-                                translated_content = translator.translate(summary, dest='en').text
-                            except TypeError:
-                                print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
-                                continue  # Skip the rest of this loop iteration and move to next news item
+                                try:
+                                    translated_content = translator.translate(summary, dest='en').text
+                                except TypeError:
+                                    print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
+                                    continue  # Skip the rest of this loop iteration and move to next news item
 
-                            try:
-                                translated_title = translator.translate(title,dest='en').text
-                            except TypeError:
-                                print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
-                                continue  # Skip the rest of this loop iteration and move to next news item
+                                try:
+                                    translated_title = translator.translate(title,dest='en').text
+                                except TypeError:
+                                    print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
+                                    continue  # Skip the rest of this loop iteration and move to next news item
 
-                            print(full_url)
-                            # 데이터베이스에 저장
-                            khfnDB = Khfncrawling(title=translated_title,
-                                                news_date=date, 
-                                                link=full_url, 
-                                                en_content=translated_content, 
-                                                img=img_src, 
-                                                collect_date=datetime.now(),
-                                                news_agency="헤럴드 Finance",
-                                                kr_content=summary)
-                            khfnDB.save()
+                                print(full_url)
+                                # 데이터베이스에 저장
+                                khfnDB = Khfncrawling(title=translated_title,
+                                                    news_date=date, 
+                                                    link=full_url, 
+                                                    en_content=translated_content, 
+                                                    img=img_src, 
+                                                    collect_date=datetime.now(),
+                                                    news_agency="헤럴드 Finance",
+                                                    kr_content=summary)
+                                khfnDB.save()
 
-                        page += 1
+                            page += 1
 
                         print(f"{company}{keyword} 크롤링이 완료 되었습니다.")
 
@@ -172,10 +173,10 @@ def start_khfn():
 
 schedule.every().day.at("00:00").do(start_khfn)
 
-while True:
-    schedule.run_pending()
+# while True:
+#     schedule.run_pending()
 
-    time.sleep(1)
+#     time.sleep(1)
 
 class Command(BaseCommand):
     help = '헤럴드 파이넨스 뉴스 크롤링'

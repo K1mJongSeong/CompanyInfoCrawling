@@ -158,10 +158,10 @@ def start_mk2():
 
 schedule.every().day.at("00:00").do(start_mk2)
 
-while True:
-    schedule.run_pending()
+# while True:
+#     schedule.run_pending()
 
-    time.sleep(1)
+#     time.sleep(1)
 
 class Command(BaseCommand):
     help = 'Crawl news articles from Maeil Business Newspaper'
