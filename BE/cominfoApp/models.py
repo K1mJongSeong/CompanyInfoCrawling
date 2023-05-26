@@ -78,9 +78,10 @@ class Instagram(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
-    content = models.TextField(blank=True, null=True)
+    en_content = models.TextField(blank=True, null=True)
     img = models.TextField(blank=True, null=True)
     collect_date = models.DateField(blank=True, null=True)
+    kr_content = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False

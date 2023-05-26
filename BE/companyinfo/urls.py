@@ -47,7 +47,7 @@ urlpatterns = [
     path('start_mkcrawling/',start_mkcrawling), #매일경제 모든 뉴스
     path('start_mkcrawling2/',start_mkcrawling2), #매일경제 모든 뉴스
     path('start_facebook/',fetch_and_save_fb_data), #페이스북
-    path('get_instagram_posts/',get_instagram_posts), #인스타그램
+    path('start_instagram/',get_instagram_posts), #인스타그램
     path('KhCrwawlingGet/',KhCrwawlingGet.as_view()), #헤럴드 경제 GET API
     path('MkCrwawlingGet/',MkCrwawlingGet.as_view()), #매일경제 GET API  
     path('InstagramGet/',InstagramGet.as_view()), #인스타그램 GET API
