@@ -15,8 +15,15 @@ import concurrent.futures
 
 #네이버
 
+companies = ["넷플릭스", "삼성전자", "LG전자"]
+keywords = [["경찰조사수사","검찰조사수사","횡령배임","증여","사기","자금세탁"], 
+            ["법원소송","법원판결","공정거래위원회처분시정제재","금융감독원처분행정지도"], 
+            ["친환경에너지기술","탄소배출권","윤리경영","사회공헌","기업지배구조"]]
 
 def get_article_info(driver, keyword, crawl_date, press_list, title_list, link_list, date_list, more_news_base_url=None, more_news=False, max_page=20):
+
+    
+# 기업 리스트
     chrome_options = Options()
     #headless 설정
     chrome_options.headless =True
@@ -26,54 +33,65 @@ def get_article_info(driver, keyword, crawl_date, press_list, title_list, link_l
     more_news_url_list = []
     current_page = 1
 
-    while True:
-        if current_page > max_page:
-            break
 
-        page_html_source = driver.page_source
-        url_soup = BeautifulSoup(page_html_source, 'lxml')
-        
-        more_news_infos = url_soup.select('a.news_more')
-        
-        if more_news:
-            for more_news_info in more_news_infos:
-                more_news_url = f"{more_news_base_url}{more_news_info.get('href')}"
 
-                more_news_url_list.append(more_news_url)
+    for company in companies:
+        for keyword_group in keywords:
+            for keyword in keyword_group:
+                search_keyword = company + keyword
 
-        article_infos = url_soup.select("div.news_area")
-        
-        if not article_infos:
-            break
+                print(f"{search_keyword} 크롤링 시작.")
 
-        for article_info in article_infos:  
-            press_info = article_info.select_one("div.info_group > a.info.press")
-            
-            if press_info is None:
-                press_info = article_info.select_one("div.info_group > span.info.press")
-            article = article_info.select_one("a.news_tit")
-            
-            press = press_info.text.replace("언론사 선정", "")
-            title = article.get('title')
-            link = article.get('href')
+                current_page = 1
+                more_news_url_list = []
 
-            if keyword in title:
-                press_list.append(press)
-                title_list.append(title)
-                link_list.append(link)
-                date_list.append(crawl_date)
+                while True:
+                    if current_page > max_page: #20페이지까지만 While문이 돌 수 있음.
+                        break
 
-        time.sleep(0.2)
+                    page_html_source = driver.page_source
+                    url_soup = BeautifulSoup(page_html_source, 'lxml')
 
-        next_button_status = url_soup.select_one("a.btn_next").get("aria-disabled")
-        
-        if next_button_status == 'true':
-            break
-        
-        time.sleep(0.2)
-        next_page_btn = driver.find_element(By.CSS_SELECTOR, "a.btn_next").click() 
+                    more_news_infos = url_soup.select('a.news_more')
 
-        current_page += 1
+                    if more_news:
+                        for more_news_info in more_news_infos:
+                            more_news_url = f"{more_news_base_url}{more_news_info.get('href')}"
+                            more_news_url_list.append(more_news_url)
+
+                    article_infos = url_soup.select("div.news_area")
+
+                    if not article_infos:
+                        break
+
+                    for article_info in article_infos:  
+                        press_info = article_info.select_one("div.info_group > a.info.press")
+
+                        if press_info is None:
+                            press_info = article_info.select_one("div.info_group > span.info.press")
+                        article = article_info.select_one("a.news_tit")
+
+                        press = press_info.text.replace("언론사 선정", "")
+                        title = article.get('title')
+                        link = article.get('href')
+
+                        if search_keyword in title:
+                            press_list.append(press)
+                            title_list.append(title)
+                            link_list.append(link)
+                            date_list.append(crawl_date)
+
+                    time.sleep(0.2)
+
+                    next_button_status = url_soup.select_one("a.btn_next").get("aria-disabled")
+
+                    if next_button_status == 'true':
+                        break
+
+                    time.sleep(0.2)
+                    next_page_btn = driver.find_element(By.CSS_SELECTOR, "a.btn_next").click() 
+
+                    current_page += 1
 
     return press_list, title_list, link_list, more_news_url_list
 
@@ -145,40 +163,42 @@ def get_naver_news_info_from_selenium(keyword, target_date, ds_de, sort=0, remov
             # DB에 저장
             article.save()
 
-def crawl_articles(company_name, start_date, end_date):
-    start_date = datetime.datetime.strptime(start_date, "%Y%m%d")
-    end_date = datetime.datetime.strptime(end_date, "%Y%m%d")
-    delta = datetime.timedelta(days=1)
+# def crawl_articles(company_name, start_date, end_date):
+#     start_date = datetime.datetime.strptime(start_date, "%Y%m%d")
+#     end_date = datetime.datetime.strptime(end_date, "%Y%m%d")
+#     delta = datetime.timedelta(days=1)
 
-    while start_date <= end_date:
-        formatted_date = start_date.strftime("%Y%m%d")
-        print(f"Crawling articles for {company_name} on {formatted_date}")
-        print(datetime.datetime.now())
-        #save_path = f"C:/Users/softlabs/Desktop/naver_news/{company_name}_{formatted_date}_articles_upScaling.xlsx"
-        ds_de = start_date.strftime("%Y.%m.%d")
-        get_naver_news_info_from_selenium(company_name, formatted_date, ds_de)
-        start_date += delta
-
-
-def crawl_yesterdays_articles(company_name):
-    today=datetime.datetime.now()
-    yesterday = today - datetime.timedelta(days=1)
-
-    start_date = yesterday.strftime("%Y%m%d")
-    end_date = start_date
-
-    crawl_articles(company_name,start_date,end_date)
+#     while start_date <= end_date:
+#         formatted_date = start_date.strftime("%Y%m%d")
+#         print(f"Crawling articles for {company_name} on {formatted_date}")
+#         print(datetime.datetime.now())
+#         #save_path = f"C:/Users/softlabs/Desktop/naver_news/{company_name}_{formatted_date}_articles_upScaling.xlsx"
+#         ds_de = start_date.strftime("%Y.%m.%d")
+#         get_naver_news_info_from_selenium(company_name, formatted_date, ds_de)
+#         start_date += delta
 
 
-def schedule_crawling(company_name):
+# def crawl_yesterdays_articles(company_name): #오늘 날짜를 기준으로 어제 날짜를 크롤링함.
+#     today=datetime.datetime.now()
+#     yesterday = today - datetime.timedelta(days=1)
+
+#     start_date = yesterday.strftime("%Y%m%d")
+#     end_date = start_date
+
+#     crawl_articles(company_name,start_date,end_date)
+
+
+def schedule_crawling(company_name, keyword_list):
 
     # with concurrent.futures.ProcessPoolExecutor() as executor: #멀티프로세싱 concurrent.futures 라이브러리 적용.
     #     results = list(executor.map(crawl_yesterdays_articles, company_list))
 
     for company in company_name:
-        print(f"Crawling {company}")
-        crawl_yesterdays_articles(company)
-        time.sleep(3)  # 기다릴 시간 설정
+        for keyword in keyword_list:
+            print(f"Crawling {company} with keyword {keyword}")
+            #get_article_info(keyword, company)
+            time.sleep(3)  # 기다릴 시간 설정
+
         
     # next_company=next(company_name)
     # schedule.every().day.at("12:31").do(crawl_yesterdays_articles, next_company) #로직 다 완성하면 이 부분 매일 자정으로 00:00 실행될 수 있게 변경필요.
@@ -191,10 +211,8 @@ def schedule_crawling(company_name):
     return
 
 
-# 기업 리스트
-company_list = ["이아이디", "이브이첨단소재", "에코프로", "현대로템","에코프로비엠","피엔티","엘엔에프","이수화학","두산에너빌리티","이트론"]
 
-#schedule_crawling(company_list)
+#schedule_crawling(companies,keywords)
 
 
 

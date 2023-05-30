@@ -14,6 +14,7 @@ def get_instagram_posts(username, insta_username, insta_password):
     custom_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36'
     L = Instaloader(user_agent=custom_user_agent)
     translator = Translator()
+    base_url = "https://www.instagram.com/p/"
     #L = instaloader.Instaloader()
 
 
@@ -28,26 +29,36 @@ def get_instagram_posts(username, insta_username, insta_password):
     for post in Profile.from_username(L.context, username).get_posts():
         img_url = post.url
         post_url = post.shortcode
-        content = clean_string(post.caption) if post.caption else ''
+        content = post.caption
+        #content = clean_string(post.caption) if post.caption else ''
         post_date = post.date
-        translated_summary = translator.translate(content, dest='en').text()
+        try:
+            translated_summary = translator.translate(content, dest='en').text
+        except TypeError:
+            print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
+            continue  
+        title = post.title
 
-        time.sleep(2)
+        full_url = base_url + post_url
+
+        print(f"내용: {content}")
 
         # DB저장
         ins_post = Instagram(
-            title="",
+            title=title,
             news_date=post_date,
-            link=post_url,
-            content=translated_summary, #한글 -> 영어로 번역 시킨 후 DB 저장
+            link=full_url,
+            en_content=translated_summary, #한글 -> 영어로 번역 시킨 후 DB 저장
             img=img_url,
-            collect_date=timezone.now().date()
+            collect_date=timezone.now().date(),
+            kr_content=content,
         )
         ins_post.save()
 
 
 def scrape_instagram():
-    username = 'kbsnews' #크롤링할 태그네임
+    username_list = ['kbsnews','jtbcnews','sbsnews','sbsnews']
+    username = 'kbsnews' #크롤링할 태그네임 ,jtbcnews, kbsnews, sbsnews, sbsnews
     insta_username = 'thesoftlabs@daum.net' #인스타 로그인
     insta_password = 'thvmxmfoqtm'
     get_instagram_posts(username, insta_username, insta_password)

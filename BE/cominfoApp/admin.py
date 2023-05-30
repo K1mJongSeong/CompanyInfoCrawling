@@ -96,8 +96,8 @@ class MyUserAdmin(admin.ModelAdmin):
     # change_form_template = 'admin/account_detail.html'
     form = MyUserForm
 
-    def get_actions(self, request):
-        return []
+    # def get_actions(self, request):
+    #     return []
 
     def has_add_permission(self, request, obj=None):
         # 추가 권한 없애기
@@ -114,8 +114,8 @@ class QnaAdmin(admin.ModelAdmin):
     list_per_page = 8
     #change_list_template = 'admin/qna.html'
     
-    def get_actions(self, request):
-        return []
+    # def get_actions(self, request):
+    #     return []
 
 
 admin.site.register(Qna, QnaAdmin)    
@@ -130,8 +130,8 @@ class PuchasedSalesAdmin(admin.ModelAdmin):
     # change_list_template = 'admin/transaction.html'
     # change_form_template = 'admin/trans_log.html'
     
-    def get_actions(self, request):
-        return []
+    # def get_actions(self, request):
+    #     return []
 
     def has_add_permission(self, request, obj=None):
         # 추가 권한 없애기

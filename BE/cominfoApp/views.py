@@ -19,8 +19,8 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.views.generic import View
 from datetime import datetime, timedelta
-from . import mkcrawling
-from . import mkcrawling, khcrawling, crawling, khfncrawling
+from . import mkcrawling2, navercrawling, navercrawling2
+from . import mkcrawling, khcrawling, khfncrawling
 from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna, PuchasedSales
 from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, QnaSerializer, LoginOutSerializer, UserCorUserSerializer, UserWithdrawalSerializer, CorUserWithdrawalSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
@@ -30,10 +30,13 @@ from datetime import datetime, timedelta
 
 
 #-----------------------------------------------------크롤링 동작
-def start_crawling(request):
-    crawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
+def start_navercrawling(request):
+    navercrawling.schedule_crawling()  # 크롤링 코드를 실행합니다. company_list
     return JsonResponse({"status": "정상", "message": "네이버 뉴스 크롤링 시작."})
 
+def start_navercrawling2(request):
+    navercrawling2.start_navercrawling2()  # 크롤링 코드를 실행합니다. company_list
+    return JsonResponse({"status": "정상", "message": "네이버 뉴스 크롤링 시작."})
 
 def start_khcrawling(requset):
     khcrawling.start_kh()
@@ -45,6 +48,10 @@ def start_khfncrawling(requset):
 
 def start_mkcrawling(requset):
     mkcrawling.start_mk()
+    return JsonResponse({"message":"매일경제 모든 뉴스 크롤링 시작."})
+
+def start_mkcrawling2(requset):
+    mkcrawling2.start_mk2()
     return JsonResponse({"message":"매일경제 모든 뉴스 크롤링 시작."})
 
 def get_instagram_posts(request):
