@@ -57,8 +57,7 @@ def start_navercrawling2():
 
                     print(f"뉴스 개수: {len(news_items)}")
 
-                    # 여기서부터 뉴스의 제목, 링크, 요약 내용 등을 원하는 방식으로 크롤링하면 됩니다.
-                    # 아래 코드는 뉴스의 제목과 링크를 크롤링하는 예시입니다.
+                    # 여기서부터 뉴스의 제목, 링크, 요약 내용 등을 크롤링
                     for news_item in news_items:
                         press_info = news_item.select_one("div.info_group > span.info.press")
 
