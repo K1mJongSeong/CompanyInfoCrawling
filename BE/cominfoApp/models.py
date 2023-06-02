@@ -1,8 +1,8 @@
 from django.db import models
 
 
-class Crawling(models.Model):
-    crawling_id = models.AutoField(primary_key=True)
+class Crawling(models.Model):#네이버
+    crawling_id = models.AutoField(db_column='crawling_id',primary_key=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)

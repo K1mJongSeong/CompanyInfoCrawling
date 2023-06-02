@@ -1,4 +1,5 @@
 from django.http import JsonResponse, HttpResponse
+from django.db.models import Q
 from rest_framework_swagger.renderers import SwaggerUIRenderer
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
@@ -420,13 +421,31 @@ class CorUserWithdrawalUpdate(generics.UpdateAPIView, mixins.UpdateModelMixin):
 #             # 이메일 또는 비밀번호가 일치하지 않음
 #             return Response({"status": "error", "message": "이메일 또는 비밀번호가 일치하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
 
+#네이버 크롤링 GET API
+class NaverCrwawlingGet(APIView):
+    @swagger_auto_schema(
+        operation_summary='네이버 크롤링 데이터 GET API',
+    )
+    def get(self, request, kr_content):
+        queries = [Q(kr_content__icontains=word) for word in kr_content.split()]
+        query = queries.pop()
+        for item in queries:
+            query |= item
+        naverData = Crawling.objects.filter(query)
+        serializers = CrawlingSerializer(naverData, many=True)
+        return Response(serializers.data)
+
 #매일경제 크롤링 GET API
 class MkCrwawlingGet(APIView):
     @swagger_auto_schema(
         operation_summary='매일경제 크롤링 데이터 GET API',
     )
-    def get(self, request):
-        mkData = Mkcrawling.objects.all()
+    def get(self, request, kr_content):
+        queries = [Q(kr_content__icontains=word) for word in kr_content.split()]
+        query = queries.pop()
+        for item in queries:
+            query |= item
+        mkData = Mkcrawling.objects.filter(query)
         serializers = MkCrawlingSerializer(mkData, many=True)
         return Response(serializers.data)
     
@@ -435,8 +454,12 @@ class KhCrwawlingGet(APIView):
     @swagger_auto_schema(
         operation_summary='헤럴드경제 크롤링 데이터 GET API',
     )
-    def get(self, request):
-        khData = Khcrawling.objects.all()
+    def get(self, request, kr_content):
+        queries = [Q(kr_content__icontains=word) for word in kr_content.split()]
+        query = queries.pop()
+        for item in queries:
+            query |= item
+        khData = Khcrawling.objects.filter(query)
         serializers = KhCrawlingSerializer(khData, many=True)
         return Response(serializers.data)
     
@@ -453,10 +476,14 @@ class InstagramGet(APIView):
 #헤럳드 파이넨스 크롤링 GET API
 class KhfnCrwawlingGet(APIView):
     @swagger_auto_schema(
-        operation_summary='헤럴드 파이넨스 크롤링 데이터 GET API',
+        operation_summary='헤럴드파이넨스 크롤링 데이터 GET API',
     )
-    def get(self, request):
-        khfnData = Khfncrawling.objects.all()
+    def get(self, request, kr_content):
+        queries = [Q(kr_content__icontains=word) for word in kr_content.split()]
+        query = queries.pop()
+        for item in queries:
+            query |= item
+        khfnData = Khfncrawling.objects.filter(query)
         serializers = KhfncrawlingSerializer(khfnData, many=True)
         return Response(serializers.data)
 

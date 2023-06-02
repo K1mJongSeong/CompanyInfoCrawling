@@ -50,22 +50,22 @@ class CorUserSerializer(serializers.ModelSerializer):
 class MkCrawlingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mkcrawling
-        fields = '__all__'
+        fields = ('mkcrawling_id','title','news_date','link','news_agency','en_content','img','kr_content')
 
 class KhCrawlingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Khcrawling
-        fields = '__all__'
+        fields = ('khcrawling_id','title','news_date','link','news_agency','en_content','img','kr_content')
 
 class CrawlingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Crawling
-        fields = '__all__'
+        fields = ('crawling_id','title','news_date','link','news_agency','en_content','img','kr_content')
 
 class KhfncrawlingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Khfncrawling
-        fields = '__all__'
+        fields = ('fn_id','title','news_date','link','news_agency','en_content','img','kr_content')
 
 class FacebookSerializer(serializers.ModelSerializer):
     class Meta:
