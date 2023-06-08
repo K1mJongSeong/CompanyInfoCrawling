@@ -35,10 +35,15 @@ def start_mk2():
     base_url = "https://www.mk.co.kr/search?word={company}{keyword}"#&dateType=1day&startDate={startDate}&endDate={endDate}
 
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
+    chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.106 Safari/537.36")#114.0.5735.110
+    #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
     chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
 
-    driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
+    driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
+    #driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
     
 
     for company in companies:
@@ -91,7 +96,11 @@ def start_mk2():
                         print("날짜 정보가 없습니다.")
 
 
-                    date = datetime.strptime(date_str,"%Y.%m.%d %H:%M")
+                    if "시간 전" in date_str:
+                        hours_ago = int(date_str.replace("시간 전","").strip())
+                        date = datetime.now() - timedelta(hours=hours_ago)
+                    else:
+                        date = datetime.strptime(date_str,"%Y.%m.%d %H:%M")
                     
                     driver.get(link_tag['href'])# 링크 방문
                     
@@ -116,54 +125,54 @@ def start_mk2():
                     print(title)
                     link = link_tag["href"] #링크 태그 잘라서 링크만 가져옴.
 
-                    # try:
-                    #     existing_link = Mkcrawling.objects.get(link=link).first()
-                    # except ObjectDoesNotExist:
-                    #     existing_link = None
+                    try:
+                        existing_link = Mkcrawling.objects.filter(link=link).first()
+                    except ObjectDoesNotExist:
+                        existing_link = None
                     
 
-                    #if existing_link is None:
-                    # 뉴스 내용 요약
-                    article = Article(link_tag["href"])
-                    try:
-                        article.download()
-                        article.parse()
-                        article.nlp()
-                    except ArticleException:
-                        print(f"요약에 실패했습니다. URL: {article} ")
-                        continue
-                    summary = article.summary
+                    if existing_link is None:
+                        # 뉴스 내용 요약
+                        article = Article(link_tag["href"])
+                        try:
+                            article.download()
+                            article.parse()
+                            article.nlp()
+                        except ArticleException:
+                            print(f"요약에 실패했습니다. URL: {article} ")
+                            continue
+                        summary = article.summary
 
-                    try:
-                        translated_content = translator.translate(summary, dest='en').text
-                    except TypeError:
-                        print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
-                        continue  # Skip the rest of this loop iteration and move to next news item
+                        try:
+                            translated_content = translator.translate(summary, dest='en').text
+                        except TypeError:
+                            print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
+                            continue  # Skip the rest of this loop iteration and move to next news item
 
-                    try:
-                        translated_title = translator.translate(title,dest='en').text
-                    except TypeError:
-                        print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
-                        continue  # Skip the rest of this loop iteration and move to next news item
+                        try:
+                            translated_title = translator.translate(title,dest='en').text
+                        except TypeError:
+                            print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
+                            continue  # Skip the rest of this loop iteration and move to next news item
 
-                    mkDB=Mkcrawling(title=translated_title, 
-                                    news_date=date, 
-                                    link=link, 
-                                    news_agency="매일경제", 
-                                    en_content=translated_content, 
-                                    img=img, 
-                                    collect_date=datetime.now(),
-                                    kr_content=summary)
-                    mkDB.save()
-                    time.sleep(1)
-                    
-                    try:
-                        print("뒤로가기")
-                        driver.implicitly_wait(5) #뒤로가기가 이벤트가 실행될 수 있도록 3초동안 로딩을 기다림.
-                        driver.back()
-                    except:
-                        continue
-                    #time.sleep(3)
+                        mkDB=Mkcrawling(title=translated_title, 
+                                        news_date=date, 
+                                        link=link, 
+                                        news_agency="매일경제", 
+                                        en_content=translated_content, 
+                                        img=img, 
+                                        collect_date=datetime.now(),
+                                        kr_content=summary)
+                        mkDB.save()
+                        time.sleep(1)
+                        
+                        try:
+                            print("뒤로가기")
+                            driver.implicitly_wait(5) #뒤로가기가 이벤트가 실행될 수 있도록 3초동안 로딩을 기다림.
+                            driver.back()
+                        except:
+                            continue
+                        #time.sleep(3)
 
         print(f"이 기업의 크롤링이 완료 되었습니다. {company}")
 

@@ -30,10 +30,15 @@ def start_navercrawling2():
     base_url2 = "https://search.naver.com/search.naver?where=news&sm=tab_pge&query={company}{keyword}&sort=0&photo=0&field=0&pd=0&ds=&de=&cluster_rank=457&mynews=0&office_type=0&office_section_code=0&news_office_checked=&nso=so:r,p:all,a:all&start={page}"
 
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
+    chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.106 Safari/537.36")#114.0.5735.110
+    #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
     chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
 
-    driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
+    driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
+    #driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
 
     #headers = {"User-Agent":"Mozilla/5.0"}
 

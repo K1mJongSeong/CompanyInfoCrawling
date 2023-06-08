@@ -35,14 +35,19 @@ def start_khfn():
     next_url = "https://www.koreaherald.com/search/index.php?kr=&q={company}{keyword}&sort=1&mode=list&np={page}&mp=1"
 
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
+    chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.106 Safari/537.36")#114.0.5735.110
+    #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.110 Safari/537.36")#114.0.5735.110
     #Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36
     chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
     # capa = DesiredCapabilities.CHROME
     # capa["pageLoadStrategy"] = "none"
 
     #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), desired_capabilities=capa)
-    driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
+    driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
+    #driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
 
     #wait = WebDriverWait(driver,10)
 
@@ -114,7 +119,7 @@ def start_khfn():
                                 print("링크가 포함된 뉴스가 없습니다.")
 
                         try:
-                            existing_link = Khfncrawling.objects.get(link=full_url).first()
+                            existing_link = Khfncrawling.objects.filter(link=full_url).first()
                         except ObjectDoesNotExist:
                             existing_link = None
 
