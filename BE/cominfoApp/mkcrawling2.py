@@ -35,15 +35,15 @@ def start_mk2():
     base_url = "https://www.mk.co.kr/search?word={company}{keyword}"#&dateType=1day&startDate={startDate}&endDate={endDate}
 
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+    # chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
+    # chrome_options.add_argument("--no-sandbox")
+    # chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.106 Safari/537.36")#114.0.5735.110
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
     chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
 
-    driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
-    #driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
+    #driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
+    driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
     
 
     for company in companies:
@@ -74,6 +74,7 @@ def start_mk2():
                     #continue
 
                 for news_item in news_items:
+                    driver.implicitly_wait(3)
                     title_tag = news_item.select_one("h3.news_ttl")
                     if title_tag is None:
                         print("제목이 포함된 뉴스가 없습니다.")
@@ -106,15 +107,22 @@ def start_mk2():
                     
                     content_tag = content_soup.select_one(".news_cnt_detail_wrap")# 뉴스 내용 찾기
                     
-                    image_tags = content_soup.select(".news_cnt_detail_wrap img")
+                    #image_tags = content_soup.select(".news_cnt_detail_wrap img")
+                    image_tags = news_item.select_one("div.thumb_area img")
                     print(image_tags)
 
                     #date_tags = content_soup.select_one("dl.registration dd")
                     print(date)
 
-                    for image_tag in image_tags: # 이미지 태그에서 src 속성을 가져와서 리스트에 추가
-                        image_url = image_tag["src"]
+                    if image_tags is not None:
+                        image_url = image_tags["data-src"]
                         image_urls.append(image_url)
+                    else:
+                        print("이미지가 없습니다.")
+
+                    # for image_tag in image_tags: # 이미지 태그에서 src 속성을 가져와서 리스트에 추가
+                    #     image_url = image_tag["src"]
+                    #     image_urls.append(image_url)
 
                     
                     #print("이미지 URL 리스트:", image_urls)# 이미지 URL 리스트 출력
@@ -166,13 +174,13 @@ def start_mk2():
                         mkDB.save()
                         time.sleep(1)
                         
-                        try:
-                            print("뒤로가기")
-                            driver.implicitly_wait(5) #뒤로가기가 이벤트가 실행될 수 있도록 3초동안 로딩을 기다림.
-                            driver.back()
-                        except:
-                            continue
-                        #time.sleep(3)
+                    try:
+                        print("뒤로가기")
+                        driver.implicitly_wait(5) #뒤로가기가 이벤트가 실행될 수 있도록 3초동안 로딩을 기다림.
+                        driver.back()
+                    except:
+                        continue
+                    #time.sleep(3)
 
         print(f"이 기업의 크롤링이 완료 되었습니다. {company}")
 
