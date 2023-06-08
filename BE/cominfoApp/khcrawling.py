@@ -60,10 +60,15 @@ def start_kh():
         base_url2 = "http://biz.heraldcorp.com/"
 
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
+        chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.106 Safari/537.36")#114.0.5735.110
+        #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36")
         chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
 
-        driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
+        driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
+        #driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
         base_url3 = "http://biz.heraldcorp.com/search/index.php?q={company}{keyword}&sort=1&np={page}"
 
         translator = Translator() #googletrans 번역 라이브러리 사용.

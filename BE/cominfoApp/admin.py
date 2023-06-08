@@ -112,6 +112,11 @@ class QnaAdmin(admin.ModelAdmin):
     list_filter = (('create_at', DateRangeFilter),)
     list_display = ('qna_id','question','answer','exposure','create_at')
     list_per_page = 8
+
+    def has_change_permission(self, request, obj=None):
+        if request.path.endswith('/history/'):  # history_view에 대한 요청을 차단합니다.
+            return False
+        return super().has_change_permission(request, obj)
     #change_list_template = 'admin/qna.html'
     
     # def get_actions(self, request):
