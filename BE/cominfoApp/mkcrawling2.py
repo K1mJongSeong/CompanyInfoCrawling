@@ -35,15 +35,15 @@ def start_mk2():
     base_url = "https://www.mk.co.kr/search?word={company}{keyword}"#&dateType=1day&startDate={startDate}&endDate={endDate}
 
     chrome_options = webdriver.ChromeOptions()
-    # chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
-    # chrome_options.add_argument("--no-sandbox")
-    # chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.106 Safari/537.36")#114.0.5735.110
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
     chrome_options.add_argument('--ignore-certificate-errors')  # 인증서 오류 무시 옵션 추가
 
-    #driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
-    driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
+    driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
+    #driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
     
 
     for company in companies:
