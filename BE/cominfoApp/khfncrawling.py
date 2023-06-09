@@ -10,6 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta
 from .models import Khfncrawling
 from newspaper import Article
+#from newspaper3k import Article
 from newspaper.article import ArticleException
 from googletrans import Translator
 from django.core.exceptions import ObjectDoesNotExist
@@ -35,9 +36,9 @@ def start_khfn():
     next_url = "https://www.koreaherald.com/search/index.php?kr=&q={company}{keyword}&sort=1&mode=list&np={page}&mp=1"
 
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+    # chrome_options.add_argument("--headless") # 이 부분이 추가됩니다.
+    # chrome_options.add_argument("--no-sandbox")
+    # chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.106 Safari/537.36")#114.0.5735.110
     #chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.110 Safari/537.36")#114.0.5735.110
     #Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36
@@ -46,8 +47,8 @@ def start_khfn():
     # capa["pageLoadStrategy"] = "none"
 
     #driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), desired_capabilities=capa)
-    driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
-    #driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
+    #driver = webdriver.Chrome("/usr/bin/chromedriver", options=chrome_options)  # 옵션 적용
+    driver = webdriver.Chrome("./chromedriver", options=chrome_options)  # 옵션 적용
 
     #wait = WebDriverWait(driver,10)
 
@@ -90,16 +91,9 @@ def start_khfn():
                         print(title)#제목
                         #content = article_soup.find('div', {'class': 'view_con_t'}).text.strip()
 
-                        # img_table = article_soup.find('table', {'style': 'margin:auto;margin-bottom: 10px; width: 500px; margin-top: 10px'})
-                        # print(img_table)    
-                        # img_tag = img_table.find('img') if img_table else None
-                        # img = img_tag['src'] if img_tag else None #이미지
-                        # print(img)
-                        #print(article_soup)
                         div_tag = article_soup.find('div', {'class': 'main_l_img'})
                         img_tag = div_tag.find('img') if div_tag else None
                         img_src = img_tag['src'] if img_tag else None
-                        print(img_src)
 
 
                         def fix_month_name(date_string):
@@ -124,7 +118,8 @@ def start_khfn():
                             existing_link = None
 
                         content_soup = BeautifulSoup(driver.page_source, "html.parser")
-                        content_tag = content_soup.select("div.view_con.article")
+                        #content_tag = content_soup.select("div.view_con.article")
+                        content_tag = content_soup.select_one("div.view_con_t").text
                         if content_tag is None:
                             print("뉴스 내용이 없습니다.")
                             continue
@@ -132,34 +127,34 @@ def start_khfn():
                         if existing_link is None:
                             #제목,내용,이미지,링크,기사시간
                             # 요약 생성
-                            def remove_sentence_from_text(text, sentence):
-                                return text.replace(sentence, '')
-                            article = Article(full_url)
-                            try:
-                                article.download()
-                                article.parse()
-                                modified_text = remove_sentence_from_text(article.text, "[H.eco Forum] 'We are in this together,' solidarity an essential pillar in overcoming climate crisis")
-                                article.set_text(modified_text)
-                                article.nlp()
-                            except ArticleException:
-                                print(f"요약에 실패했습니다. URL: {full_url}, 다음 기사로 이동합니다.")
-                                continue  # Skip the rest of this loop iteration and move to next news item
-                            summary = article.summary
-                            #print(f"내용: {summary}")
+                            # def remove_sentence_from_text(text, sentence):
+                            #     return text.replace(sentence, '')
+                            # #article = Article(content_tag)
+                            # article = Article(full_url, language='en')
+                            # try:
+                            #     article.download()
+                            #     article.parse()
+                            #     # modified_text = remove_sentence_from_text(article.text, "[H.eco Forum] 'We are in this together,' solidarity an essential pillar in overcoming climate crisis")
+                            #     # modified_text2 = remove_sentence_from_text(article.text, "Pride parade to take to Euljiro streets after Seoul Plaza refusal")
+                            #     # article.set_text(modified_text, modified_text2)
+                            #     article.nlp()
+                            # except ArticleException:
+                            #     print(f"요약에 실패했습니다. URL: {full_url}, 다음 기사로 이동합니다.")
+                            #     continue
+                            # summary = article.summary
 
                             try:
-                                translated_content = translator.translate(summary, dest='en').text
+                                translated_content = translator.translate(content_tag, dest='en').text
                             except TypeError:
                                 print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
-                                continue  # Skip the rest of this loop iteration and move to next news item
+                                continue
 
                             try:
                                 translated_title = translator.translate(title,dest='en').text
                             except TypeError:
                                 print("이 요약을 번역하지 못했습니다. 다음 뉴스로 이동합니다.")
-                                continue  # Skip the rest of this loop iteration and move to next news item
+                                continue
 
-                            print(full_url)
                             # 데이터베이스에 저장
                             khfnDB = Khfncrawling(title=translated_title,
                                                 news_date=date, 
@@ -168,7 +163,7 @@ def start_khfn():
                                                 img=img_src, 
                                                 collect_date=datetime.now(),
                                                 news_agency="헤럴드 Finance",
-                                                kr_content=summary)
+                                                kr_content=content_tag)
                             khfnDB.save()
 
                         page += 1
