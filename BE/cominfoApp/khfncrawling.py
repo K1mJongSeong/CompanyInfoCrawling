@@ -10,11 +10,13 @@ from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime, timedelta
 from .models import Khfncrawling
 from newspaper import Article
-#from newspaper3k import Article
 from newspaper.article import ArticleException
 from googletrans import Translator
 from django.core.exceptions import ObjectDoesNotExist
-from sumy.nlp.tokenizers import Tokenizer as SumyTokenizer
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.parsers.html import HtmlParser
+from sumy.summarizers.lsa import LsaSummarizer
 import requests
 import time
 import schedule
@@ -127,21 +129,22 @@ def start_khfn():
                         if existing_link is None:
                             #제목,내용,이미지,링크,기사시간
                             # 요약 생성
-                            # def remove_sentence_from_text(text, sentence):
-                            #     return text.replace(sentence, '')
-                            # #article = Article(content_tag)
                             # article = Article(full_url, language='en')
                             # try:
                             #     article.download()
                             #     article.parse()
-                            #     # modified_text = remove_sentence_from_text(article.text, "[H.eco Forum] 'We are in this together,' solidarity an essential pillar in overcoming climate crisis")
-                            #     # modified_text2 = remove_sentence_from_text(article.text, "Pride parade to take to Euljiro streets after Seoul Plaza refusal")
-                            #     # article.set_text(modified_text, modified_text2)
-                            #     article.nlp()
                             # except ArticleException:
                             #     print(f"요약에 실패했습니다. URL: {full_url}, 다음 기사로 이동합니다.")
                             #     continue
-                            # summary = article.summary
+
+                            # New summary generation with sumy
+                            tokenizer = Tokenizer("english")
+                            parser = PlaintextParser.from_string(content_tag, tokenizer=tokenizer)
+                            summarizer = LsaSummarizer()
+                            summary = summarizer(parser.document, 3)  # Summarize the document with 3 sentences
+
+                            # Converting Summary from sentences to final string
+                            summary = " ".join(str(sentence) for sentence in summary)
 
                             try:
                                 translated_content = translator.translate(content_tag, dest='en').text
