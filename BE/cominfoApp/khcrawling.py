@@ -36,7 +36,7 @@ import time
 # cursor.close()
 # db.close()
 
-# # 이제 companies는 DB에서 가져온 회사 이름들을 담은 튜플의 리스트입니다.
+# #companies는 DB에서 가져온 회사 이름들을 담은 튜플의 리스트입니다.
 # for company in companies:
 #     company = company[0]  # 튜플의 첫 번째 요소만 선택
 #     print(company)  # 또는 여기서 크롤링을 시작합니다.
