@@ -46,7 +46,7 @@ def first_day_of_month():
     return datetime.now().day == 1
 
 def start_kh():
-    #if first_day_of_month():
+    #if first_day_of_month(): #최종 완성 로직을 작성 후 이 부분을 주석을 풀고 스케줄러를 돌리시면 됩니다. 스케줄러 돌려야 할 코드만 들여쓰기 하시면 됩니다.
     today = datetime.now()
     yesterday = today - timedelta(days=1)
     yesterday_str = yesterday.strftime("%Y%m%d")
