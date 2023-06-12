@@ -76,6 +76,7 @@ class Facebook(models.Model):
 class Instagram(models.Model):
     ins_id = models.AutoField(primary_key=True, db_index=True)
     title = models.CharField(max_length=255, blank=True, null=True)
+    news_agency=models.CharField(max_length=45, blank=True, null=True)
     news_date = models.DateTimeField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
     en_content = models.TextField(blank=True, null=True)
