@@ -221,3 +221,118 @@ class Payment(models.Model):
     class Meta:
         managed = False
         db_table = 'Payment'
+
+
+class CmpInfo(models.Model): #기업정보 
+    cmp_id = models.AutoField(primary_key=True)
+    cmpcd = models.CharField(db_column='cmpCd', max_length=30, blank=True, null=True)  # Field name made lowercase.
+    cmpnm = models.CharField(db_column='cmpNm', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    cmpenm = models.CharField(db_column='cmpEnm', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    bizno = models.CharField(db_column='bizNo', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    cmptypenm = models.CharField(db_column='cmpTypEnm', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    estbdate = models.CharField(db_column='estbDate', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    indcd = models.CharField(db_column='indCd', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    empcnt = models.CharField(db_column='empCnt', max_length=30, blank=True, null=True)  # Field name made lowercase.
+    telno = models.CharField(db_column='telNo', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    faxtelno = models.CharField(db_column='faxTelNo', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    enadr = models.CharField(db_column='enAdr', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    mnbizcont = models.CharField(db_column='mnBizCont', max_length=30, blank=True, null=True)  # Field name made lowercase.
+    pstncdnm1 = models.CharField(db_column='pstnCdNm1', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm1 = models.CharField(db_column='mgrNm1', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu1 = models.CharField(max_length=100, blank=True, null=True)
+    crr1 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm2 = models.CharField(db_column='pstnCdNm2', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm2 = models.CharField(db_column='mgrNm2', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu2 = models.CharField(max_length=100, blank=True, null=True)
+    crr2 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm3 = models.CharField(db_column='pstnCdNm3', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm3 = models.CharField(db_column='mgrNm3', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu3 = models.CharField(max_length=100, blank=True, null=True)
+    crr3 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm4 = models.CharField(db_column='pstnCdNm4', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm4 = models.CharField(db_column='mgrNm4', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu4 = models.CharField(max_length=100, blank=True, null=True)
+    crr4 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm5 = models.CharField(db_column='pstnCdNm5', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm5 = models.CharField(db_column='mgrNm5', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu5 = models.CharField(max_length=100, blank=True, null=True)
+    crr5 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm6 = models.CharField(db_column='pstnCdNm6', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm6 = models.CharField(db_column='mgrNm6', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu6 = models.CharField(max_length=100, blank=True, null=True)
+    crr6 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm7 = models.CharField(db_column='pstnCdNm7', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm7 = models.CharField(db_column='mgrNm7', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu7 = models.CharField(max_length=100, blank=True, null=True)
+    crr7 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm8 = models.CharField(db_column='pstnCdNm8', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm8 = models.CharField(db_column='mgrNm8', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu8 = models.CharField(max_length=100, blank=True, null=True)
+    crr8 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm9 = models.CharField(db_column='pstnCdNm9', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm9 = models.CharField(db_column='mgrNm9', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu9 = models.CharField(max_length=100, blank=True, null=True)
+    crr9 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm10 = models.CharField(db_column='pstnCdNm10', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm10 = models.CharField(db_column='mgrNm10', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu10 = models.CharField(max_length=100, blank=True, null=True)
+    crr10 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm11 = models.CharField(db_column='pstnCdNm11', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm11 = models.CharField(db_column='mgrNm11', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu11 = models.CharField(max_length=100, blank=True, null=True)
+    crr11 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm12 = models.CharField(db_column='pstnCdNm12', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm12 = models.CharField(db_column='mgrNm12', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu12 = models.CharField(max_length=100, blank=True, null=True)
+    crr12 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm13 = models.CharField(db_column='pstnCdNm13', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm13 = models.CharField(db_column='mgrNm13', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu13 = models.CharField(max_length=100, blank=True, null=True)
+    crr13 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm14 = models.CharField(db_column='pstnCdNm14', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm14 = models.CharField(db_column='mgrNm14', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu14 = models.CharField(max_length=100, blank=True, null=True)
+    crr14 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm15 = models.CharField(db_column='pstnCdNm15', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm15 = models.CharField(db_column='mgrNm15', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu15 = models.CharField(max_length=100, blank=True, null=True)
+    crr15 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm16 = models.CharField(db_column='pstnCdNm16', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm16 = models.CharField(db_column='mgrNm16', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu16 = models.CharField(max_length=100, blank=True, null=True)
+    crr16 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm17 = models.CharField(db_column='pstnCdNm17', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm17 = models.CharField(db_column='mgrNm17', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu17 = models.CharField(max_length=100, blank=True, null=True)
+    crr17 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm18 = models.CharField(db_column='pstnCdNm18', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm18 = models.CharField(db_column='mgrNm18', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu18 = models.CharField(max_length=100, blank=True, null=True)
+    crr18 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm19 = models.CharField(db_column='pstnCdNm19', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm19 = models.CharField(db_column='mgrNm19', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu19 = models.CharField(max_length=100, blank=True, null=True)
+    crr19 = models.CharField(max_length=100, blank=True, null=True)
+    pstncdnm20 = models.CharField(db_column='pstnCdNm20', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mgrnm20 = models.CharField(db_column='mgrNm20', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    edu20 = models.CharField(max_length=100, blank=True, null=True)
+    crr20 = models.CharField(max_length=100, blank=True, null=True)
+    stkrnm1 = models.CharField(db_column='stkrNm1', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    note1 = models.CharField(max_length=100, blank=True, null=True)
+    ownrate1 = models.CharField(db_column='ownRate1', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    stkrnm2 = models.CharField(db_column='stkrNm2', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    note2 = models.CharField(max_length=100, blank=True, null=True)
+    ownrate2 = models.CharField(db_column='ownRate2', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    stkrnm3 = models.CharField(db_column='stkrNm3', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    note3 = models.CharField(max_length=100, blank=True, null=True)
+    ownrate3 = models.CharField(db_column='ownRate3', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    stkrnm4 = models.CharField(db_column='stkrNm4', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    note4 = models.CharField(max_length=100, blank=True, null=True)
+    ownrate4 = models.CharField(db_column='ownRate4', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    stkrnm5 = models.CharField(db_column='stkrNm5', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    note5 = models.CharField(max_length=100, blank=True, null=True)
+    ownrate5 = models.CharField(db_column='ownRate5', max_length=100, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'cmp_info'

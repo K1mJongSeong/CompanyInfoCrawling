@@ -23,8 +23,8 @@ from django.views.generic import View
 from datetime import datetime, timedelta
 from . import mkcrawling2, navercrawling, navercrawling2
 from . import mkcrawling, khcrawling, khfncrawling
-from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna, PuchasedSales, CmpInfo
-from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, QnaSerializer, LoginOutSerializer, UserCorUserSerializer, UserWithdrawalSerializer, CorUserWithdrawalSerializer, CmpInfoSerializer
+from .models import Crawling, Khcrawling, Mkcrawling, Khfncrawling, Instagram, Facebook, User, Coruser, Login, Email, EmailVerfi, Qna, PuchasedSales
+from .serializers import CrawlingSerializer, KhCrawlingSerializer, MkCrawlingSerializer, KhfncrawlingSerializer, UserSerializer, CorUserSerializer, InstagramSerializer, LoginSerializer, EmailSerializer, EmailVerfiSerailizer, UserPasswordChange, QnaSerializer, LoginOutSerializer, UserCorUserSerializer, UserWithdrawalSerializer, CorUserWithdrawalSerializer
 from .facebook import fetch_facebook_data, save_facebook_data
 from .insta import scrape_instagram
 import string
@@ -283,33 +283,16 @@ class SendEmailVerificationView(GenericAPIView):
                                         >
                                         <tr>
                                             <td
-                                            style="
-                                                padding-right: 0px;
-                                                padding-left: 0px;
-                                            "
-                                            align="center"
-                                            >
-                                            <img
-                                                align="center"
-                                                border="0"
-                                                src="https://item.kakaocdn.net/do/dc9561970173c28a13654c3f14180b4b617ea012db208c18f6e83b1a90a7baa7"
-                                                alt="Image"
-                                                title="Image"
-                                                style="
-                                                outline: none;
-                                                text-decoration: none;
-                                                -ms-interpolation-mode: bicubic;
-                                                clear: both;
-                                                display: inline-block !important;
-                                                border: none;
-                                                height: auto;
-                                                float: none;
-                                                width: 32%;
-                                                max-width: 179.2px;
-                                                "
-                                                width="179.2"
-                                            />
-                                            </td>
+                                      style="
+                                        padding-right: 0px;
+                                        padding-left: 0px;
+                                        font-weight: 900;
+                                        color: #17217a;
+                                      "
+                                      align="center"
+                                    >
+                                      SENTINEL KOREA KYC
+                                    </td>
                                         </tr>
                                         </table>
                                     </td>
@@ -1239,8 +1222,8 @@ class NaverCrwawlingGet(APIView):
     @swagger_auto_schema(
         operation_summary='네이버 크롤링 데이터 GET API',
     )
-    def get(self, request, cmpenm):
-        queries = [Q(cmpenm__icontains=word) for word in cmpenm.split()]
+    def get(self, request, kr_content):
+        queries = [Q(kr_content__icontains=word) for word in kr_content.split()]
         query = queries.pop()
         for item in queries:
             query |= item
@@ -1253,8 +1236,8 @@ class MkCrwawlingGet(APIView):
     @swagger_auto_schema(
         operation_summary='매일경제 크롤링 데이터 GET API',
     )
-    def get(self, request, cmpenm):
-        queries = [Q(cmpenm__icontains=word) for word in cmpenm.split()]
+    def get(self, request, kr_content):
+        queries = [Q(kr_content__icontains=word) for word in kr_content.split()]
         query = queries.pop()
         for item in queries:
             query |= item
@@ -1267,8 +1250,8 @@ class KhCrwawlingGet(APIView):
     @swagger_auto_schema(
         operation_summary='헤럴드경제 크롤링 데이터 GET API',
     )
-    def get(self, request, cmpenm):
-        queries = [Q(cmpenm__icontains=word) for word in cmpenm.split()]
+    def get(self, request, kr_content):
+        queries = [Q(kr_content__icontains=word) for word in kr_content.split()]
         query = queries.pop()
         for item in queries:
             query |= item
@@ -1291,8 +1274,8 @@ class KhfnCrwawlingGet(APIView):
     @swagger_auto_schema(
         operation_summary='헤럴드파이넨스 크롤링 데이터 GET API',
     )
-    def get(self, request, cmpenm):
-        queries = [Q(cmpenm__icontains=word) for word in cmpenm.split()]
+    def get(self, request, kr_content):
+        queries = [Q(kr_content__icontains=word) for word in kr_content.split()]
         query = queries.pop()
         for item in queries:
             query |= item
@@ -1327,20 +1310,4 @@ class CorUserLogin(generics.ListCreateAPIView):
             return Response({"message": "중복된 이메일이 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
     
-
-class CmpInfoGET(generics.ListAPIView):
-    serializer_class = CmpInfoSerializer
-
-    @swagger_auto_schema(
-        operation_summary='기업정보 GET API'
-    )
-    def get(self, request, cmpenm):
-        queries = [Q(cmpenm__icontains=word) for word in cmpenm.split()]
-        query = queries.pop()
-        for item in queries:
-            query |= item
-        cmpData = CmpInfo.objects.filter(query)
-        serializers = CmpInfoSerializer(cmpData, many=True)
-        return Response(serializers.data)
-
 #-----------------------------------------------------API
