@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser
-from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi, Qna, Payment
+from .models import Mkcrawling, Khcrawling, Crawling, Khfncrawling, Facebook, Instagram, User, Coruser, Login, Email, EmailVerfi, Qna, Payment, CmpInfo
 from datetime import datetime
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -102,3 +102,7 @@ class CorUserWithdrawalSerializer(serializers.ModelSerializer):
         model = Coruser
         fields = ('auth_state',)
 
+class CmpInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CmpInfo
+        fields = '__all__'

@@ -22,7 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_swagger.views import get_swagger_view
 from cominfoApp.views import start_navercrawling, start_mkcrawling, start_khcrawling, start_khfncrawling, fetch_and_save_fb_data, get_instagram_posts, start_mkcrawling2, start_navercrawling2
-from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, SendEmailVerificationView, VerifyEmailView, ChangePasswordView, UserLoginView2, UserLogoutView, UserLoginStatusView, UserListView, UserUpdateView, CorUserUpdateView, CorUserListView, UserWithdrawalUpdate, CorUserWithdrawalUpdate, QnaListAPI, NaverCrwawlingGet
+from cominfoApp.views import  KhCrwawlingGet, KhfnCrwawlingGet, MkCrwawlingGet, InstagramGet, UserLogin, CorUserLogin, SendEmailVerificationView, VerifyEmailView, ChangePasswordView, UserLoginView2, UserLogoutView, UserLoginStatusView, UserListView, UserUpdateView, CorUserUpdateView, CorUserListView, UserWithdrawalUpdate, CorUserWithdrawalUpdate, QnaListAPI, NaverCrwawlingGet, CmpInfoGET
 schema_view = get_schema_view(
     openapi.Info(
         title="Open API", #타이틀
@@ -68,6 +68,7 @@ urlpatterns = [
     path("CorUserPUT/<str:email>/",CorUserUpdateView.as_view()),
     path("UserWithdrawalUpdate/<str:email>/", UserWithdrawalUpdate.as_view()),
     path("CorUserWithdrawalUpdate/<str:email>/", CorUserWithdrawalUpdate.as_view()),
-    path("QnaListAPI/<str:page_num>", QnaListAPI.as_view()),
+    path("QnaListAPI/<str:page_num>/", QnaListAPI.as_view()),
+    path("CmpInfoGET/<str:cmpenm>/", CmpInfoGET.as_view()),
     #path('email/',send_email_verification),
 ]
